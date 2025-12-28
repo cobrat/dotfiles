@@ -1,0 +1,12 @@
+theme = Gruber Darker
+window-padding-y = 6
+window-padding-x = 6
+
+font-family = "Monaspice Ar Nerd Font"
+font-size = 14
+font-feature = -calt, -liga, -dlig
+
+mouse-hide-while-typing = true
+macos-option-as-alt = true
+macos-titlebar-style = transparent
+shell-integration = detect
