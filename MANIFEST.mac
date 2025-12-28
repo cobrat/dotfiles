@@ -1,2 +1,3 @@
 .vimrc|symlink|
 .tmux.conf|symlink|
+ghostty/config|symlink|.config
