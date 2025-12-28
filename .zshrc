@@ -157,8 +157,5 @@ alias cat="bat"
 # export ANDROID_HOME="$HOME/Library/Android/sdk"
 # export PATH="$PATH:$ANDROID_HOME/platform-tools"
 
-# gemini-cli
-# export GOOGLE_CLOUD_PROJECT="gen-lang-client-0844157487"
-
 # Added by Antigravity
 # export PATH="/Users/wzh/.antigravity/antigravity/bin:$PATH"
