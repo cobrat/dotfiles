@@ -2,8 +2,8 @@ theme = Atom One Dark
 window-padding-y = 6
 window-padding-x = 6
 
-# font-family = "MesloLGS Nerd Font"
-font-size = 14
+font-family = "Iosevka Nerd Font"
+font-size = 16
 font-feature = -calt, -liga, -dlig
 
 mouse-hide-while-typing = true
