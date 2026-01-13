@@ -40,6 +40,7 @@ keymap('n', '<leader>Q', '<cmd>qa<cr>', { desc = 'Quit Neovim' })
 -- LSP shortcuts
 keymap("n", "<Leader>bf", ":lua vim.lsp.buf.format()<CR>", s)                                  -- Format code
 keymap("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", { noremap = true, silent = true }) -- Go to definition
+keymap('n', '<leader>be', vim.diagnostic.open_float, { desc = 'Show diagnostic' })
 
 -- Clipboard and Visual mode
 keymap("v", "<Leader>p", '"_dP') -- Paste without overwriting register
