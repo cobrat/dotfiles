@@ -2,15 +2,27 @@
 vim.pack.add({
     { src = "https://github.com/lewis6991/gitsigns.nvim" },
     { src = "https://github.com/mason-org/mason.nvim" },
-    { src = "https://github.com/saghen/blink.cmp", version = vim.version.range("^1") },
+    { src = "https://github.com/saghen/blink.cmp",       version = vim.version.range("^1") },
     { src = "https://github.com/folke/tokyonight.nvim" },
     { src = "https://github.com/ibhagwan/fzf-lua" },
-    { src = "https://github.com/vieitesss/miniharp.nvim" },
+    { src = "https://github.com/mason-org/mason-lspconfig.nvim" },
 })
+
+vim.g.lsp_servers = {
+    'bashls',
+    'lua_ls',
+    'clangd',
+    'pyright',
+    'rust_analyzer',
+}
 
 require('gitsigns').setup({ signcolumn = false })
 
-require('mason').setup({})
+require('mason').setup()
+require('mason-lspconfig').setup({
+    ensure_installed = vim.g.lsp_servers,
+    automatic_installation = true,
+})
 
 require('blink.cmp').setup({
     fuzzy = { implementation = 'prefer_rust_with_warning' },
@@ -80,5 +92,3 @@ require('fzf-lua').setup({
         }
     }
 })
-
-require('miniharp').setup({ show_on_autoload = true })

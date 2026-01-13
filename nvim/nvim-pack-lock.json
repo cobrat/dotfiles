@@ -5,6 +5,10 @@
       "src": "https://github.com/saghen/blink.cmp",
       "version": "1.0.0 - 2.0.0"
     },
+    "command.nvim": {
+      "rev": "d78a4a0ed7727663f9e635fc3be8ae5a40983dbd",
+      "src": "https://github.com/vieitesss/command.nvim"
+    },
     "fzf-lua": {
       "rev": "e7773d0c863a31bfc8ab72dd1adbec4611a35409",
       "src": "https://github.com/ibhagwan/fzf-lua"
@@ -12,6 +16,10 @@
     "gitsigns.nvim": {
       "rev": "42d6aed4e94e0f0bbced16bbdcc42f57673bd75e",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
+    },
+    "mason-lspconfig.nvim": {
+      "rev": "fe661093f4b05136437b531e7f959af2a2ae66c8",
+      "src": "https://github.com/mason-org/mason-lspconfig.nvim"
     },
     "mason.nvim": {
       "rev": "44d1e90e1f66e077268191e3ee9d2ac97cc18e65",
