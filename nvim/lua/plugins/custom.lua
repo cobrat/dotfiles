@@ -85,4 +85,14 @@ return {
             }
         end,
     },
+    {
+        "folke/noice.nvim",
+        opts = {
+            lsp = {
+                progress = {
+                    enabled = false,
+                },
+            },
+        },
+    },
 }
