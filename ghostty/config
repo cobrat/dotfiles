@@ -1,8 +1,8 @@
-theme = TokyoNight Night
+theme = Ayu Mirage
 window-padding-y = 10
 window-padding-x = 10
 
-font-family = "Iosevka Nerd Font"
+font-family = "Iosevka Term"
 font-size = 16
 font-feature = -calt, -liga, -dlig
 
