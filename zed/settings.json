@@ -7,29 +7,35 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
-  // editor
-  "base_keymap": "VSCode",
+  // ui
+  "ui_font_family": "Iosevka Fixed",
   "theme": {
     "mode": "dark",
     "light": "One Light",
-    "dark": "One Dark Pro",
+    "dark": "Ayu Mirage",
   },
+  "ui_font_size": 16,
+  // editor
+  "show_edit_predictions": false,
+  "base_keymap": "VSCode",
   // buffer
-  // "buffer_font_family": "MesloLGS Nerd Font",
+  "buffer_font_family": "Iosevka",
+  "buffer_font_size": 16,
+  "buffer_font_weight": 300,
+  "buffer_line_height": "standard",
+  "relative_line_numbers": "enabled",
   "vim_mode": true,
   "soft_wrap": "editor_width",
   "buffer_font_features": {
     "calt": false,
   },
-  "buffer_font_size": 14,
-  "relative_line_numbers": "enabled",
   // ai
   "agent": {
     "always_allow_tool_actions": true,
-    "default_profile": "write",
+    "default_profile": "minimal",
     "default_model": {
       "provider": "copilot_chat",
-      "model": "claude-sonnet-4.5",
+      "model": "gemini-3-flash-preview",
     },
     "model_parameters": [],
   },
