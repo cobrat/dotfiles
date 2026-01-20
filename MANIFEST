@@ -5,4 +5,4 @@
 ghostty/config|symlink|.config
 nvim|symlink|.config
 zed/settings.json|symlink|.config
-zed/keymaps.json|symlink|.config
+zed/keymap.json|symlink|.config
