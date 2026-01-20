@@ -1,6 +1,6 @@
 # oh-my-zsh
 export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="alanpeabody"
+ZSH_THEME=""
 
 # zsh plugins
 plugins=(
@@ -9,6 +9,7 @@ plugins=(
     zsh-syntax-highlighting
 )
 source $ZSH/oh-my-zsh.sh
+PROMPT='%{$fg[magenta]%}%~%{$fg[red]%} %{$reset_color%}$%b '
 
 # fzf config and prview
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git "
