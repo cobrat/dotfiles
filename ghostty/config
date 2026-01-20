@@ -1,6 +1,16 @@
 theme = Ayu Mirage
-window-padding-y = 10
+background-opacity = 0.88
+background-blur-radius = 25
+
+window-decoration = auto
 window-padding-x = 10
+window-padding-y = 10
+window-padding-balance = false
+
+cursor-style = block
+cursor-style-blink = false
+cursor-color = cell-foreground
+cursor-text = cell-background
 
 font-family = "Iosevka Term"
 font-size = 16
@@ -10,3 +20,6 @@ mouse-hide-while-typing = true
 macos-option-as-alt = true
 macos-titlebar-style = transparent
 shell-integration = detect
+shell-integration-features = no-cursor
+confirm-close-surface = false
+copy-on-select = clipboard
