@@ -1,6 +1,6 @@
-theme = Ayu Mirage
-background-opacity = 0.88
-background-blur-radius = 25
+theme = Dark+
+# background-opacity = 0.88
+# background-blur-radius = 25
 
 window-decoration = auto
 window-padding-x = 10

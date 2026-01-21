@@ -1,8 +1,14 @@
-theme = "ayu_mirage_custom"
+theme = "dark_plus_custom"
 
 [editor]
 line-number = "relative"
+text-width = 100
 
 [editor.cursor-shape]
 normal = "block"
 insert = "bar"
+
+[editor.soft-wrap]
+enable = true
+wrap-at-text-width = true
+wrap-indicator = ""
