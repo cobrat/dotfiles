@@ -1,0 +1,10 @@
+inherits = "ayu_mirage"
+
+"ui.background" = {}
+"ui.text" = {}
+"ui.menu" = {}
+"ui.popup" = {}
+"ui.window" = {}
+
+"ui.statusline" = { fg = "black", bg = "light-gray"}
+"ui.statusline.inactive" = { fg = "black", bg = "gray" }
