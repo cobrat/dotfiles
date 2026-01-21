@@ -1,4 +1,8 @@
-theme = "ayu_mirage"
+theme = "ayu_mirage_custom"
 
 [editor]
 line-number = "relative"
+
+[editor.cursor-shape]
+normal = "block"
+insert = "bar"

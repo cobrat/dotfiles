@@ -3,7 +3,7 @@
 .vimrc|symlink|
 .tmux.conf|symlink|
 ghostty/config|symlink|.config
-helix/config.toml|symlink|.config
+helix|symlink|.config
 nvim|symlink|.config
 zed/settings.json|symlink|.config
 zed/keymap.json|symlink|.config
