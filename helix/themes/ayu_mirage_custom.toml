@@ -6,5 +6,5 @@ inherits = "ayu_mirage"
 "ui.popup" = {}
 "ui.window" = {}
 
-"ui.statusline" = { fg = "black", bg = "light-gray"}
+"ui.statusline" = { fg = "#1A1A1A", bg = "#999999"}
 "ui.statusline.inactive" = { fg = "black", bg = "gray" }
