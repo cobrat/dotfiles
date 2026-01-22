@@ -1,21 +1,24 @@
-theme = "dark_plus_custom"
+theme = "onedarker"
 
 [editor]
+auto-info = true
+completion-timeout = 5
+cursorline = true
+# use system clipboard
+default-yank-register = "+"
+idle-timeout = 5
 line-number = "relative"
-text-width = 100
-completion-trigger-len = 3
-inline-diagnostics = { cursor-line = "warning", other-lines = "disable" }
+inline-diagnostics.cursor-line = "hint"
+lsp.auto-signature-help = false
+smart-tab.enable = false
+soft-wrap.enable = true
 
-[editor.lsp]
-auto-signature-help = false
-display-inlay-hints = false
-display-messages = false
+[editor.indent-guides]
+character = "╎"
+render = true
+skip-levels = 1
 
 [editor.cursor-shape]
 normal = "block"
 insert = "bar"
 
-[editor.soft-wrap]
-enable = true
-wrap-at-text-width = true
-wrap-indicator = ""
