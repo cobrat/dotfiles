@@ -11,7 +11,8 @@ plugins=(
 source $ZSH/oh-my-zsh.sh
 
 # style customization
-PROMPT='%{$fg[magenta]%}%~%{$fg[red]%} %{$reset_color%}$%b '
+# PROMPT='%{$fg[magenta]%}%~%{$fg[red]%} %{$reset_color%}$%b '
+PROMPT='%F{blue}%n@%m%f %F{magenta}%1~%f $ '
 ZSH_HIGHLIGHT_STYLES[comment]='fg=242'
 
 # fzf config and prview
