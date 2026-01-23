@@ -4,7 +4,6 @@ theme = "onedarker"
 auto-info = true
 completion-timeout = 5
 cursorline = true
-# use system clipboard
 default-yank-register = "+"
 idle-timeout = 5
 line-number = "relative"
@@ -12,11 +11,6 @@ inline-diagnostics.cursor-line = "hint"
 lsp.auto-signature-help = false
 smart-tab.enable = false
 soft-wrap.enable = true
-
-[editor.indent-guides]
-character = "╎"
-render = true
-skip-levels = 1
 
 [editor.cursor-shape]
 normal = "block"

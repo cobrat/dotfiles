@@ -1,10 +1,10 @@
 
 [[language]]
 name = "c"
-auto-format = true
-formatter = { command = "clang-format", args = ["--style=file"] }
-
+auto-format =  false
+formatter = { command = "clang-format", args = ["-style", "{IndentWidth: 4, TabWidth: 4, UseTab: Never}"] }
+   
 [[language]]
 name = "python"
-auto-format = true
+auto-format = false 
 formatter = { command = "ruff", args = ["format", "--stdin-filename", "%{buffer_name}", "-"] }
