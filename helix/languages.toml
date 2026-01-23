@@ -1,8 +1,9 @@
 
 [[language]]
 name = "c"
+file-types = ["c", "h"]
 auto-format =  false
-formatter = { command = "clang-format", args = ["-style", "{IndentWidth: 4, TabWidth: 4, UseTab: Never}"] }
+formatter = { command = "clang-format", args = ["-style", "{IndentWidth: 4, TabWidth: 4, UseTab: Never}", "--header-insertion=never", "--query-driver=/usr/bin/gcc"] }
    
 [[language]]
 name = "python"
