@@ -12,7 +12,7 @@ cursor-style-blink = false
 cursor-color = cell-foreground
 cursor-text = cell-background
 
-font-family = "Iosevka Term"
+font-family = "Monaspace Argon"
 font-size = 16
 font-feature = -calt, -liga, -dlig
 
