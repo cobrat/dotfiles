@@ -13,7 +13,7 @@ cursor-color = cell-foreground
 cursor-text = cell-background
 
 font-family = "Monaspace Argon"
-font-size = 16
+font-size = 14
 font-feature = -calt, -liga, -dlig
 
 mouse-hide-while-typing = true
