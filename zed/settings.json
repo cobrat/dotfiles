@@ -8,21 +8,21 @@
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
   // ui
-  "ui_font_family": "Iosevka Fixed",
+  "ui_font_family": "Monaspace Argon",
   "theme": {
     "mode": "dark",
     "light": "One Light",
-    "dark": "Ayu Mirage",
+    "dark": "One Dark Pro",
   },
-  "ui_font_size": 16,
+  "ui_font_size": 15,
   // editor
   "show_edit_predictions": false,
   "base_keymap": "VSCode",
   // buffer
-  "buffer_font_family": "Iosevka",
-  "buffer_font_size": 16,
+  "buffer_font_family": "Monaspace Argon",
+  "buffer_font_size": 14,
   "buffer_font_weight": 300,
-  "buffer_line_height": "standard",
+  "buffer_line_height": "comfortable",
   "relative_line_numbers": "enabled",
   "vim_mode": true,
   "soft_wrap": "editor_width",
