@@ -7,65 +7,88 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
-  // ui
-  "ui_font_family": "Monaspace Argon",
-  "theme": {
-    "mode": "dark",
-    "light": "One Light",
-    "dark": "One Dark Pro",
-  },
-  "ui_font_size": 15,
-  // editor
-  "session": {
-    "trust_all_worktrees": true
-  },
-  "show_edit_predictions": false,
-  // "base_keymap": "VSCode",
-  "toolbar": {
-    "breadcrumbs": false,
-    "quick_actions": false,
-    "selections_menu": false,
-  },
-  "project_panel": { "entry_spacing": "standard" },
-  "tabs": { "file_icons": true },
-  // buffer
-  "buffer_font_family": "Monaspace Argon",
-  "buffer_font_size": 14,
-  "buffer_font_weight": 300,
-  "buffer_line_height": { "custom": 1.4 },
-  "relative_line_numbers": "enabled",
-  "vim_mode": true,
-  "soft_wrap": "editor_width",
-  "tab_size": 4,
-  "hard_tabs": false,
-  "colorize_brackets": true,
-  "buffer_font_features": {
-    "calt": false,
-  },
-  "git": { "inline_blame": { "enabled": false } },
-  "format_on_save": "off",
-  // ai
-  "agent": {
-    "always_allow_tool_actions": true,
-    "default_profile": "minimal",
-    "default_model": {
-      "provider": "copilot_chat",
-      "model": "gpt-5.2-codex",
+    // ui
+    "ui_font_family": "Monaspace Argon",
+    "theme": {
+        "mode": "dark",
+        "light": "One Light",
+        "dark": "One Dark Pro",
     },
-    "model_parameters": [],
-  },
-  "edit_predictions": {
-    "copilot": {
-      "enable_next_edit_suggestions": false
+    "ui_font_size": 15,
+    // editor
+    "session": {
+        "trust_all_worktrees": true,
     },
-    "mode": "subtle",
-  },
-  "features": {
-    "edit_prediction_provider": "copilot",
-  },
-  // others
-  "telemetry": {
-    "diagnostics": false,
-    "metrics": false,
-  },
+    "show_edit_predictions": false,
+    // "base_keymap": "VSCode",
+    "toolbar": {
+        "breadcrumbs": false,
+        "quick_actions": false,
+        "selections_menu": false,
+    },
+    "project_panel": { "entry_spacing": "standard" },
+    "tabs": { "file_icons": true },
+    // buffer
+    "buffer_font_family": "Monaspace Argon",
+    "buffer_font_size": 14,
+    "buffer_font_weight": 300,
+    "buffer_line_height": { "custom": 1.4 },
+    "relative_line_numbers": "enabled",
+    "vim_mode": true,
+    "soft_wrap": "editor_width",
+    "tab_size": 4,
+    "hard_tabs": false,
+    "colorize_brackets": true,
+    "buffer_font_features": {
+        "calt": false,
+    },
+    "git": { "inline_blame": { "enabled": false } },
+    "format_on_save": "off",
+    // lsp
+    "lsp": {
+        "clangd": {
+            "binary": {
+                "arguments": [
+                    "--fallback-style=Microsoft",
+                    "--all-scopes-completion",
+                    "--completion-style=detailed",
+                    "--header-insertion=never",
+                    "--clang-tidy",
+                ],
+            },
+            "initialization_options": {
+                "fallbackFlags": [
+                    "-xc",
+                    "-Wall",
+                    "-Wextra",
+                    "-Wpedantic",
+                    "-std=c11",
+                ],
+            },
+        },
+    },
+    // ai
+    "agent": {
+        "always_allow_tool_actions": true,
+        "default_profile": "minimal",
+        "default_model": {
+            "provider": "copilot_chat",
+            "model": "gemini-3-flash-preview",
+        },
+        "model_parameters": [],
+    },
+    "edit_predictions": {
+        "copilot": {
+            "enable_next_edit_suggestions": false,
+        },
+        "mode": "subtle",
+    },
+    "features": {
+        "edit_prediction_provider": "copilot",
+    },
+    // others
+    "telemetry": {
+        "diagnostics": false,
+        "metrics": false,
+    },
 }
