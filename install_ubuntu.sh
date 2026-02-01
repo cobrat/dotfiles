@@ -6,7 +6,7 @@
 set -e  # Exit on error
 
 # Check if running on Ubuntu/Debian
-if !  command -v apt-get &> /dev/null; then
+if ! command -v apt-get &> /dev/null; then
     echo "Error: This script is designed for Ubuntu/Debian systems with apt-get"
     exit 1
 fi
@@ -21,7 +21,6 @@ apt_packages=(
     fd-find      # fd - faster find (binary is fdfind on Ubuntu)
     fzf          # fzf - fuzzy finder
     bat          # bat - better cat (binary is batcat on Ubuntu)
-    fastfetch    # fastfetch - system info (Ubuntu 23.04+)
     tmux         # tmux - terminal multiplexer
     jq           # jq - JSON processor
     mtr          # mtr - network diagnostic
@@ -43,9 +42,19 @@ for package in "${apt_packages[@]}"; do
     fi
 done
 
+# Install fastfetch (not in Ubuntu 24.04 default repos, use PPA)
+if ! command -v fastfetch &> /dev/null; then
+    echo "Installing fastfetch via PPA..."
+    sudo add-apt-repository -y ppa:zhangsongcui3371/fastfetch
+    sudo apt-get update
+    sudo apt-get install -y fastfetch
+else
+    echo "✓ fastfetch is already installed"
+fi
+
 # Create symlinks for fd and bat if needed
-if command -v fdfind &> /dev/null && !  command -v fd &> /dev/null; then
-    echo "Creating symlink:  fd -> fdfind"
+if command -v fdfind &> /dev/null && ! command -v fd &> /dev/null; then
+    echo "Creating symlink: fd -> fdfind"
     sudo ln -sf $(which fdfind) /usr/local/bin/fd
 fi
 
@@ -67,8 +76,8 @@ if ! command -v eza &> /dev/null; then
     echo "Installing eza..."
     sudo mkdir -p /etc/apt/keyrings
     wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
-    echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list. d/gierens.list
-    sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list. d/gierens.list
+    echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+    sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
     sudo apt-get update
     sudo apt-get install -y eza
 else
@@ -84,9 +93,9 @@ else
 fi
 
 # Install lazygit
-if !  command -v lazygit &> /dev/null; then
+if ! command -v lazygit &> /dev/null; then
     echo "Installing lazygit..."
-    LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name":  "v\K[^"]*')
+    LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
     curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
     tar xf lazygit.tar.gz lazygit
     sudo install lazygit /usr/local/bin
@@ -96,7 +105,7 @@ else
 fi
 
 # Install procs
-if !  command -v procs &> /dev/null; then
+if ! command -v procs &> /dev/null; then
     echo "Installing procs..."
     PROCS_VERSION=$(curl -s "https://api.github.com/repos/dalance/procs/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
     curl -Lo procs.zip "https://github.com/dalance/procs/releases/latest/download/procs-v${PROCS_VERSION}-x86_64-linux.zip"
