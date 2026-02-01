@@ -1,0 +1,4 @@
+.zshrc|symlink|
+.zprofile|symlink|
+.vimrc|symlink|
+.tmux.conf|symlink|
