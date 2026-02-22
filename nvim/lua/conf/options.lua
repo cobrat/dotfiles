@@ -1,3 +1,5 @@
+vim.cmd.colorscheme("habamax")
+
 local options = {
     backup = false,
     clipboard = "unnamedplus",
