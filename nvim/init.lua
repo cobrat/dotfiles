@@ -153,7 +153,7 @@ local function setup_dynamic_statusline()
         "(%{v:lua.file_size()})",
         " %{v:lua.git_branch()} ",
         "%=",
-        " Line:%4l Column:%-3c  %P ",
+        " Line:%-4l Column:%-3c %P ",
     })
 
     vim.api.nvim_create_autocmd({ "WinEnter", "BufEnter" }, {
