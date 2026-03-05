@@ -1,29 +1,6 @@
 vim.opt.termguicolors = true
 vim.cmd.colorscheme("habamax")
 
-local function set_transparent() -- set UI component to transparent
-	local groups = {
-		"Normal",
-		"NormalNC",
-		"EndOfBuffer",
-		"NormalFloat",
-		"FloatBorder",
-		"SignColumn",
-		"StatusLine",
-		"StatusLineNC",
-		"TabLine",
-		"TabLineFill",
-		"TabLineSel",
-		"ColorColumn",
-	}
-	for _, g in ipairs(groups) do
-		vim.api.nvim_set_hl(0, g, { bg = "none" })
-	end
-	vim.api.nvim_set_hl(0, "TabLineFill", { bg = "none", fg = "#767676" })
-end
-
--- set_transparent()
-
 -- ============================================================================
 -- OPTIONS
 -- ============================================================================
@@ -73,9 +50,9 @@ vim.opt.writebackup = false -- do not write to a backup file
 vim.opt.swapfile = false -- do not create a swapfile
 vim.opt.undofile = true -- do create an undo file
 vim.opt.undodir = undodir -- set the undo directory
-vim.opt.updatetime = 300 -- faster completion
+vim.opt.updatetime = 200 -- faster completion
 vim.opt.timeoutlen = 500 -- timeout duration
-vim.opt.ttimeoutlen = 0 -- key code timeout
+vim.opt.ttimeoutlen = 10 -- key code timeout
 vim.opt.autoread = true -- auto-reload changes if outside of neovim
 vim.opt.autowrite = false -- do not auto-save
 
@@ -83,8 +60,8 @@ vim.opt.hidden = true -- allow hidden buffers
 vim.opt.errorbells = false -- no error sounds
 vim.opt.backspace = "indent,eol,start" -- better backspace behaviour
 vim.opt.autochdir = false -- do not autochange directories
-vim.opt.iskeyword:append("-") -- include - in words
-vim.opt.path:append("**") -- include subdirs in search
+-- vim.opt.iskeyword:append("-") -- include - in words
+-- vim.opt.path:append("**") -- include subdirs in search
 vim.opt.selection = "inclusive" -- include last char in selection
 vim.opt.mouse = "a" -- enable mouse support
 vim.opt.clipboard:append("unnamedplus") -- use system clipboard
@@ -163,6 +140,9 @@ _G.mode_icon = mode_indicator
 _G.git_branch = git_branch
 _G.file_size = file_size
 
+
+vim.api.nvim_set_hl(0, "StatusLineBold", { bold = true })
+
 -- Function to change statusline based on window focus
 local function setup_dynamic_statusline()
     -- Pre-concatenate the string once instead of inside the loop
@@ -185,9 +165,6 @@ local function setup_dynamic_statusline()
             vim.opt_local.statusline = "  %f %h%m%r %= %l:%c  "
         end,
     })
-
-    -- Pure Lua highlight definition
-    vim.api.nvim_set_hl(0, "StatusLineBold", { bold = true })
 end
 
 setup_dynamic_statusline()
@@ -261,58 +238,19 @@ local augroup = vim.api.nvim_create_augroup("UserConfig", { clear = true })
 
 -- Format on save (ONLY real file buffers, ONLY when efm is attached)
 vim.api.nvim_create_autocmd("BufWritePre", {
-	group = augroup,
-	pattern = {
-		"*.lua",
-		"*.py",
-		"*.go",
-		"*.js",
-		"*.jsx",
-		"*.ts",
-		"*.tsx",
-		"*.json",
-		"*.css",
-		"*.scss",
-		"*.html",
-		"*.sh",
-		"*.bash",
-		"*.zsh",
-		"*.c",
-		"*.cpp",
-		"*.h",
-		"*.hpp",
-	},
-	callback = function(args)
-		-- avoid formatting non-file buffers (helps prevent weird write prompts)
-		if vim.bo[args.buf].buftype ~= "" then
-			return
-		end
-		if not vim.bo[args.buf].modifiable then
-			return
-		end
-		if vim.api.nvim_buf_get_name(args.buf) == "" then
-			return
-		end
+    group = augroup,
+    callback = function(args)
+        if not vim.bo[args.buf].modifiable then return end
 
-		local has_efm = false
-		for _, c in ipairs(vim.lsp.get_clients({ bufnr = args.buf })) do
-			if c.name == "efm" then
-				has_efm = true
-				break
-			end
-		end
-		if not has_efm then
-			return
-		end
-
-		pcall(vim.lsp.buf.format, {
-			bufnr = args.buf,
-			timeout_ms = 2000,
-			filter = function(c)
-				return c.name == "efm"
-			end,
-		})
-	end,
+        local efm_clients = vim.lsp.get_clients({ bufnr = args.buf, name = "efm" })
+        if #efm_clients > 0 then
+            vim.lsp.buf.format({
+                bufnr = args.buf,
+                id = efm_clients[1].id,
+                timeout_ms = 2000,
+            })
+        end
+    end,
 })
 
 -- highlight yanked text
@@ -459,6 +397,12 @@ require("nvim-tree").setup({
 	},
 	renderer = {
 		group_empty = true,
+            icons = {
+                show = {
+                file = false,
+                folder = false,
+            }
+        }
 	},
 })
 vim.keymap.set("n", "<leader>e", function()
