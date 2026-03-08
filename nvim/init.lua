@@ -109,7 +109,7 @@ end
 -- File size with Nerd Font icon
 local function file_size()
     local size = vim.fn.getfsize(vim.fn.expand("%"))
-    if size <= 0 then return "" end
+    if size <= 0 then return "0.0K" end
     if size < 1024 then return size .. "B" end
     if size < 1048576 then return string.format("%.1fK", size / 1024) end
     return string.format("%.1fM", size / 1048576)
@@ -446,7 +446,7 @@ require("mini.indentscope").setup({})
 require("mini.pairs").setup({})
 require("mini.trailspace").setup({})
 require("mini.bufremove").setup({})
-require("mini.notify").setup({})
+-- require("mini.notify").setup({})
 require("mini.icons").setup({})
 
 require("gitsigns").setup({
