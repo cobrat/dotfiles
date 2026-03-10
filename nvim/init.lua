@@ -36,7 +36,14 @@ vim.opt.conceallevel = 0 -- do not hide markup
 vim.opt.concealcursor = "" -- do not hide cursorline in markup
 -- vim.opt.lazyredraw = true -- do not redraw during macros
 vim.opt.synmaxcol = 300 -- syntax highlighting limit
-vim.opt.fillchars = { eob = " " } -- hide "~" on empty lines
+-- vim.opt.fillchars = { eob = " " } -- hide "~" on empty lines
+vim.opt.fillchars = {
+	eob = " ",
+	fold = " ",
+	foldopen = "-",
+	foldsep = "|",
+	foldclose = "+",
+}
 
 local undodir = vim.fn.expand("~/.vim/undodir")
 if
@@ -89,82 +96,87 @@ vim.opt.maxmempattern = 20000 -- increase max memory
 -- STATUSLINE
 -- ============================================================================
 
--- Git branch function with caching and Nerd Font icon
+-- Git branch function using standard text
 local function git_branch()
-    -- Get branch name from gitsigns
-    local dict = vim.b.gitsigns_status_dict
-    if not dict or dict.head == "" then
-        return ""
-    end
+	local dict = vim.b.gitsigns_status_dict
+	if not dict or dict.head == "" then
+		return ""
+	end
 
-    local branch = dict.head
-    local added = dict.added and (" +" .. dict.added) or ""
-    local changed = dict.changed and (" ~" .. dict.changed) or ""
-    local removed = dict.removed and (" -" .. dict.removed) or ""
+	local branch = dict.head
+	local added = dict.added and (" +" .. dict.added) or ""
+	local changed = dict.changed and (" ~" .. dict.changed) or ""
+	local removed = dict.removed and (" -" .. dict.removed) or ""
 
-    -- Format:  branch_name +2 ~1 -0
-    return string.format("[%s%s%s%s]", branch, added, changed, removed)
+	return string.format(" Git: [%s%s%s%s]", branch, added, changed, removed)
 end
 
 -- File size with Nerd Font icon
 local function file_size()
-    local size = vim.fn.getfsize(vim.fn.expand("%"))
-    if size <= 0 then return "0.0K" end
-    if size < 1024 then return size .. "B" end
-    if size < 1048576 then return string.format("%.1fK", size / 1024) end
-    return string.format("%.1fM", size / 1048576)
+	local size = vim.fn.getfsize(vim.fn.expand("%"))
+	if size <= 0 then
+		return "0.0K"
+	end
+	if size < 1024 then
+		return size .. "B"
+	end
+	if size < 1048576 then
+		return string.format("%.1fK", size / 1024)
+	end
+	return string.format("%.1fM", size / 1048576)
 end
 
 -- Mode indicators with Nerd Font icons
 local modes = {
-    n = "NORMAL",
-    i = "INSERT",
-    v = "VISUAL",
-    V = "V-LINE",
-    ["\22"] = "V-BLOCK",
-    c = "COMMAND",
-    s = "SELECT",
-    S = "S-LINE",
-    ["\19"] = "S-BLOCK",
-    R = "REPLACE",
-    r = "REPLACE",
-    ["!"] = "SHELL",
-    t = "TERMINAL",
+	n = "NORMAL",
+	i = "INSERT",
+	v = "VISUAL",
+	V = "V-LINE",
+	["\22"] = "V-BLOCK",
+	c = "COMMAND",
+	s = "SELECT",
+	S = "S-LINE",
+	["\19"] = "S-BLOCK",
+	R = "REPLACE",
+	r = "REPLACE",
+	["!"] = "SHELL",
+	t = "TERMINAL",
 }
 local function mode_indicator()
 	local mode = vim.fn.mode()
-	return modes[mode] or (mode)
+	return modes[mode] or mode
 end
 
 _G.mode_icon = mode_indicator
 _G.git_branch = git_branch
 _G.file_size = file_size
 
-
 vim.api.nvim_set_hl(0, "StatusLineBold", { bold = true })
 
 -- Function to change statusline based on window focus
 local function setup_dynamic_statusline()
-    -- Pre-concatenate the string once instead of inside the loop
-    local active_st = table.concat({
-        " ",
-        " %#StatusLineBold#%{v:lua.mode_icon()}%#StatusLine# ",
-        " %f%h%m%r ",
-        "(%{v:lua.file_size()})",
-        " %{v:lua.git_branch()} ",
-        "%=",
-        " Line:%-4l Column:%-3c %P ",
-    })
+	-- Pre-concatenate the string once instead of inside the loop
+	local active_st = table.concat({
+		" ",
+		" %#StatusLineBold#%{v:lua.mode_icon()}%#StatusLine# ",
+		" %f%h%m%r ",
+		"(%{v:lua.file_size()})",
+		" %{v:lua.git_branch()} ",
+		"%=",
+		" Line:%-4l Column:%-3c %P ",
+	})
 
-    vim.api.nvim_create_autocmd({ "WinEnter", "BufEnter" }, {
-        callback = function() vim.opt_local.statusline = active_st end,
-    })
+	vim.api.nvim_create_autocmd({ "WinEnter", "BufEnter" }, {
+		callback = function()
+			vim.opt_local.statusline = active_st
+		end,
+	})
 
-    vim.api.nvim_create_autocmd({ "WinLeave", "BufLeave" }, {
-        callback = function()
-            vim.opt_local.statusline = "  %f %h%m%r %= %l:%c  "
-        end,
-    })
+	vim.api.nvim_create_autocmd({ "WinLeave", "BufLeave" }, {
+		callback = function()
+			vim.opt_local.statusline = "  %f %h%m%r %= %l:%c  "
+		end,
+	})
 end
 
 setup_dynamic_statusline()
@@ -236,23 +248,6 @@ vim.keymap.set("n", "Q", "<nop>")
 
 local augroup = vim.api.nvim_create_augroup("UserConfig", { clear = true })
 
--- Format on save (ONLY real file buffers, ONLY when efm is attached)
-vim.api.nvim_create_autocmd("BufWritePre", {
-    group = augroup,
-    callback = function(args)
-        if not vim.bo[args.buf].modifiable then return end
-
-        local efm_clients = vim.lsp.get_clients({ bufnr = args.buf, name = "efm" })
-        if #efm_clients > 0 then
-            vim.lsp.buf.format({
-                bufnr = args.buf,
-                id = efm_clients[1].id,
-                timeout_ms = 2000,
-            })
-        end
-    end,
-})
-
 -- highlight yanked text
 vim.api.nvim_create_autocmd("TextYankPost", {
 	group = augroup,
@@ -308,7 +303,7 @@ vim.pack.add({
 	-- Language Server Protocols
 	"https://www.github.com/neovim/nvim-lspconfig",
 	"https://github.com/mason-org/mason.nvim",
-	"https://github.com/creativenull/efmls-configs-nvim",
+	"https://github.com/stevearc/conform.nvim",
 	{
 		src = "https://github.com/saghen/blink.cmp",
 		version = vim.version.range("1.*"),
@@ -327,7 +322,7 @@ packadd("nvim-tree.lua")
 -- LSP
 packadd("nvim-lspconfig")
 packadd("mason.nvim")
-packadd("efmls-configs-nvim")
+packadd("conform.nvim")
 packadd("blink.cmp")
 packadd("LuaSnip")
 
@@ -396,13 +391,14 @@ require("nvim-tree").setup({
 		dotfiles = false,
 	},
 	renderer = {
-		group_empty = true,
-            icons = {
-                show = {
-                file = false,
-                folder = false,
-            }
-        }
+		icons = {
+			show = {
+				file = false,
+				folder = false,
+				git = false,
+				folder_arrow = false,
+			},
+		},
 	},
 })
 vim.keymap.set("n", "<leader>e", function()
@@ -438,28 +434,34 @@ vim.keymap.set("n", "<leader>fX", function()
 end, { desc = "FZF Diagnostics Workspace" })
 
 require("mini.ai").setup({})
-require("mini.comment").setup({})
+-- require("mini.comment").setup({})
 require("mini.move").setup({})
 require("mini.surround").setup({})
 require("mini.cursorword").setup({})
 require("mini.indentscope").setup({})
+-- require("mini.indentscope").setup({
+--     symbol = "|", -- Simple ASCII pipe instead of icons
+--     draw = { delay = 0, animation = nil }, -- Disable animations for snappier feel
+-- })
 require("mini.pairs").setup({})
 require("mini.trailspace").setup({})
 require("mini.bufremove").setup({})
--- require("mini.notify").setup({})
-require("mini.icons").setup({})
+-- require("mini.icons").setup({})
+
+-- Use mini.bufremove to close buffers without messing up window layouts
+vim.keymap.set("n", "<leader>bd", function()
+    require("mini.bufremove").delete(0, false)
+end, { desc = "Delete buffer (stable)" })
 
 require("gitsigns").setup({
 	signs = {
-		add = { text = "\u{2590}" }, -- ▏
-		change = { text = "\u{2590}" }, -- ▐
-		delete = { text = "\u{2590}" }, -- ◦
-		topdelete = { text = "\u{25e6}" }, -- ◦
-		changedelete = { text = "\u{25cf}" }, -- ●
-		untracked = { text = "\u{25cb}" }, -- ○
+		add = { text = "+" },
+		change = { text = "~" },
+		delete = { text = "-" },
+		topdelete = { text = "^" },
+		changedelete = { text = "!" },
+		untracked = { text = "?" },
 	},
-	signcolumn = true,
-	current_line_blame = false,
 })
 
 require("mason").setup({})
@@ -492,41 +494,22 @@ end, { desc = "Diff this" })
 -- ============================================================================
 -- LSP, Linting, Formatting & Completion
 -- ============================================================================
-local diagnostic_signs = {
-	Error = " ",
-	Warn = " ",
-	Hint = "",
-	Info = "",
-}
 
+-- Plain text diagnostics
 vim.diagnostic.config({
-	virtual_text = { prefix = "●", spacing = 4 },
-	signs = {
-		text = {
-			[vim.diagnostic.severity.ERROR] = diagnostic_signs.Error,
-			[vim.diagnostic.severity.WARN] = diagnostic_signs.Warn,
-			[vim.diagnostic.severity.INFO] = diagnostic_signs.Info,
-			[vim.diagnostic.severity.HINT] = diagnostic_signs.Hint,
-		},
-	},
+	virtual_text = { prefix = "*", spacing = 4 },
+	signs = false, -- Disable icons in the sign column
 	underline = true,
 	update_in_insert = false,
 	severity_sort = true,
-	float = {
-		border = "rounded",
-		source = "always",
-		header = "",
-		prefix = "",
-		focusable = false,
-		style = "minimal",
-	},
+	float = { border = "single" },
 })
 
 do
 	local orig = vim.lsp.util.open_floating_preview
 	function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
 		opts = opts or {}
-		opts.border = opts.border or "rounded"
+		opts.border = opts.border or "single"
 		return orig(contents, syntax, opts, ...)
 	end
 end
@@ -612,15 +595,16 @@ vim.keymap.set("n", "<leader>dl", vim.diagnostic.open_float, { desc = "Show line
 
 require("blink.cmp").setup({
 	keymap = {
-		preset = "none",
-		["<C-Space>"] = { "show", "hide" },
-		["<CR>"] = { "accept", "fallback" },
-		["<C-j>"] = { "select_next", "fallback" },
-		["<C-k>"] = { "select_prev", "fallback" },
-		["<Tab>"] = { "snippet_forward", "fallback" },
-		["<S-Tab>"] = { "snippet_backward", "fallback" },
+		preset = "super-tab",
+		-- preset = "none",
+		-- ["<C-Space>"] = { "show", "hide" },
+		-- ["<CR>"] = { "accept", "fallback" },
+		-- ["<C-j>"] = { "select_next", "fallback" },
+		-- ["<C-k>"] = { "select_prev", "fallback" },
+		-- ["<Tab>"] = { "snippet_forward", "fallback" },
+		-- ["<S-Tab>"] = { "snippet_backward", "fallback" },
 	},
-	appearance = { nerd_font_variant = "mono" },
+	appearance = { nerd_font_variant = "none" },
 	completion = { menu = { auto_show = true } },
 	sources = { default = { "lsp", "path", "buffer", "snippets" } },
 	snippets = {
@@ -653,72 +637,6 @@ vim.lsp.config("ts_ls", {})
 vim.lsp.config("gopls", {})
 vim.lsp.config("clangd", {})
 
-do
-	local luacheck = require("efmls-configs.linters.luacheck")
-	local stylua = require("efmls-configs.formatters.stylua")
-
-	local flake8 = require("efmls-configs.linters.flake8")
-	local black = require("efmls-configs.formatters.black")
-
-	local prettier_d = require("efmls-configs.formatters.prettier_d")
-	local eslint_d = require("efmls-configs.linters.eslint_d")
-
-	local fixjson = require("efmls-configs.formatters.fixjson")
-
-	local shellcheck = require("efmls-configs.linters.shellcheck")
-	local shfmt = require("efmls-configs.formatters.shfmt")
-
-	local cpplint = require("efmls-configs.linters.cpplint")
-	local clangfmt = require("efmls-configs.formatters.clang_format")
-
-	local go_revive = require("efmls-configs.linters.go_revive")
-	local gofumpt = require("efmls-configs.formatters.gofumpt")
-
-	vim.lsp.config("efm", {
-		filetypes = {
-			"c",
-			"cpp",
-			"css",
-			"go",
-			"html",
-			"javascript",
-			"javascriptreact",
-			"json",
-			"jsonc",
-			"lua",
-			"markdown",
-			"python",
-			"sh",
-			"typescript",
-			"typescriptreact",
-			"vue",
-			"svelte",
-		},
-		init_options = { documentFormatting = true },
-		settings = {
-			languages = {
-				c = { clangfmt, cpplint },
-				go = { gofumpt, go_revive },
-				cpp = { clangfmt, cpplint },
-				css = { prettier_d },
-				html = { prettier_d },
-				javascript = { eslint_d, prettier_d },
-				javascriptreact = { eslint_d, prettier_d },
-				json = { eslint_d, fixjson },
-				jsonc = { eslint_d, fixjson },
-				lua = { luacheck, stylua },
-				markdown = { prettier_d },
-				python = { flake8, black },
-				sh = { shellcheck, shfmt },
-				typescript = { eslint_d, prettier_d },
-				typescriptreact = { eslint_d, prettier_d },
-				vue = { eslint_d, prettier_d },
-				svelte = { eslint_d, prettier_d },
-			},
-		},
-	})
-end
-
 vim.lsp.enable({
 	"lua_ls",
 	"pyright",
@@ -726,7 +644,26 @@ vim.lsp.enable({
 	"ts_ls",
 	"gopls",
 	"clangd",
-	"efm",
+	-- "efm",
+})
+
+-- Manual formatting keymap
+vim.keymap.set("n", "<leader>bf", function()
+	require("conform").format({ async = true, lsp_fallback = true })
+	print("Buffer formatted")
+end, { desc = "Format current buffer (Manual)" })
+
+-- Conform.nvim configuration
+require("conform").setup({
+	formatters_by_ft = {
+		lua = { "stylua" },
+		python = { "black" },
+		javascript = { "prettier_d" },
+		typescript = { "prettier_d" },
+		go = { "gofumpt" },
+		c = { "clang-format" },
+		cpp = { "clang-format" },
+	},
 })
 
 -- ============================================================================
@@ -776,7 +713,7 @@ local function FloatingTerminal()
 		row = row,
 		col = col,
 		style = "minimal",
-		border = "rounded",
+		border = "single",
 	})
 
 	vim.wo[terminal_state.win].winblend = 0
