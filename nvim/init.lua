@@ -5,7 +5,7 @@ vim.cmd.colorscheme("habamax")
 -- OPTIONS
 -- ============================================================================
 vim.opt.number = true -- line number
-vim.opt.relativenumber = false -- dsiable relative line numbers
+vim.opt.relativenumber = true -- dsiable relative line numbers
 vim.opt.cursorline = true -- highlight current line
 vim.opt.wrap = true -- wrap lines by default
 vim.opt.scrolloff = 10 -- keep 10 lines above/below cursor
