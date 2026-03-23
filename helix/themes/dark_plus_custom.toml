@@ -1,4 +1,0 @@
-inherits = "dark_plus"
-
-"ui.statusline" = { fg = "#1A1A1A", bg = "#999999"}
-"ui.statusline.inactive" = { fg = "black", bg = "gray" }
