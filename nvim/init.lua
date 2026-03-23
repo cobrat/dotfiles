@@ -1,42 +1,59 @@
+-- ============================================================================
+-- == BASIC CONFIGS ==
+-- ============================================================================
+
 vim.opt.termguicolors = true
 vim.cmd.colorscheme("habamax")
 
--- ============================================================================
--- OPTIONS
--- ============================================================================
-vim.opt.number = true -- line number
-vim.opt.relativenumber = true -- dsiable relative line numbers
-vim.opt.cursorline = true -- highlight current line
-vim.opt.wrap = true -- wrap lines by default
-vim.opt.scrolloff = 10 -- keep 10 lines above/below cursor
-vim.opt.sidescrolloff = 10 -- keep 10 lines to left/right of cursor
+-- -- Floating Windows --
+vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#444444", bg = "none" })
 
-vim.opt.tabstop = 4 -- tabwidth
-vim.opt.shiftwidth = 4 -- indent width
-vim.opt.softtabstop = 4 -- soft tab stop not tabs on tab/backspace
-vim.opt.expandtab = true -- use spaces instead of tabs
-vim.opt.smartindent = true -- smart auto-indent
-vim.opt.autoindent = true -- copy indent from current line
+-- -- Core Options --
+local options = {
+	number = true,
+	relativenumber = true,
+	cursorline = true,
+	wrap = true,
+	scrolloff = 10,
+	sidescrolloff = 10,
+	colorcolumn = "80",
+	tabstop = 4,
+	shiftwidth = 4,
+	expandtab = true,
+	smartindent = true,
+	ignorecase = true,
+	smartcase = true,
+	hlsearch = true,
+	signcolumn = "yes",
+	cmdheight = 1,
+	completeopt = "menuone,noinsert,noselect",
+	showmode = false,
+	pumheight = 10,
+	pumblend = 10,
+	winblend = 0,
+	conceallevel = 0,
+	concealcursor = "",
+	synmaxcol = 300,
+	backup = false,
+	writebackup = false,
+	swapfile = false,
+	undofile = true,
+	updatetime = 200,
+	timeoutlen = 400,
+	selection = "inclusive",
+	mouse = "a",
+	modifiable = true,
+	splitbelow = true,
+	splitright = true,
+	wildmode = "longest:full,full",
+}
 
-vim.opt.ignorecase = true -- case insensitive search
-vim.opt.smartcase = true -- case sensitive if uppercase in string
-vim.opt.hlsearch = true -- highlight search matches
-vim.opt.incsearch = true -- show matches as you type
+for k, v in pairs(options) do
+	vim.opt[k] = v
+end
 
-vim.opt.signcolumn = "yes" -- always show a sign column
--- vim.opt.colorcolumn = "100" -- show a column at 100 position chars
-vim.opt.showmatch = true -- highlights matching brackets
-vim.opt.cmdheight = 1 -- single line command line
-vim.opt.completeopt = "menuone,noinsert,noselect" -- completion options
-vim.opt.showmode = false -- do not show the mode, instead have it in statusline
-vim.opt.pumheight = 10 -- popup menu height
-vim.opt.pumblend = 10 -- popup menu transparency
-vim.opt.winblend = 0 -- floating window transparency
-vim.opt.conceallevel = 0 -- do not hide markup
-vim.opt.concealcursor = "" -- do not hide cursorline in markup
--- vim.opt.lazyredraw = true -- do not redraw during macros
-vim.opt.synmaxcol = 300 -- syntax highlighting limit
--- vim.opt.fillchars = { eob = " " } -- hide "~" on empty lines
+-- -- UI Decor --
 vim.opt.fillchars = {
 	eob = " ",
 	fold = " ",
@@ -45,149 +62,109 @@ vim.opt.fillchars = {
 	foldclose = "+",
 }
 
-local undodir = vim.fn.expand("~/.vim/undodir")
-if
-	vim.fn.isdirectory(undodir) == 0 -- create undodir if nonexistent
-then
-	vim.fn.mkdir(undodir, "p")
-end
+vim.opt.clipboard:append("unnamedplus")
+vim.opt.diffopt:append("linematch:60")
 
-vim.opt.backup = false -- do not create a backup file
-vim.opt.writebackup = false -- do not write to a backup file
-vim.opt.swapfile = false -- do not create a swapfile
-vim.opt.undofile = true -- do create an undo file
-vim.opt.undodir = undodir -- set the undo directory
-vim.opt.updatetime = 200 -- faster completion
-vim.opt.timeoutlen = 500 -- timeout duration
-vim.opt.ttimeoutlen = 10 -- key code timeout
-vim.opt.autoread = true -- auto-reload changes if outside of neovim
-vim.opt.autowrite = false -- do not auto-save
+vim.opt.guicursor = table.concat({
+	"n-v-c:block",
+	"i-ci-ve:block",
+	"r-cr:hor20",
+	"o:hor50",
+	"a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor",
+	"sm:block-blinkwait175-blinkoff150-blinkon175",
+}, ",")
 
-vim.opt.hidden = true -- allow hidden buffers
-vim.opt.errorbells = false -- no error sounds
-vim.opt.backspace = "indent,eol,start" -- better backspace behaviour
-vim.opt.autochdir = false -- do not autochange directories
--- vim.opt.iskeyword:append("-") -- include - in words
--- vim.opt.path:append("**") -- include subdirs in search
-vim.opt.selection = "inclusive" -- include last char in selection
-vim.opt.mouse = "a" -- enable mouse support
-vim.opt.clipboard:append("unnamedplus") -- use system clipboard
-vim.opt.modifiable = true -- allow buffer modifications
-vim.opt.encoding = "utf-8" -- set encoding
-
-vim.opt.guicursor =
-	"n-v-c:block,i-ci-ve:block,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,sm:block-blinkwait175-blinkoff150-blinkon175" -- cursor blinking and settings
-
--- Folding: requires treesitter available at runtime; safe fallback if not
-vim.opt.foldmethod = "expr" -- use expression for folding
-vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()" -- use treesitter for folding
-vim.opt.foldlevel = 99 -- start with all folds open
-
-vim.opt.splitbelow = true -- horizontal splits go below
-vim.opt.splitright = true -- vertical splits go right
-
-vim.opt.wildmenu = true -- tab completion
-vim.opt.wildmode = "longest:full,full" -- complete longest common match, full completion list, cycle through with Tab
-vim.opt.diffopt:append("linematch:60") -- improve diff display
-vim.opt.redrawtime = 10000 -- increase neovim redraw tolerance
-vim.opt.maxmempattern = 20000 -- increase max memory
+-- -- Folding --
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.opt.foldlevel = 99
 
 -- ============================================================================
--- STATUSLINE
+-- == STATUSLINE ==
 -- ============================================================================
 
--- Git branch function using standard text
 local function git_branch()
 	local dict = vim.b.gitsigns_status_dict
-	if not dict or dict.head == "" then
+	if not dict or not dict.head or dict.head == "" then
 		return ""
 	end
-
-	local branch = dict.head
-	local added = dict.added and (" +" .. dict.added) or ""
-	local changed = dict.changed and (" ~" .. dict.changed) or ""
-	local removed = dict.removed and (" -" .. dict.removed) or ""
-
-	return string.format(" Git: [%s%s%s%s]", branch, added, changed, removed)
+	local res = string.format(" [%s", dict.head)
+	if (dict.added or 0) > 0 then
+		res = res .. " +" .. dict.added
+	end
+	if (dict.changed or 0) > 0 then
+		res = res .. " ~" .. dict.changed
+	end
+	if (dict.removed or 0) > 0 then
+		res = res .. " -" .. dict.removed
+	end
+	return res .. "]"
 end
 
--- File size with Nerd Font icon
-local function file_size()
+local cached_size = "0B"
+local function update_file_size()
 	local size = vim.fn.getfsize(vim.fn.expand("%"))
 	if size <= 0 then
-		return "0.0K"
+		cached_size = "0B"
+		return
 	end
-	if size < 1024 then
-		return size .. "B"
+	local units = { "B", "K", "M", "G" }
+	local i = 1
+	while size > 1024 and i < #units do
+		size = size / 1024
+		i = i + 1
 	end
-	if size < 1048576 then
-		return string.format("%.1fK", size / 1024)
-	end
-	return string.format("%.1fM", size / 1048576)
+	cached_size = string.format("%.1f%s", size, units[i])
 end
 
--- Mode indicators with Nerd Font icons
-local modes = {
-	n = "NORMAL",
-	i = "INSERT",
-	v = "VISUAL",
-	V = "V-LINE",
-	["\22"] = "V-BLOCK",
-	c = "COMMAND",
-	s = "SELECT",
-	S = "S-LINE",
-	["\19"] = "S-BLOCK",
-	R = "REPLACE",
-	r = "REPLACE",
-	["!"] = "SHELL",
-	t = "TERMINAL",
+local sl_modes = {
+	n = "--NORMAL--",
+	i = "--INSERT--",
+	v = "--VISUAL--",
+	V = "--V-LINE--",
+	["\22"] = "--V-BLOCK--",
+	c = "--COMMAND--",
+	R = "--REPLACE--",
+	t = "--TERMINAL--",
 }
-local function mode_indicator()
-	local mode = vim.fn.mode()
-	return modes[mode] or mode
+
+_G.sl_status = function()
+	local m = vim.api.nvim_get_mode().mode
+	local mode_tag = sl_modes[m] or ("--" .. m:upper() .. "--")
+	local branch = git_branch()
+
+	return string.format(
+		" %s %%f%%h%%m%%r (%s) %s %%= Line:%%-4l Col:%%-3c %%P ",
+		mode_tag,
+		cached_size,
+		branch
+	)
 end
 
-_G.mode_icon = mode_indicator
-_G.git_branch = git_branch
-_G.file_size = file_size
-
-vim.api.nvim_set_hl(0, "StatusLineBold", { bold = true })
-
--- Function to change statusline based on window focus
-local function setup_dynamic_statusline()
-	-- Pre-concatenate the string once instead of inside the loop
-	local active_st = table.concat({
-		" ",
-		" %#StatusLineBold#%{v:lua.mode_icon()}%#StatusLine# ",
-		" %f%h%m%r ",
-		"(%{v:lua.file_size()})",
-		" %{v:lua.git_branch()} ",
-		"%=",
-		" Line:%-4l Column:%-3c %P ",
-	})
-
-	vim.api.nvim_create_autocmd({ "WinEnter", "BufEnter" }, {
-		callback = function()
-			vim.opt_local.statusline = active_st
-		end,
-	})
-
-	vim.api.nvim_create_autocmd({ "WinLeave", "BufLeave" }, {
-		callback = function()
-			vim.opt_local.statusline = "  %f %h%m%r %= %l:%c  "
-		end,
-	})
-end
-
-setup_dynamic_statusline()
+vim.api.nvim_create_autocmd({ "WinEnter", "BufEnter", "BufWritePost" }, {
+	callback = function()
+		if vim.bo.filetype == "minifiles" then
+			vim.opt_local.statusline = ""
+			return
+		end
+		update_file_size()
+		vim.opt_local.statusline = "%!v:lua.sl_status()"
+	end,
+})
+vim.api.nvim_create_autocmd({ "WinLeave", "BufLeave" }, {
+	callback = function()
+		vim.opt_local.statusline = "  %f %h%m%r %= %l:%c  "
+	end,
+})
 
 -- ============================================================================
--- KEYMAPS
+-- == GLOBAL KEYMAPS ==
 -- ============================================================================
-vim.g.mapleader = " " -- space for leader
-vim.g.maplocalleader = " " -- space for localleader
 
--- better movement in wrapped text
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+
+-- -- Navigation --
 vim.keymap.set("n", "j", function()
 	return vim.v.count == 0 and "gj" or "j"
 end, { expr = true, silent = true, desc = "Down (wrap-aware)" })
@@ -195,60 +172,139 @@ vim.keymap.set("n", "k", function()
 	return vim.v.count == 0 and "gk" or "k"
 end, { expr = true, silent = true, desc = "Up (wrap-aware)" })
 
-vim.keymap.set("n", "<leader>c", ":nohlsearch<CR>", { desc = "Clear search highlights" })
+vim.keymap.set("n", "<leader>c", ":nohlsearch<CR>", {
+	desc = "Clear search highlights",
+})
+vim.keymap.set("n", "n", "nzzzv", { desc = "Next search result" })
+vim.keymap.set("n", "N", "Nzzzv", { desc = "Previous search result" })
+vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Half page down" })
+vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Half page up" })
 
-vim.keymap.set("n", "n", "nzzzv", { desc = "Next search result (centered)" })
-vim.keymap.set("n", "N", "Nzzzv", { desc = "Previous search result (centered)" })
-vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Half page down (centered)" })
-vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Half page up (centered)" })
+-- Visual mode paste (don't overwrite register)
+vim.keymap.set("x", "p", '"_dP', { desc = "Paste without yanking" })
+vim.keymap.set({ "n", "v" }, "<leader>x", '"_d', {
+	desc = "Delete without yanking",
+})
 
-vim.keymap.set("x", "<leader>p", '"_dP', { desc = "Paste without yanking" })
-vim.keymap.set({ "n", "v" }, "<leader>x", '"_d', { desc = "Delete without yanking" })
-
+-- -- Buffer Ops --
 vim.keymap.set("n", "<leader>bn", ":bnext<CR>", { desc = "Next buffer" })
-vim.keymap.set("n", "<leader>bp", ":bprevious<CR>", { desc = "Previous buffer" })
+vim.keymap.set("n", "<leader>bp", ":bprevious<CR>", {
+	desc = "Previous buffer",
+})
+-- plugin: mini.bufremove
+vim.keymap.set("n", "<leader>bd", function()
+	require("mini.bufremove").delete(0, false)
+end, { desc = "Delete buffer" })
+-- plugin: conform.nvim
+vim.keymap.set("n", "<leader>bf", function()
+	require("conform").format({ async = true, lsp_fallback = true })
+end, { desc = "Format buffer" })
 
-vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Move to left window" })
-vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Move to bottom window" })
-vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Move to top window" })
-vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
+-- -- Window Ops --
+vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Move left" })
+vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Move down" })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Move up" })
+vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Move right" })
+vim.keymap.set("n", "<leader>sv", ":vsplit<CR>", { desc = "Split vertical" })
+vim.keymap.set("n", "<leader>sh", ":split<CR>", { desc = "Split horizontal" })
+vim.keymap.set("n", "<leader>wc", ":close<CR>", { desc = "Close window" })
+vim.keymap.set("n", "<C-Up>", ":resize +2<CR>")
+vim.keymap.set("n", "<C-Down>", ":resize -2<CR>")
+vim.keymap.set("n", "<C-Left>", ":vertical resize -2<CR>")
+vim.keymap.set("n", "<C-Right>", ":vertical resize +2<CR>")
 
-vim.keymap.set("n", "<leader>sv", ":vsplit<CR>", { desc = "Split window vertically" })
-vim.keymap.set("n", "<leader>sh", ":split<CR>", { desc = "Split window horizontally" })
-vim.keymap.set("n", "<C-Up>", ":resize +2<CR>", { desc = "Increase window height" })
-vim.keymap.set("n", "<C-Down>", ":resize -2<CR>", { desc = "Decrease window height" })
-vim.keymap.set("n", "<C-Left>", ":vertical resize -2<CR>", { desc = "Decrease window width" })
-vim.keymap.set("n", "<C-Right>", ":vertical resize +2<CR>", { desc = "Increase window width" })
+-- -- Indent --
+vim.keymap.set("v", "<", "<gv", { desc = "Indent left" })
+vim.keymap.set("v", ">", ">gv", { desc = "Indent right" })
 
-vim.keymap.set("n", "<A-j>", ":m .+1<CR>==", { desc = "Move line down" })
-vim.keymap.set("n", "<A-k>", ":m .-2<CR>==", { desc = "Move line up" })
-vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
-vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
-
-vim.keymap.set("v", "<", "<gv", { desc = "Indent left and reselect" })
-vim.keymap.set("v", ">", ">gv", { desc = "Indent right and reselect" })
-
-vim.keymap.set("n", "J", "mzJ`z", { desc = "Join lines and keep cursor position" })
-
-vim.keymap.set("n", "<leader>pa", function() -- show file path
+-- -- File & Toggle --
+vim.keymap.set("n", "<leader>fp", function()
 	local path = vim.fn.expand("%:p")
 	vim.fn.setreg("+", path)
 	print("file:", path)
-end, { desc = "Copy full file path" })
-
+end, { desc = "Copy file path" })
 vim.keymap.set("n", "<leader>td", function()
 	vim.diagnostic.enable(not vim.diagnostic.is_enabled())
 end, { desc = "Toggle diagnostics" })
+-- plugin: mini.files
+vim.keymap.set("n", "<leader>e", function()
+	if not require("mini.files").close() then
+		require("mini.files").open(vim.api.nvim_buf_get_name(0))
+	end
+end, { desc = "Explorer" })
+
+-- fzf-lua
+vim.keymap.set("n", "<leader>ff", function()
+	require("fzf-lua").files()
+end, { desc = "Find files" })
+vim.keymap.set("n", "<leader>fg", function()
+	require("fzf-lua").live_grep()
+end, { desc = "Live grep" })
+vim.keymap.set("n", "<leader>fb", function()
+	require("fzf-lua").buffers()
+end, { desc = "Find buffers" })
+vim.keymap.set("n", "<leader>fx", function()
+	require("fzf-lua").diagnostics_document()
+end, { desc = "Diagnostics" })
+vim.keymap.set("n", "<leader>fz", function()
+	require("fzf-lua").blines()
+end, { desc = "Fuzzy lines" })
+vim.keymap.set("n", "<leader>fo", function()
+	require("fzf-lua").oldfiles()
+end, { desc = "Old files" })
+
+-- -- Git (Mini.diff & FZF) --
+-- plugin: fzf-lua
+vim.keymap.set("n", "<leader>gs", function()
+	require("fzf-lua").git_status()
+end, { desc = "Git status" })
+-- plugin: mini.diff
+vim.keymap.set("n", "]h", function()
+	require("mini.diff").goto_hunk("next")
+end, { desc = "Next hunk" })
+vim.keymap.set("n", "[h", function()
+	require("mini.diff").goto_hunk("prev")
+end, { desc = "Prev hunk" })
+vim.keymap.set("n", "<leader>hp", function()
+	require("mini.diff").toggle_overlay(0)
+end, { desc = "Toggle hunk overlay" })
+
+-- -- LSP & Diagnostic --
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, {
+	desc = "Prev diagnostic",
+})
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next, {
+	desc = "Next diagnostic",
+})
+vim.keymap.set("n", "<leader>ld", vim.diagnostic.open_float, {
+	desc = "Line diagnostics",
+})
 
 vim.keymap.set("n", "Q", "<nop>")
 
 -- ============================================================================
--- AUTOCMDS
+-- == AUTOCMDS ==
 -- ============================================================================
 
 local augroup = vim.api.nvim_create_augroup("UserConfig", { clear = true })
 
--- highlight yanked text
+-- -- Diagnostics Float --
+vim.api.nvim_create_autocmd("CursorHold", {
+	group = augroup,
+	callback = function()
+		if vim.bo.buftype ~= "" then return end
+		vim.diagnostic.open_float(nil, {
+			focusable = false,
+			close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+			border = "single",
+			source = "always",
+			prefix = " ",
+			scope = "cursor",
+		})
+	end,
+})
+
+-- -- Utility --
 vim.api.nvim_create_autocmd("TextYankPost", {
 	group = augroup,
 	callback = function()
@@ -256,28 +312,28 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
--- return to last cursor position
-vim.api.nvim_create_autocmd("BufReadPost", {
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
 	group = augroup,
-	desc = "Restore last cursor position",
 	callback = function()
-		if vim.o.diff then -- except in diff mode
-			return
+		if vim.fn.getcmdwintype() == "" then
+			vim.cmd("checktime")
 		end
-
-		local last_pos = vim.api.nvim_buf_get_mark(0, '"') -- {line, col}
-		local last_line = vim.api.nvim_buf_line_count(0)
-
-		local row = last_pos[1]
-		if row < 1 or row > last_line then
-			return
-		end
-
-		pcall(vim.api.nvim_win_set_cursor, 0, last_pos)
 	end,
 })
 
--- wrap, linebreak and spellcheck on markdown and text files
+-- -- Cursor Pos --
+vim.api.nvim_create_autocmd("BufReadPost", {
+	group = augroup,
+	callback = function()
+		local last_pos = vim.api.nvim_buf_get_mark(0, '"')
+		local count = vim.api.nvim_buf_line_count(0)
+		if last_pos[1] > 0 and last_pos[1] <= count then
+			pcall(vim.api.nvim_win_set_cursor, 0, last_pos)
+		end
+	end,
+})
+
+-- -- Filetype Specific --
 vim.api.nvim_create_autocmd("FileType", {
 	group = augroup,
 	pattern = { "markdown", "text", "gitcommit" },
@@ -287,471 +343,222 @@ vim.api.nvim_create_autocmd("FileType", {
 		vim.opt_local.spell = true
 	end,
 })
+
 -- ============================================================================
--- PLUGINS (vim.pack)
+-- == PLUGINS ==
 -- ============================================================================
-vim.pack.add({
-	"https://www.github.com/lewis6991/gitsigns.nvim",
+
+local plugins = {
 	"https://www.github.com/echasnovski/mini.nvim",
 	"https://www.github.com/ibhagwan/fzf-lua",
-	"https://www.github.com/nvim-tree/nvim-tree.lua",
 	{
 		src = "https://github.com/nvim-treesitter/nvim-treesitter",
-		branch = "main",
 		build = ":TSUpdate",
 	},
-	-- Language Server Protocols
 	"https://www.github.com/neovim/nvim-lspconfig",
+	"https://github.com/williamboman/mason-lspconfig.nvim",
 	"https://github.com/mason-org/mason.nvim",
 	"https://github.com/stevearc/conform.nvim",
-	{
-		src = "https://github.com/saghen/blink.cmp",
-		version = vim.version.range("1.*"),
-	},
-	"https://github.com/L3MON4D3/LuaSnip",
-})
+	{ src = "https://github.com/saghen/blink.cmp", version = "1.*" },
+}
+vim.pack.add(plugins)
 
-local function packadd(name)
-	vim.cmd("packadd " .. name)
-end
-packadd("nvim-treesitter")
-packadd("gitsigns.nvim")
-packadd("mini.nvim")
-packadd("fzf-lua")
-packadd("nvim-tree.lua")
--- LSP
-packadd("nvim-lspconfig")
-packadd("mason.nvim")
-packadd("conform.nvim")
-packadd("blink.cmp")
-packadd("LuaSnip")
-
--- ============================================================================
--- PLUGIN CONFIGS
--- ============================================================================
-
-local setup_treesitter = function()
-	local treesitter = require("nvim-treesitter")
-	treesitter.setup({})
-	local ensure_installed = {
-		"vim",
-		"vimdoc",
-		"rust",
-		"c",
-		"cpp",
-		"go",
-		"html",
-		"css",
-		"javascript",
-		"json",
-		"lua",
-		"markdown",
-		"python",
-		"typescript",
-		"vue",
-		"svelte",
-		"bash",
-		"lua",
-		"python",
-	}
-
-	local config = require("nvim-treesitter.config")
-
-	local already_installed = config.get_installed()
-	local parsers_to_install = {}
-
-	for _, parser in ipairs(ensure_installed) do
-		if not vim.tbl_contains(already_installed, parser) then
-			table.insert(parsers_to_install, parser)
-		end
-	end
-
-	if #parsers_to_install > 0 then
-		treesitter.install(parsers_to_install)
-	end
-
-	local group = vim.api.nvim_create_augroup("TreeSitterConfig", { clear = true })
-	vim.api.nvim_create_autocmd("FileType", {
-		group = group,
-		callback = function(args)
-			if vim.list_contains(treesitter.get_installed(), vim.treesitter.language.get_lang(args.match)) then
-				vim.treesitter.start(args.buf)
-			end
-		end,
-	})
+for _, p in ipairs({
+	"nvim-treesitter",
+	"mini.nvim",
+	"fzf-lua",
+	"nvim-lspconfig",
+	"mason-lspconfig.nvim",
+	"mason.nvim",
+	"conform.nvim",
+	"blink.cmp",
+}) do
+	vim.cmd("packadd " .. p)
 end
 
-setup_treesitter()
+-- ============================================================================
+-- == PLUGIN CONFIGS ==
+-- ============================================================================
 
-require("nvim-tree").setup({
-	view = {
-		width = 35,
+-- -- Mini (Modules) --
+local miniclue = require("mini.clue")
+miniclue.setup({
+	triggers = {
+		{ mode = "n", keys = "<leader>" },
+		{ mode = "x", keys = "<leader>" },
+		{ mode = "n", keys = "g" },
+		{ mode = "x", keys = "g" },
+		{ mode = "n", keys = "'" },
+		{ mode = "n", keys = "`" },
+		{ mode = "x", keys = "'" },
+		{ mode = "x", keys = "`" },
+		{ mode = "n", keys = '"' },
+		{ mode = "x", keys = '"' },
+		{ mode = "n", keys = "<C-w>" },
+		{ mode = "n", keys = "z" },
+		{ mode = "x", keys = "z" },
 	},
-	filters = {
-		dotfiles = false,
+	clues = {
+		miniclue.gen_clues.builtin_completion(),
+		miniclue.gen_clues.registers(),
+		miniclue.gen_clues.windows(),
+		miniclue.gen_clues.z(),
+		{ mode = "n", keys = "<leader>b", desc = "Buffer" },
+		{ mode = "n", keys = "<leader>f", desc = "Find/LSP" },
+		{ mode = "n", keys = "<leader>g", desc = "Git" },
+		{ mode = "n", keys = "<leader>h", desc = "Hunk" },
+		{ mode = "n", keys = "<leader>l", desc = "LSP" },
+		{ mode = "n", keys = "<leader>s", desc = "Split" },
+		{ mode = "n", keys = "<leader>t", desc = "Toggle" },
+		{ mode = "n", keys = "<leader>w", desc = "Window" },
 	},
-	renderer = {
-		icons = {
-			show = {
-				file = false,
-				folder = false,
-				git = false,
-				folder_arrow = false,
-			},
-		},
-	},
+	window = { config = { border = "single" }, delay = 300 },
 })
-vim.keymap.set("n", "<leader>e", function()
-	require("nvim-tree.api").tree.toggle()
-end, { desc = "Toggle NvimTree" })
-
-vim.api.nvim_set_hl(0, "NvimTreeNormalNC", { bg = "none" })
-vim.api.nvim_set_hl(0, "SignColumn", { bg = "none" })
-vim.api.nvim_set_hl(0, "NvimTreeSignColumn", { bg = "none" })
-vim.api.nvim_set_hl(0, "NvimTreeNormal", { bg = "none" })
-vim.api.nvim_set_hl(0, "NvimTreeWinSeparator", { fg = "#2a2a2a", bg = "none" })
-vim.api.nvim_set_hl(0, "NvimTreeEndOfBuffer", { bg = "none" })
-
-require("fzf-lua").setup({})
-
-vim.keymap.set("n", "<leader>ff", function()
-	require("fzf-lua").files()
-end, { desc = "FZF Files" })
-vim.keymap.set("n", "<leader>fg", function()
-	require("fzf-lua").live_grep()
-end, { desc = "FZF Live Grep" })
-vim.keymap.set("n", "<leader>fb", function()
-	require("fzf-lua").buffers()
-end, { desc = "FZF Buffers" })
-vim.keymap.set("n", "<leader>fh", function()
-	require("fzf-lua").help_tags()
-end, { desc = "FZF Help Tags" })
-vim.keymap.set("n", "<leader>fx", function()
-	require("fzf-lua").diagnostics_document()
-end, { desc = "FZF Diagnostics Document" })
-vim.keymap.set("n", "<leader>fX", function()
-	require("fzf-lua").diagnostics_workspace()
-end, { desc = "FZF Diagnostics Workspace" })
 
 require("mini.ai").setup({})
--- require("mini.comment").setup({})
 require("mini.move").setup({})
-require("mini.surround").setup({})
+require("mini.surround").setup({
+	mappings = {
+		add = "sa", delete = "sd", find = "sf", find_left = "sF",
+		highlight = "sh", replace = "sr", update_n_lines = "sn",
+	},
+})
 require("mini.cursorword").setup({})
-require("mini.indentscope").setup({})
--- require("mini.indentscope").setup({
---     symbol = "|", -- Simple ASCII pipe instead of icons
---     draw = { delay = 0, animation = nil }, -- Disable animations for snappier feel
--- })
+require("mini.indentscope").setup({
+	draw = { delay = 100, priority = 2 },
+	symbol = "|",
+	options = { try_as_border = true },
+})
 require("mini.pairs").setup({})
 require("mini.trailspace").setup({})
 require("mini.bufremove").setup({})
--- require("mini.icons").setup({})
-
--- Use mini.bufremove to close buffers without messing up window layouts
-vim.keymap.set("n", "<leader>bd", function()
-    require("mini.bufremove").delete(0, false)
-end, { desc = "Delete buffer (stable)" })
-
-require("gitsigns").setup({
-	signs = {
-		add = { text = "+" },
-		change = { text = "~" },
-		delete = { text = "-" },
-		topdelete = { text = "^" },
-		changedelete = { text = "!" },
-		untracked = { text = "?" },
+require("mini.files").setup({
+	content = {
+		filter = nil,
+		prefix = function(fs_entry) return "", "" end,
+		sort = nil,
+	},
+	windows = { preview = true, width_preview = 80 },
+	options = { use_as_default_explorer = true },
+})
+require("mini.diff").setup({
+	view = {
+		style = "sign",
+		signs = { add = "+", change = "~", delete = "-" },
 	},
 })
+require("mini.operators").setup({
+	evaluate = { prefix = "g=" },
+	exchange = { prefix = "gx" },
+	multiply = { prefix = "gm" },
+	replace = { prefix = "gr" },
+	sort = { prefix = "gs" },
+})
 
+-- -- Treesitter --
+-- Use manual treesitter start to avoid nvim-treesitter.configs dependency.
+local ensure_installed = {
+	"vim", "vimdoc", "rust", "c", "cpp", "go", "html", "css",
+	"javascript", "json", "markdown", "typescript", "vue",
+	"svelte", "bash", "lua", "python",
+}
+
+-- Try to load nvim-treesitter if available for management
+local has_ts, ts_install = pcall(require, "nvim-treesitter.install")
+if has_ts and ts_install.commands and ts_install.commands.TSUpdate then
+	local has_ts_config, ts_config = pcall(require, "nvim-treesitter.config")
+	local already_installed = {}
+	if has_ts_config and ts_config.get_installed_parsers then
+		already_installed = ts_config.get_installed_parsers()
+	end
+
+	local to_install = {}
+	for _, parser in ipairs(ensure_installed) do
+		if not vim.tbl_contains(already_installed, parser) then
+			table.insert(to_install, parser)
+		end
+	end
+	if #to_install > 0 then
+		ts_install.commands.TSUpdate.run(to_install)
+	end
+end
+
+vim.api.nvim_create_autocmd("FileType", {
+	group = vim.api.nvim_create_augroup("TSConfig", { clear = true }),
+	callback = function(args)
+		local lang = vim.treesitter.language.get_lang(args.match)
+		if lang and args.match ~= "minifiles" then
+			vim.treesitter.start(args.buf)
+		end
+	end,
+})
+
+-- -- FZF-lua --
+require("fzf-lua").setup({
+	winopts = { preview = { layout = "vertical" } },
+})
+
+-- -- Git (Mini.diff) --
+-- Diff already setup in mini section
+
+-- -- LSP --
+local servers = { "lua_ls", "pyright", "bashls", "ts_ls", "gopls", "clangd" }
 require("mason").setup({})
-
-vim.keymap.set("n", "]h", function()
-	require("gitsigns").next_hunk()
-end, { desc = "Next git hunk" })
-vim.keymap.set("n", "[h", function()
-	require("gitsigns").prev_hunk()
-end, { desc = "Previous git hunk" })
-vim.keymap.set("n", "<leader>hs", function()
-	require("gitsigns").stage_hunk()
-end, { desc = "Stage hunk" })
-vim.keymap.set("n", "<leader>hr", function()
-	require("gitsigns").reset_hunk()
-end, { desc = "Reset hunk" })
-vim.keymap.set("n", "<leader>hp", function()
-	require("gitsigns").preview_hunk()
-end, { desc = "Preview hunk" })
-vim.keymap.set("n", "<leader>hb", function()
-	require("gitsigns").blame_line({ full = true })
-end, { desc = "Blame line" })
-vim.keymap.set("n", "<leader>hB", function()
-	require("gitsigns").toggle_current_line_blame()
-end, { desc = "Toggle inline blame" })
-vim.keymap.set("n", "<leader>hd", function()
-	require("gitsigns").diffthis()
-end, { desc = "Diff this" })
-
--- ============================================================================
--- LSP, Linting, Formatting & Completion
--- ============================================================================
-
--- Plain text diagnostics
+require("mason-lspconfig").setup({
+	ensure_installed = servers,
+})
 vim.diagnostic.config({
 	virtual_text = { prefix = "*", spacing = 4 },
-	signs = false, -- Disable icons in the sign column
-	underline = true,
-	update_in_insert = false,
-	severity_sort = true,
+	signs = false,
 	float = { border = "single" },
 })
 
-do
-	local orig = vim.lsp.util.open_floating_preview
-	function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
-		opts = opts or {}
-		opts.border = opts.border or "single"
-		return orig(contents, syntax, opts, ...)
-	end
-end
-
-local function lsp_on_attach(ev)
-	local client = vim.lsp.get_client_by_id(ev.data.client_id)
-	if not client then
-		return
-	end
-
-	local bufnr = ev.buf
-	local opts = { noremap = true, silent = true, buffer = bufnr }
-
-	vim.keymap.set("n", "<leader>gd", function()
+local function on_attach(ev)
+	local opts = { buffer = ev.buf }
+	vim.keymap.set("n", "gd", function()
 		require("fzf-lua").lsp_definitions({ jump_to_single_result = true })
 	end, opts)
-
-	vim.keymap.set("n", "<leader>gD", vim.lsp.buf.definition, opts)
-
-	vim.keymap.set("n", "<leader>gS", function()
-		vim.cmd("vsplit")
-		vim.lsp.buf.definition()
-	end, opts)
-
-	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
-	vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-
-	vim.keymap.set("n", "<leader>D", function()
-		vim.diagnostic.open_float({ scope = "line" })
-	end, opts)
-	vim.keymap.set("n", "<leader>d", function()
-		vim.diagnostic.open_float({ scope = "cursor" })
-	end, opts)
-	vim.keymap.set("n", "<leader>nd", function()
-		vim.diagnostic.jump({ count = 1 })
-	end, opts)
-
-	vim.keymap.set("n", "<leader>pd", function()
-		vim.diagnostic.jump({ count = -1 })
-	end, opts)
-
-	vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-
-	vim.keymap.set("n", "<leader>fd", function()
-		require("fzf-lua").lsp_definitions({ jump_to_single_result = true })
-	end, opts)
-	vim.keymap.set("n", "<leader>fr", function()
+	vim.keymap.set("n", "gr", function()
 		require("fzf-lua").lsp_references()
 	end, opts)
-	vim.keymap.set("n", "<leader>ft", function()
-		require("fzf-lua").lsp_typedefs()
-	end, opts)
-	vim.keymap.set("n", "<leader>fs", function()
-		require("fzf-lua").lsp_document_symbols()
-	end, opts)
-	vim.keymap.set("n", "<leader>fw", function()
-		require("fzf-lua").lsp_workspace_symbols()
-	end, opts)
-	vim.keymap.set("n", "<leader>fi", function()
+	vim.keymap.set("n", "gi", function()
 		require("fzf-lua").lsp_implementations()
 	end, opts)
-
-	if client:supports_method("textDocument/codeAction", bufnr) then
-		vim.keymap.set("n", "<leader>oi", function()
-			vim.lsp.buf.code_action({
-				context = { only = { "source.organizeImports" }, diagnostics = {} },
-				apply = true,
-				bufnr = bufnr,
-			})
-			vim.defer_fn(function()
-				vim.lsp.buf.format({ bufnr = bufnr })
-			end, 50)
-		end, opts)
-	end
+	vim.keymap.set("n", "gt", function()
+		require("fzf-lua").lsp_typedefs()
+	end, opts)
+	vim.keymap.set("n", "<leader>ls", function()
+		require("fzf-lua").lsp_document_symbols()
+	end, opts)
+	vim.keymap.set("n", "<leader>la", vim.lsp.buf.code_action, opts)
+	vim.keymap.set("n", "<leader>lr", vim.lsp.buf.rename, opts)
+	vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
 end
+vim.api.nvim_create_autocmd("LspAttach", { callback = on_attach })
 
-vim.api.nvim_create_autocmd("LspAttach", { group = augroup, callback = lsp_on_attach })
-
-vim.keymap.set("n", "<leader>q", function()
-	vim.diagnostic.setloclist({ open = true })
-end, { desc = "Open diagnostic list" })
-vim.keymap.set("n", "<leader>dl", vim.diagnostic.open_float, { desc = "Show line diagnostics" })
-
+-- -- Completion (Blink) --
 require("blink.cmp").setup({
-	keymap = {
-		preset = "super-tab",
-		-- preset = "none",
-		-- ["<C-Space>"] = { "show", "hide" },
-		-- ["<CR>"] = { "accept", "fallback" },
-		-- ["<C-j>"] = { "select_next", "fallback" },
-		-- ["<C-k>"] = { "select_prev", "fallback" },
-		-- ["<Tab>"] = { "snippet_forward", "fallback" },
-		-- ["<S-Tab>"] = { "snippet_backward", "fallback" },
-	},
+	keymap = { preset = "super-tab" },
 	appearance = { nerd_font_variant = "none" },
-	completion = { menu = { auto_show = true } },
-	sources = { default = { "lsp", "path", "buffer", "snippets" } },
-	snippets = {
-		expand = function(snippet)
-			require("luasnip").lsp_expand(snippet)
-		end,
-	},
-
-	fuzzy = {
-		implementation = "prefer_rust",
-		prebuilt_binaries = { download = true },
-	},
+	sources = { default = { "lsp", "path", "buffer" } },
 })
 
-vim.lsp.config["*"] = {
-	capabilities = require("blink.cmp").get_lsp_capabilities(),
-}
+-- -- LSP Servers --
+for _, s in ipairs(servers) do
+	local cfg = { capabilities = require("blink.cmp").get_lsp_capabilities() }
+	if s == "lua_ls" then
+		cfg.settings = { Lua = { diagnostics = { globals = { "vim" } } } }
+	end
+	vim.lsp.config(s, cfg)
+end
+vim.lsp.enable(servers)
 
-vim.lsp.config("lua_ls", {
-	settings = {
-		Lua = {
-			diagnostics = { globals = { "vim" } },
-			telemetry = { enable = false },
-		},
-	},
-})
-vim.lsp.config("pyright", {})
-vim.lsp.config("bashls", {})
-vim.lsp.config("ts_ls", {})
-vim.lsp.config("gopls", {})
-vim.lsp.config("clangd", {})
-
-vim.lsp.enable({
-	"lua_ls",
-	"pyright",
-	"bashls",
-	"ts_ls",
-	"gopls",
-	"clangd",
-	-- "efm",
-})
-
--- Manual formatting keymap
-vim.keymap.set("n", "<leader>bf", function()
-	require("conform").format({ async = true, lsp_fallback = true })
-	print("Buffer formatted")
-end, { desc = "Format current buffer (Manual)" })
-
--- Conform.nvim configuration
+-- -- Formatting (Conform) --
 require("conform").setup({
 	formatters_by_ft = {
 		lua = { "stylua" },
 		python = { "black" },
 		javascript = { "prettier_d" },
 		typescript = { "prettier_d" },
-		go = { "gofumpt" },
-		c = { "clang-format" },
-		cpp = { "clang-format" },
 	},
 })
-
--- ============================================================================
--- FLOATING TERMINAL
--- ============================================================================
-vim.api.nvim_create_autocmd("TermClose", {
-	group = augroup,
-	callback = function()
-		if vim.v.event.status == 0 then
-			vim.api.nvim_buf_delete(0, {})
-		end
-	end,
-})
-
-vim.api.nvim_create_autocmd("TermOpen", {
-	group = augroup,
-	callback = function()
-		vim.opt_local.number = false
-		vim.opt_local.relativenumber = false
-		vim.opt_local.signcolumn = "no"
-	end,
-})
-
-local terminal_state = { buf = nil, win = nil, is_open = false }
-
-local function FloatingTerminal()
-	if terminal_state.is_open and terminal_state.win and vim.api.nvim_win_is_valid(terminal_state.win) then
-		vim.api.nvim_win_close(terminal_state.win, false)
-		terminal_state.is_open = false
-		return
-	end
-
-	if not terminal_state.buf or not vim.api.nvim_buf_is_valid(terminal_state.buf) then
-		terminal_state.buf = vim.api.nvim_create_buf(false, true)
-		vim.bo[terminal_state.buf].bufhidden = "hide"
-	end
-
-	local width = math.floor(vim.o.columns * 0.8)
-	local height = math.floor(vim.o.lines * 0.8)
-	local row = math.floor((vim.o.lines - height) / 2)
-	local col = math.floor((vim.o.columns - width) / 2)
-
-	terminal_state.win = vim.api.nvim_open_win(terminal_state.buf, true, {
-		relative = "editor",
-		width = width,
-		height = height,
-		row = row,
-		col = col,
-		style = "minimal",
-		border = "single",
-	})
-
-	vim.wo[terminal_state.win].winblend = 0
-	vim.wo[terminal_state.win].winhighlight = "Normal:FloatingTermNormal,FloatBorder:FloatingTermBorder"
-	vim.api.nvim_set_hl(0, "FloatingTermNormal", { bg = "none" })
-	vim.api.nvim_set_hl(0, "FloatingTermBorder", { bg = "none" })
-
-	local has_terminal = false
-	local lines = vim.api.nvim_buf_get_lines(terminal_state.buf, 0, -1, false)
-	for _, line in ipairs(lines) do
-		if line ~= "" then
-			has_terminal = true
-			break
-		end
-	end
-	if not has_terminal then
-		vim.fn.termopen(os.getenv("SHELL"))
-	end
-
-	terminal_state.is_open = true
-	vim.cmd("startinsert")
-
-	vim.api.nvim_create_autocmd("BufLeave", {
-		buffer = terminal_state.buf,
-		callback = function()
-			if terminal_state.is_open and terminal_state.win and vim.api.nvim_win_is_valid(terminal_state.win) then
-				vim.api.nvim_win_close(terminal_state.win, false)
-				terminal_state.is_open = false
-			end
-		end,
-		once = true,
-	})
-end
-
-vim.keymap.set("n", "<leader>t", FloatingTerminal, { noremap = true, silent = true, desc = "Toggle floating terminal" })
-vim.keymap.set("t", "<Esc>", function()
-	if terminal_state.is_open and terminal_state.win and vim.api.nvim_win_is_valid(terminal_state.win) then
-		vim.api.nvim_win_close(terminal_state.win, false)
-		terminal_state.is_open = false
-	end
-end, { noremap = true, silent = true, desc = "Close floating terminal" })
