@@ -9,7 +9,7 @@ config.font = wezterm.font_with_fallback {
 config.font_size = 14.0
 
 -- Color scheme
-config.color_scheme = 'Everforest Dark (Gogh)'
+config.color_scheme = 'Gruvbox Dark (Gogh)'
 
 -- Window
 config.window_background_opacity = 0.95
