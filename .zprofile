@@ -8,7 +8,9 @@ export LANG=en_US.UTF-8
 
 # ------All PATHS------
 ## Mise
-eval "$($HOME/.local/bin/mise activate zsh)"
+if command -v mise &>/dev/null; then
+    eval "$(mise activate zsh)"
+fi
 
 ## Rust
-[ -f "$HOME/.cargo/env" ] && 
+[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
