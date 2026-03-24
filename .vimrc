@@ -154,6 +154,9 @@ set statusline=%!SlStatus()
 " ============================================================
 " Keymaps
 " ============================================================
+" Disable macro recording
+nnoremap q <nop>
+
 " Clear highlight
 nnoremap <silent> <leader>c :noh<CR>
 
