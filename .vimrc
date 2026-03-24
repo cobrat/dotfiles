@@ -88,6 +88,19 @@ catch
 endtry
 
 set background=dark
+
+" Transparent background
+function! SetTransparentBg()
+    hi Normal           guibg=NONE ctermbg=NONE
+    hi NormalNC         guibg=NONE ctermbg=NONE
+    hi SignColumn       guibg=NONE ctermbg=NONE
+    hi LineNr           guibg=NONE ctermbg=NONE
+    hi CursorLineNr     guibg=NONE ctermbg=NONE
+    hi EndOfBuffer      guibg=NONE ctermbg=NONE
+endfunction
+
+call SetTransparentBg()
+autocmd ColorScheme * call SetTransparentBg()
 set encoding=utf8
 set ffs=unix,dos,mac
 

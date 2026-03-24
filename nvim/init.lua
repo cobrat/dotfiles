@@ -5,9 +5,21 @@
 vim.opt.termguicolors = true
 vim.cmd.colorscheme("habamax")
 
--- -- Floating Windows --
-vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
-vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#444444", bg = "none" })
+-- -- Transparent Background --
+local function set_transparent_bg()
+    local groups = {
+        "Normal", "NormalNC", "NormalFloat", "FloatBorder",
+        "SignColumn", "LineNr", "CursorLineNr",
+        "EndOfBuffer",
+    }
+    for _, g in ipairs(groups) do
+        vim.api.nvim_set_hl(0, g, { bg = "none" })
+    end
+    vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#444444", bg = "none" })
+end
+
+set_transparent_bg()
+vim.api.nvim_create_autocmd("ColorScheme", { callback = set_transparent_bg })
 
 -- -- Core Options --
 local options = {
