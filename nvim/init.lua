@@ -1,4 +1,20 @@
 -- ============================================================================
+-- == BOOTSTRAP & PERFORMANCE ==
+-- ============================================================================
+
+vim.g.start_time = vim.uv.hrtime()
+vim.api.nvim_create_autocmd("VimEnter", {
+    once = true,
+    callback = function()
+        local ms = (vim.uv.hrtime() - vim.g.start_time) / 1e6
+        vim.notify(
+            string.format("Start Time: %.2f ms", ms),
+            vim.log.levels.INFO
+        )
+    end,
+})
+
+-- ============================================================================
 -- == BASIC CONFIGS ==
 -- ============================================================================
 
@@ -8,7 +24,7 @@ vim.cmd.colorscheme("habamax")
 -- -- Transparent Background --
 local function set_transparent_bg()
     local groups = {
-        "Normal", "NormalNC", "NormalFloat", "FloatBorder",
+        "Normal", "NormalNC", "NormalFloat",
         "SignColumn", "LineNr", "CursorLineNr",
         "EndOfBuffer",
     }
@@ -37,7 +53,7 @@ local options = {
 	ignorecase = true,
 	smartcase = true,
 	hlsearch = true,
-	signcolumn = "yes",
+	signcolumn = "no",
 	completeopt = "menuone,noinsert,noselect",
 	showmode = false,
 	pumheight = 10,
@@ -53,6 +69,22 @@ local options = {
 	splitbelow = true,
 	splitright = true,
 	wildmode = "longest:full,full",
+	redrawtime = 2000,
+	maxmempattern = 5000,
+	showcmd = false,
+	cmdheight = 1,
+	formatoptions = vim.opt.formatoptions
+		- "a"
+		- "t"
+		+ "c"
+		+ "q"
+		- "o"
+		+ "r"
+		+ "n"
+		+ "j"
+		- "2",
+	sessionoptions = "blank,buffers,curdir,folds,help," ..
+		"tabpages,winsize,winpos,terminal,localoptions",
 }
 
 for k, v in pairs(options) do
@@ -76,7 +108,8 @@ vim.opt.guicursor = table.concat({
 	"i-ci-ve:block",
 	"r-cr:hor20",
 	"o:hor50",
-	"a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor",
+	"a:blinkwait700-blinkoff400-blinkon250-" ..
+		"Cursor/lCursor",
 	"sm:block-blinkwait175-blinkoff150-blinkon175",
 }, ",")
 
@@ -91,8 +124,10 @@ vim.opt.foldlevel = 99
 
 -- -- Statusline --
 local function git_branch()
-	local summary = vim.b.minidiff_summary
-	if not summary or not summary.source_name then
+	local ok, summary = pcall(function()
+		return vim.b.minidiff_summary
+	end)
+	if not ok or not summary or not summary.source_name then
 		return ""
 	end
 	local res = string.format(" [%s", summary.source_name)
@@ -111,8 +146,8 @@ end
 local cached_size = "0B"
 local function update_file_size()
 	local size = vim.fn.getfsize(vim.fn.expand("%"))
-	if size <= 0 then
-		cached_size = "0B"
+	if size <= 0 or vim.bo.buftype ~= "" then
+		cached_size = "--"
 		return
 	end
 	local units = { "B", "K", "M", "G" }
@@ -141,14 +176,15 @@ _G.sl_status = function()
 	local branch = git_branch()
 
 	return string.format(
-		" %s %%f%%h%%m%%r (%s) %s %%= Line:%%-4l Col:%%-3c %%P ",
+		" %s %%f%%h%%m%%r (%s) %s %%= " ..
+		"Line:%%-4l Col:%%-3c %%P ",
 		mode_tag,
 		cached_size,
 		branch
 	)
 end
 
-vim.api.nvim_create_autocmd({ "WinEnter", "BufEnter", "BufWritePost" }, {
+vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
 	callback = function()
 		if vim.bo.filetype == "minifiles" then
 			vim.opt_local.statusline = ""
@@ -199,7 +235,16 @@ vim.keymap.set("n", "<leader>bd", function()
 end, { desc = "Del" })
 -- plugin: conform.nvim
 vim.keymap.set("n", "<leader>bf", function()
-	require("conform").format({ async = true, lsp_fallback = true })
+	require("conform").format({
+		async = true,
+		lsp_fallback = true
+	}, function(err)
+		if err then
+			vim.notify("格式化失败: " .. err, vim.log.levels.ERROR)
+		else
+			vim.notify("格式化完成", vim.log.levels.INFO)
+		end
+	end)
 end, { desc = "Format" })
 
 -- -- Window Ops --
@@ -210,11 +255,26 @@ vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Right" })
 vim.keymap.set("n", "<leader>wv", ":vsplit<CR>", { desc = "V-Split" })
 vim.keymap.set("n", "<leader>wh", ":split<CR>", { desc = "H-Split" })
 vim.keymap.set("n", "<leader>wc", ":close<CR>", { desc = "Close" })
-vim.keymap.set("n", "<C-Up>", ":resize +2<CR>", { desc = "H-Grow" })
-vim.keymap.set("n", "<C-Down>", ":resize -2<CR>", { desc = "H-Shrink" })
-vim.keymap.set("n", "<C-Left>", ":vertical resize -2<CR>",
-	{ desc = "V-Shrink" })
-vim.keymap.set("n", "<C-Right>", ":vertical resize +2<CR>", { desc = "V-Grow" })
+
+-- Resize keys (with fallback for tmux/terminal envs)
+local is_tmux = vim.env.TMUX ~= nil
+local resize_prefix = is_tmux and "<leader>r" or "<C-"
+local resize_suffix = is_tmux and "" or ">"
+if is_tmux then
+	vim.keymap.set("n", "<leader>rk", ":resize +2<CR>", { desc = "H-Grow" })
+	vim.keymap.set("n", "<leader>rj", ":resize -2<CR>", { desc = "H-Shrink" })
+	vim.keymap.set("n", "<leader>rh", ":vertical resize -2<CR>",
+		{ desc = "V-Shrink" })
+	vim.keymap.set("n", "<leader>rl", ":vertical resize +2<CR>",
+		{ desc = "V-Grow" })
+else
+	vim.keymap.set("n", "<C-Up>", ":resize +2<CR>", { desc = "H-Grow" })
+	vim.keymap.set("n", "<C-Down>", ":resize -2<CR>", { desc = "H-Shrink" })
+	vim.keymap.set("n", "<C-Left>", ":vertical resize -2<CR>",
+		{ desc = "V-Shrink" })
+	vim.keymap.set("n", "<C-Right>", ":vertical resize +2<CR>",
+		{ desc = "V-Grow" })
+end
 
 -- -- Indent --
 vim.keymap.set("v", "<", "<gv", { desc = "Unindent" })
@@ -325,6 +385,21 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
+-- -- Web Languages Indent (2 spaces) --
+vim.api.nvim_create_autocmd("FileType", {
+	group = augroup,
+	pattern = {
+			"javascript", "typescript", "json", "yaml",
+			"html", "css", "vue", "svelte",
+		},
+	callback = function()
+		vim.opt_local.tabstop = 2
+		vim.opt_local.shiftwidth = 2
+	end,
+})
+
+
+
 -- ============================================================================
 -- == PLUGINS ==
 -- ============================================================================
@@ -343,17 +418,6 @@ local plugins = {
 }
 vim.pack.add(plugins)
 
-for _, p in ipairs({
-	"nvim-treesitter",
-	"mini.nvim",
-	"nvim-lspconfig",
-	"mason-lspconfig.nvim",
-	"mason.nvim",
-	"conform.nvim",
-	"blink.cmp",
-}) do
-	vim.cmd("packadd " .. p)
-end
 
 -- ============================================================================
 -- == PLUGIN CONFIGS ==
@@ -381,6 +445,7 @@ miniclue.setup({
 	},
 	clues = {
 		miniclue.gen_clues.builtin_completion(),
+		miniclue.gen_clues.g(),
 		miniclue.gen_clues.registers(),
 		miniclue.gen_clues.windows(),
 		miniclue.gen_clues.z(),
@@ -399,7 +464,12 @@ miniclue.setup({
 		{ mode = "n", keys = "gm", desc = "Mult" },
 		{ mode = "n", keys = "gs", desc = "Sort" },
 	},
-	window = { config = { border = "single", width = "auto" }, delay = 300 },
+	window = {
+		config = { border = "single", width = 50, height = 15 },
+		delay = 300,
+		scroll_down = "<C-d>",
+		scroll_up = "<C-u>",
+	},
 })
 
 require("mini.ai").setup({})
@@ -423,7 +493,7 @@ require("mini.pick").setup({})
 require("mini.extra").setup({})
 require("mini.files").setup({
 	content = {
-		prefix = function(fs_entry) return "", "" end,
+		prefix = function(_) return "", "" end,
 	},
 	windows = { preview = true, width_preview = 80 },
 	options = { use_as_default_explorer = true },
@@ -431,14 +501,9 @@ require("mini.files").setup({
 require("mini.diff").setup({
 	view = {
 		style = "sign",
-		signs = { add = "+", change = "~", delete = "-" },
+		signs = { add = "", change = "", delete = "" },
 	},
 })
-
--- -- Hunk Colors (Link to theme) --
-vim.api.nvim_set_hl(0, "MiniDiffSignAdd", { fg = "#77cc77", bg = "none" })
-vim.api.nvim_set_hl(0, "MiniDiffSignChange", { fg = "#cccc77", bg = "none" })
-vim.api.nvim_set_hl(0, "MiniDiffSignDelete", { fg = "#cc7777", bg = "none" })
 
 -- -- Mini (Operators) --
 require("mini.operators").setup({
@@ -494,6 +559,8 @@ local function on_attach(ev)
 		{ buffer = ev.buf, desc = "Rename" })
 	vim.keymap.set("n", "K", vim.lsp.buf.hover,
 		{ buffer = ev.buf, desc = "Hover" })
+	vim.keymap.set("n", "gD", vim.lsp.buf.declaration,
+		{ buffer = ev.buf, desc = "Decl" })
 end
 vim.api.nvim_create_autocmd("LspAttach", { callback = on_attach })
 
@@ -505,13 +572,13 @@ require("blink.cmp").setup({
 })
 
 -- -- LSP Servers --
-for _, s in ipairs(servers) do
-	local cfg = { capabilities = require("blink.cmp").get_lsp_capabilities() }
-	if s == "lua_ls" then
-		cfg.settings = { Lua = { diagnostics = { globals = { "vim" } } } }
-	end
-	vim.lsp.config(s, cfg)
-end
+vim.lsp.config("*", {
+	capabilities = require("blink.cmp").get_lsp_capabilities(),
+})
+vim.lsp.config("lua_ls", {
+	capabilities = require("blink.cmp").get_lsp_capabilities(),
+	settings = { Lua = { diagnostics = { globals = { "vim" } } } },
+})
 vim.lsp.enable(servers)
 
 -- -- Formatting (Conform) --
