@@ -27,8 +27,10 @@ ZSH_HIGHLIGHT_STYLES[comment]='fg=242'
 # fzf config and preview
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git "
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
-export FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:#2dd4bf"
+export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix \
+    --exclude .git"
+export FZF_DEFAULT_OPTS="--height 50% --layout=default --border \
+    --color=hl:#2dd4bf"
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :500 {}'"
 export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
@@ -48,7 +50,8 @@ alias ls="eza --long --color=always --no-user"
 alias l="eza --color=always --no-user"
 alias la="eza -la --color=always --no-user"
 alias tree="eza --tree --level=3 --all --ignore-glob='.git' --color=always"
-alias dtree="eza --tree --level=3 --all --only-dirs --ignore-glob='.git' --color=always"
+alias dtree="eza --tree --level=3 --all --only-dirs \
+    --ignore-glob='.git' --color=always"
 alias cat="bat"
 alias cd="z"
 alias lg="lazygit"
