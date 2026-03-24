@@ -1,3 +1,12 @@
+# history
+HISTSIZE=10000
+SAVEHIST=10000
+HISTFILE=~/.zsh_history
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_FIND_NO_DUPS
+
 # oh-my-zsh
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME=""
@@ -5,42 +14,42 @@ ZSH_THEME=""
 # zsh plugins
 plugins=(
     git
+    colored-man-pages
     zsh-autosuggestions
     zsh-syntax-highlighting
 )
 source $ZSH/oh-my-zsh.sh
 
 # style customization
-# PROMPT='%F{blue}%n@%m%f %F{magenta}%1~%f $ '
-PROMPT='%F{blue}%n@%m%f: %F{magenta}%~%f
-$ '
+PROMPT=$'\n''%B[%F{green}%n@%m%f %F{blue}%(4~|%-1~/…/%2~|%~)%f]%b%(#.#.$) '
 ZSH_HIGHLIGHT_STYLES[comment]='fg=242'
 
-# fzf config and prview
+# fzf config and preview
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git "
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
 export FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:#2dd4bf"
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :500 {}'"
-export FZF_ALT_C_OPTS="--preview 'eza --icons=always --tree --color=always {} | head -200'"
+export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
 # zoxide initialize
 eval "$(zoxide init zsh)"
 
 # fzf integration
 if command -v fzf &>/dev/null; then
-    if fzf --zsh &>/dev/null; then
-        eval "$(fzf --zsh)"
-    else
-        [[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]] && source /usr/share/doc/fzf/examples/key-bindings.zsh
-        [[ -f /usr/share/doc/fzf/examples/completion.zsh ]] && source /usr/share/doc/fzf/examples/completion.zsh
-    fi
+    source <(fzf --zsh 2>/dev/null) || {
+        source /usr/share/doc/fzf/examples/key-bindings.zsh 2>/dev/null
+        source /usr/share/doc/fzf/examples/completion.zsh 2>/dev/null
+    }
 fi
 
 # alias
 alias ls="eza --long --color=always --no-user"
-alias tree="tree -L 3 -a -I '.git' --charset X "
-alias dtree="tree -L 3 -a -d -I '.git' --charset X "
+alias l="eza --color=always --no-user"
+alias la="eza -la --color=always --no-user"
+alias tree="eza --tree --level=3 --all --ignore-glob='.git' --color=always"
+alias dtree="eza --tree --level=3 --all --only-dirs --ignore-glob='.git' --color=always"
+alias cat="bat"
+alias cd="z"
 alias lg="lazygit"
 
-typeset -U PATH
