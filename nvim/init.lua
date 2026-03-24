@@ -277,6 +277,7 @@ vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Prev" })
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Next" })
 vim.keymap.set("n", "<leader>ld", vim.diagnostic.open_float, { desc = "Line" })
 
+vim.keymap.set("n", "q", "<nop>")
 vim.keymap.set("n", "Q", "<nop>")
 
 -- ============================================================================
