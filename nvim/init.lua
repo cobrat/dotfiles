@@ -41,6 +41,7 @@ vim.api.nvim_create_autocmd("ColorScheme", { callback = set_transparent_bg })
 local options = {
 	number = true,
 	relativenumber = true,
+	numberwidth = 4,
 	cursorline = true,
 	wrap = true,
 	scrolloff = 10,
@@ -89,6 +90,48 @@ local options = {
 
 for k, v in pairs(options) do
 	vim.opt[k] = v
+end
+
+local function update_number_mode(win)
+	win = win or 0
+	if not vim.api.nvim_win_is_valid(win) then
+		return
+	end
+
+	local buf = vim.api.nvim_win_get_buf(win)
+	local bt = vim.bo[buf].buftype
+	local ft = vim.bo[buf].filetype
+	if bt ~= "" or ft == "minifiles" then
+		vim.wo[win].relativenumber = false
+		return
+	end
+
+	vim.wo[win].relativenumber = vim.api.nvim_win_get_width(win) >= 100
+end
+
+local function buf_file_size(buf)
+	buf = buf or 0
+	if vim.bo[buf].buftype ~= "" then
+		return "--"
+	end
+
+	local name = vim.api.nvim_buf_get_name(buf)
+	if name == "" then
+		return "--"
+	end
+
+	local size = vim.fn.getfsize(name)
+	if size <= 0 then
+		return "0B"
+	end
+
+	local units = { "B", "K", "M", "G" }
+	local i = 1
+	while size > 1024 and i < #units do
+		size = size / 1024
+		i = i + 1
+	end
+	return string.format("%.1f%s", size, units[i])
 end
 
 -- -- UI Decor --
@@ -143,22 +186,6 @@ local function git_branch()
 	return res .. "]"
 end
 
-local cached_size = "0B"
-local function update_file_size()
-	local size = vim.fn.getfsize(vim.fn.expand("%"))
-	if size <= 0 or vim.bo.buftype ~= "" then
-		cached_size = "--"
-		return
-	end
-	local units = { "B", "K", "M", "G" }
-	local i = 1
-	while size > 1024 and i < #units do
-		size = size / 1024
-		i = i + 1
-	end
-	cached_size = string.format("%.1f%s", size, units[i])
-end
-
 local sl_modes = {
 	n = "--NORMAL--",
 	i = "--INSERT--",
@@ -179,24 +206,32 @@ _G.sl_status = function()
 		" %s %%f%%h%%m%%r (%s) %s %%= " ..
 		"Line:%%-4l Col:%%-3c %%P ",
 		mode_tag,
-		cached_size,
+		buf_file_size(0),
 		branch
 	)
 end
 
-vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
-	callback = function()
-		if vim.bo.filetype == "minifiles" then
-			vim.opt_local.statusline = ""
-			return
-		end
-		update_file_size()
+local function set_statusline(active)
+	if vim.bo.filetype == "minifiles" then
+		vim.opt_local.statusline = ""
+		return
+	end
+
+	if active then
 		vim.opt_local.statusline = "%!v:lua.sl_status()"
+	else
+		vim.opt_local.statusline = "  %f %h%m%r %= %l:%c  "
+	end
+end
+
+vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "WinEnter" }, {
+	callback = function()
+		set_statusline(true)
 	end,
 })
 vim.api.nvim_create_autocmd({ "WinLeave", "BufLeave" }, {
 	callback = function()
-		vim.opt_local.statusline = "  %f %h%m%r %= %l:%c  "
+		set_statusline(false)
 	end,
 })
 
@@ -258,8 +293,6 @@ vim.keymap.set("n", "<leader>wc", ":close<CR>", { desc = "Close" })
 
 -- Resize keys (with fallback for tmux/terminal envs)
 local is_tmux = vim.env.TMUX ~= nil
-local resize_prefix = is_tmux and "<leader>r" or "<C-"
-local resize_suffix = is_tmux and "" or ">"
 if is_tmux then
 	vim.keymap.set("n", "<leader>rk", ":resize +2<CR>", { desc = "H-Grow" })
 	vim.keymap.set("n", "<leader>rj", ":resize -2<CR>", { desc = "H-Shrink" })
@@ -332,6 +365,22 @@ vim.keymap.set("n", "<leader>gh", function()
 	require("mini.diff").toggle_overlay(0)
 end, { desc = "Hunk" })
 
+local function lsp_picker(scope)
+	return function()
+		local clients = vim.lsp.get_clients({ bufnr = 0 })
+		if vim.tbl_isempty(clients) then
+			vim.notify("No active LSP for current buffer", vim.log.levels.WARN)
+			return
+		end
+		require("mini.extra").pickers.lsp({ scope = scope })
+	end
+end
+
+vim.keymap.set("n", "gd", lsp_picker("definition"), { desc = "Def" })
+vim.keymap.set("n", "gr", lsp_picker("reference"), { desc = "Refs" })
+vim.keymap.set("n", "gi", lsp_picker("implementation"), { desc = "Impl" })
+vim.keymap.set("n", "gt", lsp_picker("type_definition"), { desc = "Type" })
+
 -- -- LSP & Diagnostic --
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Prev" })
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Next" })
@@ -360,6 +409,18 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
 		if vim.fn.getcmdwintype() == "" then
 			vim.cmd("checktime")
 		end
+	end,
+})
+
+vim.api.nvim_create_autocmd({
+	"BufEnter",
+	"BufWinEnter",
+	"VimResized",
+	"WinEnter",
+}, {
+	group = augroup,
+	callback = function(args)
+		update_number_mode(args.win)
 	end,
 })
 
@@ -445,7 +506,6 @@ miniclue.setup({
 	},
 	clues = {
 		miniclue.gen_clues.builtin_completion(),
-		miniclue.gen_clues.g(),
 		miniclue.gen_clues.registers(),
 		miniclue.gen_clues.windows(),
 		miniclue.gen_clues.z(),
@@ -456,16 +516,16 @@ miniclue.setup({
 		{ mode = "n", keys = "<leader>w", desc = "Window" },
 		-- Custom g-clues
 		{ mode = "n", keys = "gd", desc = "Def" },
-		{ mode = "n", keys = "gr", desc = "Ref/Repl" },
+		{ mode = "n", keys = "gr", desc = "Refs" },
 		{ mode = "n", keys = "gi", desc = "Impl" },
-		{ mode = "n", keys = "gt", desc = "TypeDef" },
-		{ mode = "n", keys = "g=", desc = "Eval" },
-		{ mode = "n", keys = "gx", desc = "Xchange" },
+		{ mode = "n", keys = "gt", desc = "Type" },
+		{ mode = "n", keys = "gR", desc = "Repl" },
 		{ mode = "n", keys = "gm", desc = "Mult" },
+		{ mode = "n", keys = "gx", desc = "Swap" },
 		{ mode = "n", keys = "gs", desc = "Sort" },
 	},
 	window = {
-		config = { border = "single", width = 50, height = 15 },
+		config = { border = "single", width = 26, height = 12 },
 		delay = 300,
 		scroll_down = "<C-d>",
 		scroll_up = "<C-u>",
@@ -500,8 +560,7 @@ require("mini.files").setup({
 })
 require("mini.diff").setup({
 	view = {
-		style = "sign",
-		signs = { add = "", change = "", delete = "" },
+		style = "number",
 	},
 })
 
@@ -510,7 +569,7 @@ require("mini.operators").setup({
 	evaluate = { prefix = "g=", desc = "Eval" },
 	exchange = { prefix = "gx", desc = "Xchange" },
 	multiply = { prefix = "gm", desc = "Mult" },
-	replace = { prefix = "gr", desc = "Repl" },
+	replace = { prefix = "gR", desc = "Repl" },
 	sort = { prefix = "gs", desc = "Sort" },
 })
 
@@ -526,7 +585,15 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 -- -- LSP --
-local servers = { "lua_ls", "pyright", "bashls", "ts_ls", "gopls", "clangd" }
+local servers = {
+	"lua_ls",
+	"pyright",
+	"bashls",
+	"ts_ls",
+	"gopls",
+	"clangd",
+	"rust_analyzer",
+}
 require("mason").setup({})
 require("mason-lspconfig").setup({
 	ensure_installed = servers,
@@ -538,18 +605,6 @@ vim.diagnostic.config({
 })
 
 local function on_attach(ev)
-	vim.keymap.set("n", "gd", function()
-		require("mini.extra").pickers.lsp({ scope = "definition" })
-	end, { buffer = ev.buf, desc = "Def" })
-	vim.keymap.set("n", "gr", function()
-		require("mini.extra").pickers.lsp({ scope = "reference" })
-	end, { buffer = ev.buf, desc = "Ref" })
-	vim.keymap.set("n", "gi", function()
-		require("mini.extra").pickers.lsp({ scope = "implementation" })
-	end, { buffer = ev.buf, desc = "Impl" })
-	vim.keymap.set("n", "gt", function()
-		require("mini.extra").pickers.lsp({ scope = "type_definition" })
-	end, { buffer = ev.buf, desc = "TypeDef" })
 	vim.keymap.set("n", "<leader>ls", function()
 		require("mini.extra").pickers.lsp({ scope = "document_symbol" })
 	end, { buffer = ev.buf, desc = "Syms" })
@@ -579,6 +634,16 @@ vim.lsp.config("lua_ls", {
 	capabilities = require("blink.cmp").get_lsp_capabilities(),
 	settings = { Lua = { diagnostics = { globals = { "vim" } } } },
 })
+vim.lsp.config("rust_analyzer", {
+	capabilities = require("blink.cmp").get_lsp_capabilities(),
+	settings = {
+		["rust-analyzer"] = {
+			check = {
+				command = "clippy",
+			},
+		},
+	},
+})
 vim.lsp.enable(servers)
 
 -- -- Formatting (Conform) --
@@ -588,5 +653,6 @@ require("conform").setup({
 		python = { "black" },
 		javascript = { "prettierd" },
 		typescript = { "prettierd" },
+		rust = { "rustfmt" },
 	},
 })

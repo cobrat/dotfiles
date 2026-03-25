@@ -1,63 +1,72 @@
-# Neovim Config Cheatsheet (Minimalist & Plugin-Light)
+# Neovim Config Cheatsheet
 
-这是一个基于 Neovim 内置功能与 `mini.nvim` 生态构建的高性能配置。
-遵循 **80 字符行宽**、**无图标 (No Icons)** 且 **无 Snippets** 的设计原则。
+轻量配置，偏向 80 列编码和小屏使用。
 
-## 1. 核心导航 (Navigation)
-- `j` / `k` : 智能折行跳转（不带 count 时为 `gj`/`gk`）。
+## 1. 核心导航
+- `j` / `k` : 智能折行跳转。
 - `Ctrl + d/u` : 半屏翻页并居中。
-- `n` / `N` : 搜索结果跳转并居中。
+- `n` / `N` : 搜索跳转并居中。
 - `<leader>c` : 清除搜索高亮。
-- `<leader>bn/bp` : 切换上一个/下一个 Buffer。
-- `<leader>bd` : 安全删除当前 Buffer (`mini.bufremove`)。
+- `<leader>x` : 黑洞删除。
+- 视觉模式 `p` : 粘贴不覆盖寄存器。
 
-## 2. 文件浏览 (mini.files)
-- `<leader>e` : 开关文件浏览器。
-- `j` / `k` : 移动光标。
-- `h` / `l` : 向左回到父目录 / 向右进入目录或打开文件。
-- `Enter` : 确认选择。
-- `g.` : 切换隐藏文件显示。
-- **编辑模式** : 直接修改文件名或另起一行输入名称，保存 (`:w`) 即可同步更改。
+## 2. Buffer 与窗口
+- `<leader>bb` : 上一个 Buffer。
+- `<leader>bn` / `<leader>bp` : 下一个 / 上一个 Buffer。
+- `<leader>bd` : 安全删除当前 Buffer。
+- `Ctrl + h/j/k/l` : 在窗口间移动。
+- `<leader>wv` / `<leader>wh` : 垂直 / 水平分屏。
+- `<leader>wc` : 关闭当前窗口。
+- `tmux` : `<leader>rh/rj/rk/rl` 调整窗口大小。
+- 非 `tmux` : `Ctrl + ←/↓/↑/→` 调整窗口大小。
 
-## 3. 搜索与模糊查找 (fzf-lua)
+## 3. 文件与搜索
+- `<leader>e` : 文件浏览器。
 - `<leader>ff` : 查找文件。
-- `<leader>fg` : 全局搜索 (Live Grep)。
-- `<leader>fb` : 列出当前打开的 Buffer。
-- `<leader>fo` : 最近打开的文件 (Oldfiles)。
-- `<leader>fx` : 列出当前文档的诊断信息。
-- `<leader>fz` : 在当前文件中进行模糊搜索。
+- `<leader>fg` : 全局搜索。
+- `<leader>fb` : Buffer 列表。
+- `<leader>fo` : 最近文件。
+- `<leader>fx` : 当前文档诊断。
+- `<leader>fz` : 当前 Buffer 搜索行。
+- `<leader>fp` : 复制当前文件绝对路径。
 
-## 4. LSP 与代码开发
+## 4. LSP 与诊断
 - `gd` : 跳转到定义。
-- `gr` : 查看所有引用。
-- `K` : 显示悬浮文档 (Hover)。
-- `<leader>la` : 执行代码操作 (Code Action)。
-- `<leader>lr` : 重命名 (Rename)。
-- `<leader>ls` : 列出文档符号 (Symbols)。
-- `<leader>bf` : 格式化当前 Buffer (`conform.nvim`)。
-- `[d` / `]d` : 跳转到上一个/下一个诊断错误。
-- `<leader>ld` : 打开当前行的诊断悬浮窗。
+- `gr` : 查看引用。
+- `gi` : 跳转到实现。
+- `gt` : 跳转到类型定义。
+- `K` : 显示悬浮文档。
+- `<leader>la` : Code Action。
+- `<leader>lr` : Rename。
+- `<leader>ls` : 文档符号。
+- `<leader>bf` : 格式化。
+- `[d` / `]d` : 上一个 / 下一个诊断。
+- `<leader>ld` : 当前行诊断。
+- `<leader>lt` : 开关诊断。
 
-## 5. Git 集成 (mini.diff)
-- `]h` / `[h` : 跳转到下一个/上一个修改块 (Hunk)。
-- `<leader>hp` : 切换显示当前 Hunk 的差异 Overlay。
-- `<leader>gs` : 查看 Git 状态 (`fzf-lua`)。
+## 5. Git
+- `<leader>gs` : 列出 Git hunks。
+- `<leader>gn` / `<leader>gp` : 跳到下一个 / 上一个 hunk。
+- `<leader>gh` : 切换 hunk overlay。
+- Git 变更显示在线号上，不占 `signcolumn`。
 
-## 6. 文本编辑技巧 (mini.modules)
-- **Surround (`sa/sd/sr`)**:
-    - `saiw"` : 为当前单词加上双引号。
-    - `sd"` : 删除周围的双引号。
-    - `sr"(` : 将双引号替换为小括号。
-- **Operators**:
-    - `gx` : 交换文本位置。
-    - `gs` : 对选中行进行排序。
-    - `gm` : 复制/倍增选中文本。
-- **Indent Scope**: 侧边会有 `|` 线条提示当前的缩进范围。
+## 6. 编辑增强
+- `sa` / `sd` / `sr` : surround 添加 / 删除 / 替换。
+- `gx` : 交换文本。
+- `gm` : 复制 / 倍增文本。
+- `gs` : 排序。
+- 视觉模式 `<` / `>` : 缩进后保持选区。
+- `|` : 当前缩进范围提示。
 
-## 7. 补全 (blink.cmp)
-- 输入字符时自动触发。
-- `Tab` : 接受建议。
-- `Ctrl + n/p` : 在补全列表中上下移动。
+## 7. Mini Clue
+- 前缀提示：`<leader>`、`g`、`[`、`]`、`z`、寄存器、窗口。
+- `g` 仅显示：`gd`、`gr`、`gi`、`gt`、`gx`、`gs`。
+- clue 窗口已收窄。
+
+## 8. 界面行为
+- Git 变更用行号着色显示。
+- 窄窗口自动关闭 `relativenumber`。
+- `colorcolumn=80` 为参考线。
 
 ---
-*注：本配置使用 `mason-lspconfig` 自动管理语言服务器，首次打开特定类型文件时可能会有简短的安装过程。*
+注：LSP 通过 `mason-lspconfig` 自动管理，首次打开某些文件类型时可能会短暂安装。
