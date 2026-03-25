@@ -20,7 +20,7 @@ let mapleader = " "
 " Core Options
 " ============================================================
 set number
-set relativenumber
+"set relativenumber
 set cursorline
 set scrolloff=10
 set sidescrolloff=10

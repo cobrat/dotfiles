@@ -40,7 +40,7 @@ vim.api.nvim_create_autocmd("ColorScheme", { callback = set_transparent_bg })
 -- -- Core Options --
 local options = {
 	number = true,
-	relativenumber = true,
+	relativenumber = false,
 	numberwidth = 4,
 	cursorline = true,
 	wrap = true,
@@ -90,23 +90,6 @@ local options = {
 
 for k, v in pairs(options) do
 	vim.opt[k] = v
-end
-
-local function update_number_mode(win)
-	win = win or 0
-	if not vim.api.nvim_win_is_valid(win) then
-		return
-	end
-
-	local buf = vim.api.nvim_win_get_buf(win)
-	local bt = vim.bo[buf].buftype
-	local ft = vim.bo[buf].filetype
-	if bt ~= "" or ft == "minifiles" then
-		vim.wo[win].relativenumber = false
-		return
-	end
-
-	vim.wo[win].relativenumber = vim.api.nvim_win_get_width(win) >= 100
 end
 
 local function buf_file_size(buf)
@@ -409,18 +392,6 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
 		if vim.fn.getcmdwintype() == "" then
 			vim.cmd("checktime")
 		end
-	end,
-})
-
-vim.api.nvim_create_autocmd({
-	"BufEnter",
-	"BufWinEnter",
-	"VimResized",
-	"WinEnter",
-}, {
-	group = augroup,
-	callback = function(args)
-		update_number_mode(args.win)
 	end,
 })
 
