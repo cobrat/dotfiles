@@ -27,8 +27,8 @@ if [[ -r "$ZSH/oh-my-zsh.sh" ]]; then
 fi
 
 # style customization
-PROMPT=$'\n''%B[%F{green}%n@%m%f '\
-    '%F{blue}%(4~|%-1~/.../%2~|%~)%f]%b%(#.#.$) '
+PROMPT=$'\n''%B[%F{green}%n@%m%f '
+PROMPT+='%F{blue}%(4~|%-1~/.../%2~|%~)%f]%b%(#.#.$) '
 
 if (( ${+ZSH_HIGHLIGHT_STYLES} )); then
     ZSH_HIGHLIGHT_STYLES[comment]='fg=242'
@@ -54,29 +54,29 @@ if command -v fzf &>/dev/null; then
     unset FZF_ALT_C_OPTS
 
     if command -v fd &>/dev/null; then
-        export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix "\
-            "--exclude .git"
+        export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix "
+        FZF_DEFAULT_COMMAND+="--exclude .git"
         export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-        export FZF_ALT_C_COMMAND="fd --type=d --hidden "\
-            "--strip-cwd-prefix --exclude .git"
+        export FZF_ALT_C_COMMAND="fd --type=d --hidden "
+        FZF_ALT_C_COMMAND+="--strip-cwd-prefix --exclude .git"
     fi
 
-    export FZF_DEFAULT_OPTS="--height 50% --layout=default --border "\
-        "--color=hl:#2dd4bf"
+    export FZF_DEFAULT_OPTS="--height 50% --layout=default --border "
+    FZF_DEFAULT_OPTS+="--color=hl:#2dd4bf"
 
     if command -v bat &>/dev/null; then
-        export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n "\
-            "--line-range :500 {}'"
+        export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n "
+        FZF_CTRL_T_OPTS+="--line-range :500 {}'"
     else
         export FZF_CTRL_T_OPTS="--preview 'sed -n \"1,500p\" {}'"
     fi
 
     if command -v eza &>/dev/null; then
-        export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} "\
-            "| head -200'"
+        export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} "
+        FZF_ALT_C_OPTS+="| head -200'"
     else
-        export FZF_ALT_C_OPTS="--preview 'find {} -maxdepth 3 -print "\
-            "| head -200'"
+        export FZF_ALT_C_OPTS="--preview 'find {} -maxdepth 3 -print "
+        FZF_ALT_C_OPTS+="| head -200'"
     fi
 
     source <(fzf --zsh 2>/dev/null) || {
@@ -90,11 +90,16 @@ if command -v eza &>/dev/null; then
     alias ls="eza --long --color=always --no-user"
     alias l="eza --color=always --no-user"
     alias la="eza -la --color=always --no-user"
-    alias tree=\
-        "eza --tree --level=3 --all --ignore-glob='.git' --color=always"
-    alias dtree=\
-        "eza --tree --level=3 --all --only-dirs --ignore-glob='.git' "\
-        "--color=always"
+
+    tree() {
+        eza --tree --level=3 --all --ignore-glob='.git' \
+            --color=always "$@"
+    }
+
+    dtree() {
+        eza --tree --level=3 --all --only-dirs --ignore-glob='.git' \
+            --color=always "$@"
+    }
 fi
 
 if command -v zoxide &>/dev/null; then
