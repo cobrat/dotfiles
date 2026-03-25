@@ -1,16 +1,17 @@
+typeset -U path PATH
+
+# Environment variables and PATH setup for login shells only.
 if [[ "$OSTYPE" == darwin* ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
+    if [[ -x /opt/homebrew/bin/brew ]]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    fi
 elif [[ "$OSTYPE" == linux* ]]; then
     export PATH="$HOME/.local/bin:$PATH"
 fi
 
-export LANG=en_US.UTF-8
+export LANG="en_US.UTF-8"
 
-# ------All PATHS------
-## Mise
-if command -v mise &>/dev/null; then
-    eval "$(mise activate zsh)"
+# Tool-managed PATH additions.
+if [[ -f "$HOME/.cargo/env" ]]; then
+    source "$HOME/.cargo/env"
 fi
-
-## Rust
-[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
