@@ -28,6 +28,10 @@
       "rev": "9f3c6dd7868bcc116e9c1c1929ce063b978fa519",
       "src": "https://www.github.com/lewis6991/gitsigns.nvim"
     },
+    "gruvbox.nvim": {
+      "rev": "334d5fd49fc8033f26408425366c66c6390c57bb",
+      "src": "https://github.com/ellisonleao/gruvbox.nvim"
+    },
     "mason-lspconfig.nvim": {
       "rev": "a979821a975897b88493843301950c456a725982",
       "src": "https://github.com/williamboman/mason-lspconfig.nvim"
