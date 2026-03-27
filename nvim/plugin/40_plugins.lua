@@ -81,9 +81,10 @@ later(function() add({ 'https://github.com/rafamadriz/friendly-snippets' }) end)
 Config.now(function()
   add({ 'https://github.com/ellisonleao/gruvbox.nvim' })
   require('gruvbox').setup({
-    contrast = 'hard',       -- '' | 'hard' | 'soft'
-    bold     = true,
-    italic   = {
+    contrast         = 'hard',  -- '' | 'hard' | 'soft'
+    bold             = true,
+    transparent_mode = true,
+    italic           = {
       strings   = false,
       emphasis  = false,
       comments  = false,
