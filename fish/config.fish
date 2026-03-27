@@ -10,6 +10,10 @@ if test -d $HOME/.cargo/bin
     fish_add_path --move $HOME/.cargo/bin
 end
 
+if test -d $HOME/.local/share/bob/nvim-bin
+    fish_add_path --move $HOME/.local/share/bob/nvim-bin
+end
+
 set -gx LANG en_US.UTF-8
 
 # Syntax highlighting colors
