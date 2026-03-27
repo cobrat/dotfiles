@@ -1,2 +1,5 @@
 .DS_Store
 **/.DS_Store
+
+# fish universal variables — machine-specific paths, managed by fish automatically
+fish/fish_variables

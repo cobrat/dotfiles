@@ -1,8 +1,9 @@
-.zshrc|symlink|
-.zprofile|symlink|
+# .zshrc|symlink|
+# .zprofile|symlink|
+fish|symlink|.config
 .vimrc|symlink|
 .tmux.conf|symlink|
-ghostty/config|symlink|.config
+# ghostty/config|symlink|.config
 wezterm|symlink|.config
 # helix|symlink|.config
 zed/settings.json|symlink|.config
