@@ -97,9 +97,6 @@ now(function()
   })
 end)
 
--- Tabline: listed buffers at the top. Navigate with `[b` and `]b`.
-now(function() require('mini.tabline').setup({ show_icons = false }) end)
-
 -- Step one or two ============================================================
 
 -- Completion (async two-stage: LSP then keyword fallback) + signature help.
@@ -303,7 +300,6 @@ later(function()
     },
   })
 
-  -- Uncomment to expose snippets as LSP candidates in mini.completion:
   -- MiniSnippets.start_lsp_server()
 end)
 

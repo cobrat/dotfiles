@@ -9,6 +9,8 @@ local nmap = function(lhs, rhs, desc)
 end
 
 
+nmap('<Esc>', '<Cmd>nohlsearch<CR>', 'Clear search highlight')
+
 -- Paste linewise before/after current line
 nmap('[p', '<Cmd>exe "iput! " . v:register<CR>', 'Paste Above')
 nmap(']p', '<Cmd>exe "iput "  . v:register<CR>', 'Paste Below')
