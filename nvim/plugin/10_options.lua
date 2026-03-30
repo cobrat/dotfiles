@@ -14,7 +14,6 @@ vim.o.undofile    = true           -- Enable persistent undo
 vim.o.shada = "'100,<50,s10,:1000,/100,@100,h" -- Limit ShaDa file
 
 vim.cmd('filetype plugin indent on')
-if vim.fn.exists('syntax_on') ~= 1 then vim.cmd('syntax enable') end
 
 -- UI =========================================================================
 vim.o.breakindent    = true       -- Indent wrapped lines to match line start
@@ -50,7 +49,6 @@ vim.o.foldnestmax = 10       -- Limit number of fold levels
 vim.o.foldtext    = ''       -- Show text under fold with its highlighting
 
 -- Editing ====================================================================
-vim.o.autoindent    = true    -- Use auto indent
 vim.o.expandtab     = true    -- Convert tabs to spaces
 vim.o.formatoptions = 'rqnl1j'-- Improve comment editing
 vim.o.ignorecase    = true    -- Ignore case during search

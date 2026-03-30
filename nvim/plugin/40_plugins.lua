@@ -39,18 +39,20 @@ now_if_args(function()
       table.insert(filetypes, ft)
     end
   end
-  local ts_start = function(ev) vim.treesitter.start(ev.buf) end
+  local ts_start = function(ev)
+    vim.treesitter.start(ev.buf)
+    -- Use tree-sitter for folding in TS-enabled filetypes
+    vim.opt_local.foldmethod = 'expr'
+    vim.opt_local.foldexpr   = 'v:lua.vim.treesitter.foldexpr()'
+  end
   Config.new_autocmd('FileType', filetypes, ts_start, 'Start tree-sitter')
 end)
 
 -- Language servers ===========================================================
 -- Neovim is the LSP client; servers must be installed separately.
--- Configure servers in 'after/lsp/' directory. See `:h vim.lsp.enable()`.
+-- Configure servers in 'lsp/' directory. See `:h vim.lsp.enable()`.
 now_if_args(function()
-  add({ 'https://github.com/neovim/nvim-lspconfig' })
-
-  -- Uncomment and list servers to enable:
-  -- vim.lsp.enable({ 'lua_ls' })
+  vim.lsp.enable({ 'lua_ls', 'ruff', 'clangd', 'rust_analyzer' })
 end)
 
 -- Formatting =================================================================
@@ -61,13 +63,9 @@ later(function()
     default_format_opts = {
       lsp_format = 'fallback', -- use LSP if no dedicated formatter
     },
-    -- formatters_by_ft = { lua = { 'stylua' } },
+    formatters_by_ft = { lua = { 'stylua' } },
   })
 end)
-
--- Snippets ===================================================================
--- 'friendly-snippets': large collection of language snippets for mini.snippets.
-later(function() add({ 'https://github.com/rafamadriz/friendly-snippets' }) end)
 
 -- Honorable mentions =========================================================
 

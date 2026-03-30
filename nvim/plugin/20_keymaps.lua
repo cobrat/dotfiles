@@ -8,12 +8,11 @@ local nmap = function(lhs, rhs, desc)
   vim.keymap.set('n', lhs, rhs, { desc = desc })
 end
 
-
 nmap('<Esc>', '<Cmd>nohlsearch<CR>', 'Clear search highlight')
 
 -- Paste linewise before/after current line
-nmap('[p', '<Cmd>exe "iput! " . v:register<CR>', 'Paste Above')
-nmap(']p', '<Cmd>exe "iput "  . v:register<CR>', 'Paste Below')
+nmap('[p', '<Cmd>exe "put! " . v:register<CR>', 'Paste Above')
+nmap(']p', '<Cmd>exe "put "  . v:register<CR>', 'Paste Below')
 
 -- Many general mappings are created by 'mini.basics'. See 'plugin/30_mini.lua'
 
@@ -151,6 +150,5 @@ xmap_leader('lf', '<Cmd>lua require("conform").format()<CR>', 'Format selection'
 nmap_leader('or', '<Cmd>lua MiniMisc.resize_window()<CR>', 'Resize to default width')
 nmap_leader('ot', '<Cmd>lua MiniTrailspace.trim()<CR>',    'Trim trailspace')
 nmap_leader('oz', '<Cmd>lua MiniMisc.zoom()<CR>',          'Zoom toggle')
-
 
 -- stylua: ignore end
