@@ -10,10 +10,7 @@
 -- ├── 20_keymaps.lua  Key mappings
 -- ├── 30_mini.lua     mini.nvim configuration
 -- ├── 40_plugins.lua  Third-party plugins
--- ├ snippets/         Global snippets
--- ├ after/ftplugin/   Per-filetype overrides
--- ├── lsp/            LSP server configs
--- └── snippets/       High-priority snippets
+-- └ lsp/             LSP server configs
 
 -- Plugin manager: built-in `vim.pack`. Lockfile: 'nvim-pack-lock.json'.
 -- `:lua vim.pack.update()` to update, `:write` to confirm.
@@ -30,9 +27,6 @@ local misc = require('mini.misc')
 Config.now = function(f) misc.safely('now', f) end
 Config.later = function(f) misc.safely('later', f) end
 Config.now_if_args = vim.fn.argc(-1) > 0 and Config.now or Config.later
-Config.on_event = function(ev, f) misc.safely('event:' .. ev, f) end
-Config.on_filetype = function(ft, f) misc.safely('filetype:' .. ft, f) end
-
 -- Autocommand helper. See `:h autocommand`.
 local gr = vim.api.nvim_create_augroup('custom-config', {})
 Config.new_autocmd = function(event, pattern, callback, desc)

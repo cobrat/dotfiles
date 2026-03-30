@@ -3,14 +3,11 @@
 return {
   settings = {
     ['rust-analyzer'] = {
-      checkOnSave = {
+      check = {
         command = 'clippy',
         extraArgs = { '--all-targets', '--all-features' },
       },
       cargo = { allFeatures = true },
-      clippy = {
-        allTargets = true,
-      },
     },
   },
 }

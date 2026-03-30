@@ -8,19 +8,12 @@ local now, now_if_args, later = Config.now, Config.now_if_args, Config.later
 
 -- Step one ===================================================================
 
--- Color scheme (miniwinter from mini.nvim)
--- now(function() vim.cmd('colorscheme miniwinter') end)
--- now(function() vim.cmd('colorscheme minispring') end)
--- now(function() vim.cmd('colorscheme minisummer') end)
--- now(function() vim.cmd('colorscheme miniautumn') end)
--- now(function() vim.cmd('colorscheme randomhue') end)
-
 -- Common presets: options, mappings, autocommands.
 -- Notable mappings: `<C-s>` save, `go`/`gO` empty lines, `gy`/`gp` clipboard,
 -- `\` toggles, `<C-hjkl>` window nav, `<M-hjkl>` insert/command nav.
 now(function()
   require('mini.basics').setup({
-    options = { basic = false }, -- managed in 'plugin/10_options.lua'
+    options = { basic = false, extra_ui = false }, -- managed in 'plugin/10_options.lua'
     mappings = {
       windows = true,       -- <C-hjkl> window navigation
       move_with_alt = true, -- <M-hjkl> in Insert/Command mode
@@ -251,7 +244,6 @@ end)
 -- Smarter `fFtT`: works across lines, highlights matches.
 later(function() require('mini.jump').setup() end)
 
-
 -- Special key mappings: multi-step and combo actions.
 later(function()
   require('mini.keymap').setup()
@@ -283,24 +275,13 @@ later(function() require('mini.pick').setup() end)
 
 -- Snippet management. Expand with `<C-j>`; navigate tabstops with `<C-l>`/`<C-h>`.
 later(function()
-  local latex_patterns = { 'latex/**/*.json', '**/latex.json' }
-  local lang_patterns = {
-    tex              = latex_patterns,
-    plaintex         = latex_patterns,
-    markdown_inline  = { 'markdown.json' },
-  }
-
   local snippets = require('mini.snippets')
-  local config_path = vim.fn.stdpath('config')
   snippets.setup({
     snippets = {
-      snippets.gen_loader.from_file(
-        config_path .. '/snippets/global.json'),
-      snippets.gen_loader.from_lang({ lang_patterns = lang_patterns }),
+      -- Per-language snippets from runtimepath (e.g. snippets/{lang}.json)
+      snippets.gen_loader.from_lang(),
     },
   })
-
-  -- MiniSnippets.start_lsp_server()
 end)
 
 -- Toggle join/split arguments with `gS`.

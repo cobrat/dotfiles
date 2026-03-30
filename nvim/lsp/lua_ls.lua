@@ -11,7 +11,6 @@ return {
     Lua = {
       runtime = {
         version = 'LuaJIT',
-        path = vim.split(package.path, ';'),
       },
       workspace = {
         ignoreSubmodules = true,
