@@ -10,7 +10,7 @@
 -- ├── 20_keymaps.lua  Key mappings
 -- ├── 30_mini.lua     mini.nvim configuration
 -- ├── 40_plugins.lua  Third-party plugins
--- └ lsp/             LSP server configs
+-- └ after/lsp/        LSP overrides for configs provided by nvim-lspconfig
 
 -- Plugin manager: built-in `vim.pack`. Lockfile: 'nvim-pack-lock.json'.
 -- `:lua vim.pack.update()` to update, `:write` to confirm.
@@ -27,6 +27,13 @@ local misc = require('mini.misc')
 Config.now = function(f) misc.safely('now', f) end
 Config.later = function(f) misc.safely('later', f) end
 Config.now_if_args = vim.fn.argc(-1) > 0 and Config.now or Config.later
+Config.root_dir_with_fallback = function(markers)
+  return function(bufnr, on_dir)
+    local fname = vim.api.nvim_buf_get_name(bufnr)
+    local root = vim.fs.root(fname, markers)
+    on_dir(root or vim.fs.dirname(fname))
+  end
+end
 -- Autocommand helper. See `:h autocommand`.
 local gr = vim.api.nvim_create_augroup('custom-config', {})
 Config.new_autocmd = function(event, pattern, callback, desc)

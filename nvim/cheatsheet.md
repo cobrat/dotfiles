@@ -239,6 +239,26 @@ Prefix with `a` (around) or `i` (inside). Use `n`/`l` suffix for next/last:
 | `<Leader>lt` | Type definition |
 | `[d` / `]d` | Previous / next diagnostic |
 
+LSP setup notes:
+| Item | Meaning |
+|-----|--------|
+| `plugin/40_plugins.lua` | Installs `nvim-lspconfig`, `mason.nvim`, `mason-lspconfig.nvim` |
+| `Config.lsp_servers` | Mason-managed LSP servers to install/enable |
+| `Config.treesitter_languages` | Tree-sitter parsers expected by this config |
+| `Config.root_dir_with_fallback()` | Helper for servers that should still attach on single files |
+| `ensure_installed` | Mason-managed servers to auto-install |
+| `automatic_enable = false` | Mason only installs; `vim.lsp.enable(Config.lsp_servers)` enables LSPs directly |
+| `after/lsp/*.lua` | Per-server overrides only; base config comes from `nvim-lspconfig` |
+
+LSP / Mason commands:
+| Command | Action |
+|-----|--------|
+| `:Mason` | Open Mason UI |
+| `:checkhealth vim.lsp` | Show enabled/active LSP status |
+| `:lsp enable <name>` | Enable an LSP config manually |
+| `:lsp disable <name>` | Disable an LSP config manually |
+| `:lsp restart <name>` | Restart a running LSP client |
+
 ---
 
 ## Explore / Edit Config — `<Leader>e`
