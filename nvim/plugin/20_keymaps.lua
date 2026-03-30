@@ -41,25 +41,31 @@ local xmap_leader = function(suffix, rhs, desc)
   vim.keymap.set('x', '<Leader>' .. suffix, rhs, { desc = desc })
 end
 
+local conform_format = function(opts)
+  opts = vim.tbl_extend('force', { async = true, lsp_format = 'fallback' }, opts or {})
+  require('conform').format(opts)
+end
+
 -- b is for 'Buffer'
 local new_scratch_buffer = function()
   vim.api.nvim_win_set_buf(0, vim.api.nvim_create_buf(true, true))
 end
 
 nmap_leader('ba', '<Cmd>b#<CR>',                                 'Alternate')
-nmap_leader('bd', '<Cmd>lua MiniBufremove.delete()<CR>',         'Delete')
-nmap_leader('bD', '<Cmd>lua MiniBufremove.delete(0, true)<CR>',  'Delete!')
+nmap_leader('bd', function() require('mini.bufremove').delete() end, 'Delete')
+nmap_leader('bD', function() require('mini.bufremove').delete(0, true) end, 'Delete!')
 nmap_leader('bs', new_scratch_buffer,                            'Scratch')
-nmap_leader('bw', '<Cmd>lua MiniBufremove.wipeout()<CR>',        'Wipeout')
-nmap_leader('bW', '<Cmd>lua MiniBufremove.wipeout(0, true)<CR>', 'Wipeout!')
+nmap_leader('bw', function() require('mini.bufremove').wipeout() end, 'Wipeout')
+nmap_leader('bW', function() require('mini.bufremove').wipeout(0, true) end, 'Wipeout!')
 
 -- e is for 'Explore' and 'Edit'
 local edit_plugin_file = function(filename)
-  return string.format(
-    '<Cmd>edit %s/plugin/%s<CR>', vim.fn.stdpath('config'), filename)
+  local path = vim.fs.joinpath(vim.fn.stdpath('config'), 'plugin', filename)
+  return string.format('<Cmd>edit %s<CR>', vim.fn.fnameescape(path))
 end
-local explore_at_file =
-  '<Cmd>lua MiniFiles.open(vim.api.nvim_buf_get_name(0))<CR>'
+local explore_at_file = function()
+  require('mini.files').open(vim.api.nvim_buf_get_name(0))
+end
 local explore_quickfix = function()
   local is_open = vim.fn.getqflist({ winid = true }).winid ~= 0
   vim.cmd(is_open and 'cclose' or 'copen')
@@ -69,12 +75,12 @@ local explore_locations = function()
   vim.cmd(is_open and 'lclose' or 'lopen')
 end
 
-nmap_leader('ed', '<Cmd>lua MiniFiles.open()<CR>',          'Directory')
+nmap_leader('ed', function() require('mini.files').open() end, 'Directory')
 nmap_leader('ef', explore_at_file,                          'File directory')
 nmap_leader('ei', '<Cmd>edit $MYVIMRC<CR>',                 'init.lua')
 nmap_leader('ek', edit_plugin_file('20_keymaps.lua'),       'Keymaps config')
 nmap_leader('em', edit_plugin_file('30_mini.lua'),          'MINI config')
-nmap_leader('en', '<Cmd>lua MiniNotify.show_history()<CR>', 'Notifications')
+nmap_leader('en', function() MiniNotify.show_history() end, 'Notifications')
 nmap_leader('eo', edit_plugin_file('10_options.lua'),       'Options config')
 nmap_leader('ep', edit_plugin_file('40_plugins.lua'),       'Plugins config')
 nmap_leader('eq', explore_quickfix,                         'Quickfix list')
@@ -136,7 +142,7 @@ xmap_leader('gs', '<Cmd>lua MiniGit.show_at_cursor()<CR>', 'Show at selection')
 nmap_leader('la', '<Cmd>lua vim.lsp.buf.code_action()<CR>',     'Actions')
 nmap_leader('ld',
   '<Cmd>lua vim.diagnostic.open_float()<CR>',   'Diagnostic popup')
-nmap_leader('lf', '<Cmd>lua require("conform").format()<CR>',   'Format')
+nmap_leader('lf', conform_format,                              'Format')
 nmap_leader('li', '<Cmd>lua vim.lsp.buf.implementation()<CR>',  'Implementation')
 nmap_leader('lh', '<Cmd>lua vim.lsp.buf.hover()<CR>',           'Hover')
 nmap_leader('lr', '<Cmd>lua vim.lsp.buf.rename()<CR>',          'Rename')
@@ -144,11 +150,11 @@ nmap_leader('lR', '<Cmd>lua vim.lsp.buf.references()<CR>',      'References')
 nmap_leader('ls', '<Cmd>lua vim.lsp.buf.definition()<CR>',      'Source definition')
 nmap_leader('lt', '<Cmd>lua vim.lsp.buf.type_definition()<CR>', 'Type definition')
 
-xmap_leader('lf', '<Cmd>lua require("conform").format()<CR>', 'Format selection')
+xmap_leader('lf', conform_format, 'Format selection')
 
 -- o is for 'Other'
-nmap_leader('or', '<Cmd>lua MiniMisc.resize_window()<CR>', 'Resize to default width')
-nmap_leader('ot', '<Cmd>lua MiniTrailspace.trim()<CR>',    'Trim trailspace')
-nmap_leader('oz', '<Cmd>lua MiniMisc.zoom()<CR>',          'Zoom toggle')
+nmap_leader('or', function() MiniMisc.resize_window() end, 'Resize to default width')
+nmap_leader('ot', function() require('mini.trailspace').trim() end, 'Trim trailspace')
+nmap_leader('oz', function() MiniMisc.zoom() end,          'Zoom toggle')
 
 -- stylua: ignore end

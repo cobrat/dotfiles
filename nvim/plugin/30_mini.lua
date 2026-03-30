@@ -108,6 +108,17 @@ now_if_args(function()
     },
   })
 
+  -- Keep completion menu, but suppress auxiliary floating docs/signatures.
+  local stop_aux_windows = function()
+    MiniCompletion.stop({ 'info', 'signature' })
+  end
+  Config.new_autocmd(
+    'CompleteChanged', nil, stop_aux_windows,
+    "Suppress completion item info window")
+  Config.new_autocmd(
+    'CursorMovedI', nil, stop_aux_windows,
+    "Suppress signature help window")
+
   -- Set 'omnifunc' only when an LSP attaches
   local on_attach = function(ev)
     vim.bo[ev.buf].omnifunc = 'v:lua.MiniCompletion.completefunc_lsp'
@@ -119,7 +130,7 @@ end)
 
 -- File explorer (Miller columns). `l`/`h` navigate in/out, `g?` for help.
 -- Manipulate by editing buffer text, then `=` to sync.
-now_if_args(function()
+now(function()
   require('mini.files').setup({
     mappings = {
       close      = '<Esc>',
@@ -130,7 +141,9 @@ now_if_args(function()
   -- Bookmarks available inside explorer (press `'c`, `'p`, etc.)
   local add_marks = function()
     MiniFiles.set_bookmark('c', vim.fn.stdpath('config'), { desc = 'Config' })
-    local vimpack = vim.fn.stdpath('data') .. '/site/pack/core/opt'
+    local pack = vim.pack.get()[1]
+    local pack_root = pack and vim.fs.dirname(pack.path) or nil
+    local vimpack = pack_root or vim.fs.joinpath(vim.fn.stdpath('data'), 'site', 'pack', 'core', 'opt')
     MiniFiles.set_bookmark('p', vimpack, { desc = 'Plugins' })
     MiniFiles.set_bookmark('w', vim.fn.getcwd, { desc = 'Working directory' })
   end
@@ -138,7 +151,7 @@ now_if_args(function()
 end)
 
 -- Misc utilities: put(), zoom, auto-root, cursor restore.
-now_if_args(function()
+now(function()
   require('mini.misc').setup()
   MiniMisc.setup_auto_root()      -- cd to project root on file open
   MiniMisc.setup_restore_cursor() -- restore cursor position on reopen
@@ -171,7 +184,7 @@ end)
 later(function() require('mini.bracketed').setup() end)
 
 -- Buffer removal without closing windows. `<Leader>bd/bw/bD/bW`.
-later(function() require('mini.bufremove').setup() end)
+now(function() require('mini.bufremove').setup() end)
 
 -- Key sequence clue window (shows available next keys after a trigger).
 later(function()
@@ -207,7 +220,8 @@ later(function()
   })
 end)
 
--- Command line: autocompletion, autocorrection, range autopeek.
+-- Command line: autocompletion, autocorrection, range autopeek on top of the
+-- traditional built-in cmdline UI.
 later(function() require('mini.cmdline').setup() end)
 
 -- Color scheme utilities. Disabled by default.
@@ -221,10 +235,10 @@ later(function() require('mini.comment').setup() end)
 
 -- Diff hunks vs Git index. Also feeds statusline devinfo.
 -- `gh`/`gH` apply/reset hunks; `<Leader>go` toggle overlay.
-later(function() require('mini.diff').setup() end)
+now_if_args(function() require('mini.diff').setup() end)
 
 -- Git integration: `:Git <cmd>`, `<Leader>gs/gd/gL`.
-later(function() require('mini.git').setup() end)
+now_if_args(function() require('mini.git').setup() end)
 
 -- Highlight TODO/FIXME/NOTE/HACK and hex color strings.
 later(function()
@@ -271,7 +285,7 @@ end)
 
 -- Fuzzy picker. `<Leader>ff` files, `<Leader>fg` grep, `<Leader>fh` help.
 -- See `:h MiniPick-overview` and `:h MiniExtra.pickers`.
-later(function() require('mini.pick').setup() end)
+now(function() require('mini.pick').setup() end)
 
 -- Snippet management. Expand with `<C-j>`; navigate tabstops with `<C-l>`/`<C-h>`.
 later(function()
@@ -291,6 +305,6 @@ later(function() require('mini.splitjoin').setup() end)
 later(function() require('mini.surround').setup() end)
 
 -- Highlight and trim trailing whitespace. `<Leader>ot` to trim.
-later(function() require('mini.trailspace').setup() end)
+now(function() require('mini.trailspace').setup() end)
 
 -- Not included: mini.doc, mini.fuzzy, mini.test (plugin-dev tools).
