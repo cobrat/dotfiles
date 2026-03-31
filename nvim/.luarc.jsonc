@@ -2,6 +2,18 @@
   "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
   "Lua.runtime.version": "LuaJIT",
   "Lua.workspace.checkThirdParty": false,
+  "Lua.diagnostics.globals": [
+    "vim",
+    "Config",
+    "MiniNotify",
+    "MiniMisc",
+    "MiniIcons",
+    "MiniStatusline",
+    "MiniCompletion",
+    "MiniFiles",
+    "MiniExtra",
+    "MiniKeymap"
+  ],
   "Lua.workspace.library": [
     "/Users/wzh/.local/share/bob/nightly/share/nvim/runtime"
   ]
