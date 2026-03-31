@@ -1,7 +1,8 @@
 -- rust-analyzer overrides for Rust.
 -- Base config comes from nvim-lspconfig.
 return {
-  -- Fall back to the file's directory so standalone Rust files can still attach.
+  -- Fall back to the file's directory so standalone Rust files
+  -- can still attach.
   root_dir = Config.root_dir_with_fallback({
     'Cargo.toml',
     'rust-project.json',

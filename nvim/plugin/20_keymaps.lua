@@ -42,7 +42,11 @@ local xmap_leader = function(suffix, rhs, desc)
 end
 
 local conform_format = function(opts)
-  opts = vim.tbl_extend('force', { async = true, lsp_format = 'fallback' }, opts or {})
+  opts = vim.tbl_extend(
+    'force',
+    { async = true, lsp_format = 'fallback' },
+    opts or {}
+  )
   require('conform').format(opts)
 end
 
@@ -53,10 +57,14 @@ end
 
 nmap_leader('ba', '<Cmd>b#<CR>',                                 'Alternate')
 nmap_leader('bd', function() require('mini.bufremove').delete() end, 'Delete')
-nmap_leader('bD', function() require('mini.bufremove').delete(0, true) end, 'Delete!')
+nmap_leader('bD',
+  function() require('mini.bufremove').delete(0, true) end,
+  'Delete!')
 nmap_leader('bs', new_scratch_buffer,                            'Scratch')
 nmap_leader('bw', function() require('mini.bufremove').wipeout() end, 'Wipeout')
-nmap_leader('bW', function() require('mini.bufremove').wipeout(0, true) end, 'Wipeout!')
+nmap_leader('bW',
+  function() require('mini.bufremove').wipeout(0, true) end,
+  'Wipeout!')
 
 -- e is for 'Explore' and 'Edit'
 local edit_plugin_file = function(filename)
@@ -72,7 +80,17 @@ local explore_quickfix = function()
 end
 local explore_locations = function()
   local is_open = vim.fn.getloclist(0, { winid = true }).winid ~= 0
-  vim.cmd(is_open and 'lclose' or 'lopen')
+  if is_open then
+    vim.cmd('lclose')
+    return
+  end
+
+  if vim.tbl_isempty(vim.fn.getloclist(0)) then
+    vim.notify('Location list is empty', vim.log.levels.INFO)
+    return
+  end
+
+  vim.cmd('lopen')
 end
 
 nmap_leader('ed', function() require('mini.files').open() end, 'Directory')
@@ -115,7 +133,8 @@ nmap_leader('fm', '<Cmd>Pick git_hunks<CR>',            'Modified hunks (all)')
 nmap_leader('fM', '<Cmd>Pick git_hunks path="%"<CR>',   'Modified hunks (buf)')
 nmap_leader('fr', '<Cmd>Pick resume<CR>',               'Resume')
 nmap_leader('fR', '<Cmd>Pick lsp scope="references"<CR>', 'References (LSP)')
-nmap_leader('fs', pick_workspace_symbols_live,          'Symbols workspace (live)')
+nmap_leader('fs',
+  pick_workspace_symbols_live,          'Symbols workspace (live)')
 nmap_leader('fS',
   '<Cmd>Pick lsp scope="document_symbol"<CR>', 'Symbols document')
 
@@ -143,18 +162,23 @@ nmap_leader('la', '<Cmd>lua vim.lsp.buf.code_action()<CR>',     'Actions')
 nmap_leader('ld',
   '<Cmd>lua vim.diagnostic.open_float()<CR>',   'Diagnostic popup')
 nmap_leader('lf', conform_format,                              'Format')
-nmap_leader('li', '<Cmd>lua vim.lsp.buf.implementation()<CR>',  'Implementation')
+nmap_leader('li',
+  '<Cmd>lua vim.lsp.buf.implementation()<CR>',  'Implementation')
 nmap_leader('lh', '<Cmd>lua vim.lsp.buf.hover()<CR>',           'Hover')
 nmap_leader('lr', '<Cmd>lua vim.lsp.buf.rename()<CR>',          'Rename')
 nmap_leader('lR', '<Cmd>lua vim.lsp.buf.references()<CR>',      'References')
-nmap_leader('ls', '<Cmd>lua vim.lsp.buf.definition()<CR>',      'Source definition')
-nmap_leader('lt', '<Cmd>lua vim.lsp.buf.type_definition()<CR>', 'Type definition')
+nmap_leader('ls',
+  '<Cmd>lua vim.lsp.buf.definition()<CR>',      'Source definition')
+nmap_leader('lt',
+  '<Cmd>lua vim.lsp.buf.type_definition()<CR>', 'Type definition')
 
 xmap_leader('lf', conform_format, 'Format selection')
 
 -- o is for 'Other'
-nmap_leader('or', function() MiniMisc.resize_window() end, 'Resize to default width')
-nmap_leader('ot', function() require('mini.trailspace').trim() end, 'Trim trailspace')
+nmap_leader('or',
+  function() MiniMisc.resize_window() end, 'Resize to default width')
+nmap_leader('ot',
+  function() require('mini.trailspace').trim() end, 'Trim trailspace')
 nmap_leader('oz', function() MiniMisc.zoom() end,          'Zoom toggle')
 
 -- stylua: ignore end

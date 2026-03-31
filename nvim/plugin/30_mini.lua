@@ -13,7 +13,8 @@ local now, now_if_args, later = Config.now, Config.now_if_args, Config.later
 -- `\` toggles, `<C-hjkl>` window nav, `<M-hjkl>` insert/command nav.
 now(function()
   require('mini.basics').setup({
-    options = { basic = false, extra_ui = false }, -- managed in 'plugin/10_options.lua'
+    options = { basic = false, extra_ui = false }, -- managed in
+                                                    -- 'plugin/10_options.lua'
     mappings = {
       windows = true,       -- <C-hjkl> window navigation
       move_with_alt = true, -- <M-hjkl> in Insert/Command mode
@@ -29,7 +30,7 @@ now(function()
 end)
 
 -- Notifications in upper-right corner. `<Leader>en` shows history.
-now(function() require('mini.notify').setup() end)
+later(function() require('mini.notify').setup() end)
 
 -- Statusline. Layout (left → right):
 --   [mode] [branch +~/~/-] | filename | [fileinfo] [search] [location]
@@ -130,7 +131,7 @@ end)
 
 -- File explorer (Miller columns). `l`/`h` navigate in/out, `g?` for help.
 -- Manipulate by editing buffer text, then `=` to sync.
-now(function()
+now_if_args(function()
   require('mini.files').setup({
     mappings = {
       close      = '<Esc>',
@@ -143,11 +144,35 @@ now(function()
     MiniFiles.set_bookmark('c', vim.fn.stdpath('config'), { desc = 'Config' })
     local pack = vim.pack.get()[1]
     local pack_root = pack and vim.fs.dirname(pack.path) or nil
-    local vimpack = pack_root or vim.fs.joinpath(vim.fn.stdpath('data'), 'site', 'pack', 'core', 'opt')
+    local vimpack = pack_root
+      or vim.fs.joinpath(vim.fn.stdpath('data'), 'site', 'pack', 'core', 'opt')
     MiniFiles.set_bookmark('p', vimpack, { desc = 'Plugins' })
     MiniFiles.set_bookmark('w', vim.fn.getcwd, { desc = 'Working directory' })
   end
-  Config.new_autocmd('User', 'MiniFilesExplorerOpen', add_marks, 'Add bookmarks')
+  Config.new_autocmd(
+    'User',
+    'MiniFilesExplorerOpen',
+    add_marks,
+    'Add bookmarks'
+  )
+
+  -- Open explorer automatically when launching Neovim with a directory arg.
+  local open_for_directory_arg = function()
+    local argc = vim.fn.argc(-1)
+    for i = 0, argc - 1 do
+      local arg = vim.fn.argv(i)
+      if vim.fn.isdirectory(arg) == 1 then
+        MiniFiles.open(vim.fn.fnamemodify(arg, ':p'))
+        return
+      end
+    end
+  end
+  Config.new_autocmd(
+    'VimEnter',
+    nil,
+    open_for_directory_arg,
+    'Open mini.files for directory arguments'
+  )
 end)
 
 -- Misc utilities: put(), zoom, auto-root, cursor restore.
@@ -269,13 +294,17 @@ later(function()
   MiniKeymap.map_multistep('i', '<BS>', { 'minipairs_bs' })
 end)
 
--- Text operators: replace (`gr`), duplicate (`gm`), sort (`gs`), evaluate (`g=`).
+-- Text operators:
+-- replace (`gr`), duplicate (`gm`), sort (`gs`), evaluate (`g=`).
 later(function()
   require('mini.operators').setup()
 
-  -- `(`/`)` swap adjacent function arguments (relies on 'mini.ai' `a` textobject)
-  vim.keymap.set('n', '(', 'gxiagxila', { remap = true, desc = 'Swap arg left' })
-  vim.keymap.set('n', ')', 'gxiagxina', { remap = true, desc = 'Swap arg right' })
+  -- `(`/`)` swap adjacent function arguments
+  -- (relies on 'mini.ai' `a` textobject)
+  vim.keymap.set(
+    'n', '(', 'gxiagxila', { remap = true, desc = 'Swap arg left' })
+  vim.keymap.set(
+    'n', ')', 'gxiagxina', { remap = true, desc = 'Swap arg right' })
 end)
 
 -- Auto-insert and jump over matching pairs. `<C-v>(` for literal insert.
@@ -285,9 +314,10 @@ end)
 
 -- Fuzzy picker. `<Leader>ff` files, `<Leader>fg` grep, `<Leader>fh` help.
 -- See `:h MiniPick-overview` and `:h MiniExtra.pickers`.
-now(function() require('mini.pick').setup() end)
+later(function() require('mini.pick').setup() end)
 
--- Snippet management. Expand with `<C-j>`; navigate tabstops with `<C-l>`/`<C-h>`.
+-- Snippet management.
+-- Expand with `<C-j>`; navigate tabstops with `<C-l>`/`<C-h>`.
 later(function()
   local snippets = require('mini.snippets')
   snippets.setup({
@@ -301,7 +331,8 @@ end)
 -- Toggle join/split arguments with `gS`.
 later(function() require('mini.splitjoin').setup() end)
 
--- Surround actions: add (`sa`), delete (`sd`), replace (`sr`), find (`sf`/`sh`).
+-- Surround actions:
+-- add (`sa`), delete (`sd`), replace (`sr`), find (`sf`/`sh`).
 later(function() require('mini.surround').setup() end)
 
 -- Highlight and trim trailing whitespace. `<Leader>ot` to trim.
