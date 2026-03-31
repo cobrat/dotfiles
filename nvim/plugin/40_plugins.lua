@@ -5,8 +5,31 @@
 local add = vim.pack.add
 local now_if_args, later = Config.now_if_args, Config.later
 
-Config.treesitter_languages = { 'lua', 'vimdoc', 'markdown' }
-Config.lsp_servers = { 'lua_ls', 'ruff', 'clangd', 'rust_analyzer' }
+Config.treesitter_languages = {
+  'lua',
+  'vimdoc',
+  'markdown',
+  'rust',
+  'javascript',
+  'typescript',
+  'svelte',
+  'html',
+  'css',
+  'json',
+  'toml',
+}
+Config.lsp_servers = {
+  'lua_ls',
+  'ruff',
+  'clangd',
+  'rust_analyzer',
+  'svelte',
+  'ts_ls',
+  'html',
+  'cssls',
+  'jsonls',
+  'taplo',
+}
 
 -- Tree-sitter ================================================================
 -- Fast incremental parsing for syntax highlighting, textobjects, indent.
