@@ -78,6 +78,19 @@ vim.o.completetimeout = 100                             -- Limit sources delay
 local f = function() vim.cmd('setlocal formatoptions-=c formatoptions-=o') end
 Config.new_autocmd('FileType', nil, f, "Proper 'formatoptions'")
 
+-- Markdown: hard wrap text at 80 columns and wrap visually by screen line.
+local markdown_wrap = function()
+  vim.opt_local.wrap = true
+  vim.opt_local.linebreak = true
+  vim.opt_local.textwidth = 80
+  vim.opt_local.colorcolumn = '80'
+  vim.opt_local.formatoptions:append('t')
+  vim.opt_local.formatoptions:append('m')
+  vim.opt_local.formatoptions:remove('l')
+  vim.opt_local.breakat:append('，、。；：？！')
+end
+Config.new_autocmd('FileType', 'markdown', markdown_wrap, 'Markdown wrap at 80')
+
 -- Diagnostics ================================================================
 
 -- See `:h vim.diagnostic.config()`.
