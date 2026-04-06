@@ -78,6 +78,21 @@ vim.o.completetimeout = 100                             -- Limit sources delay
 local f = function() vim.cmd('setlocal formatoptions-=c formatoptions-=o') end
 Config.new_autocmd('FileType', nil, f, "Proper 'formatoptions'")
 
+-- Reload buffer when file changed outside Neovim.
+local checktime_if_normal_mode = function()
+  if vim.fn.mode() ~= 'n' then return end
+  vim.cmd('silent! checktime')
+end
+Config.new_autocmd(
+  { 'FocusGained', 'BufEnter', 'CursorHold', 'CursorHoldI' },
+  '*',
+  checktime_if_normal_mode,
+  'Auto checktime'
+)
+Config.new_autocmd('FileChangedShellPost', '*', function()
+  vim.notify('File reloaded from disk', vim.log.levels.INFO)
+end, 'Notify on external file change')
+
 -- Markdown: hard wrap text at 80 columns and wrap visually by screen line.
 local markdown_wrap = function()
   vim.opt_local.wrap = true
