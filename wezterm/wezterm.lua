@@ -18,8 +18,8 @@ config.window_decorations = 'INTEGRATED_BUTTONS | RESIZE'
 config.window_padding = {
     left = 18,
     right = 18,
-    top = 48,
-    bottom = 12,
+    top = 58,
+    bottom = 8,
 }
 
 -- Tab bar
