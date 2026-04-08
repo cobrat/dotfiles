@@ -138,9 +138,10 @@ Prefix with `a` (around) or `i` (inside). Use `n`/`l` suffix for next/last:
 |-----|--------|
 | `<Leader>ed` | Open explorer (cwd) |
 | `<Leader>ef` | Open explorer at current file |
-| `l` / `<CR>` | Enter directory / open file |
+| `l` | Enter directory |
+| `L` | Enter directory / open file |
 | `h` | Go up to parent directory |
-| `<Esc>` | Close explorer |
+| `q` | Close explorer |
 | `=` | Sync changes (rename/delete/create) |
 | `g?` | Show help |
 | `'c` | Bookmark: config dir |

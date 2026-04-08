@@ -132,12 +132,7 @@ end)
 -- File explorer (Miller columns). `l`/`h` navigate in/out, `g?` for help.
 -- Manipulate by editing buffer text, then `=` to sync.
 now_if_args(function()
-  require('mini.files').setup({
-    mappings = {
-      close      = '<Esc>',
-      go_in_plus = '<CR>',
-    },
-  })
+  require('mini.files').setup()
 
   -- Bookmarks available inside explorer (press `'c`, `'p`, etc.)
   local add_marks = function()
