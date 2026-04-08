@@ -72,8 +72,34 @@ now(function()
             return string.format('%.2fKiB', size / 1024)
           else return string.format('%.2fMiB', size / 1048576) end
         end)()
-        local location  =
-          MiniStatusline.section_location({ trunc_width = 60 })
+        local location  = (function()
+          local line = vim.fn.line('.')
+          local total_lines = vim.fn.line('$')
+          local col = vim.fn.virtcol('.')
+          local total_cols = math.max(vim.fn.virtcol('$') - 1, 0)
+          local line_width = #tostring(total_lines)
+          local col_width = math.max(2, #tostring(total_cols))
+
+          if MiniStatusline.is_truncated(60) then
+            local display = string.format('Ln %d Col %d', line, col)
+            local stable = string.format(
+              'Ln %' .. line_width .. 'd Col %' .. col_width .. 'd',
+              total_lines,
+              math.max(total_cols, 10 ^ col_width - 1)
+            )
+            return string.format('%-' .. #stable .. 's', display)
+          end
+
+          local display = string.format('Ln %d/%d Col %d/%d', line, total_lines, col, total_cols)
+          local stable = string.format(
+            'Ln %' .. line_width .. 'd/%d Col %' .. col_width .. 'd/%d',
+            total_lines,
+            total_lines,
+            math.max(total_cols, 10 ^ col_width - 1),
+            math.max(total_cols, 10 ^ col_width - 1)
+          )
+          return string.format('%-' .. #stable .. 's', display)
+        end)()
         local search    =
           MiniStatusline.section_searchcount({ trunc_width = 80 })
 
