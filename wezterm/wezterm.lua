@@ -13,6 +13,7 @@ config.color_scheme = 'Gruvbox Dark (Gogh)'
 
 -- Window
 config.window_background_opacity = 0.95
+config.text_background_opacity = 0.90
 config.macos_window_background_blur = 20
 config.window_decorations = 'INTEGRATED_BUTTONS | RESIZE'
 config.window_padding = {
