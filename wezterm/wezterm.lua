@@ -15,17 +15,17 @@ config.color_scheme = 'Gruvbox Dark (Gogh)'
 config.window_background_opacity = 0.95
 config.text_background_opacity = 0.90
 config.macos_window_background_blur = 20
-config.window_decorations = 'INTEGRATED_BUTTONS | RESIZE'
+config.window_decorations = 'RESIZE'
 config.window_padding = {
     left = 18,
     right = 18,
-    top = 58,
+    top = 20,
     bottom = 8,
 }
 
 -- Tab bar
 config.hide_tab_bar_if_only_one_tab = true
-config.use_fancy_tab_bar = true
+config.use_fancy_tab_bar = false
 config.tab_bar_at_bottom = false
 config.tab_max_width = 32
 
