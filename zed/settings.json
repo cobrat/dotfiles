@@ -8,6 +8,11 @@
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
     // ui
+    "agent_servers": {
+        "codex-acp": {
+            "type": "registry"
+        }
+    },
     "ui_font_family": "Monaspace Argon",
     "theme": {
         "mode": "dark",
@@ -69,7 +74,9 @@
     },
     // ai
     "agent": {
-        "always_allow_tool_actions": true,
+        "tool_permissions": {
+            "default": "allow"
+        },
         "default_profile": "minimal",
         "default_model": {
             "provider": "copilot_chat",
@@ -78,13 +85,11 @@
         "model_parameters": [],
     },
     "edit_predictions": {
+        "provider": "zed",
         "copilot": {
             "enable_next_edit_suggestions": false,
         },
         "mode": "subtle",
-    },
-    "features": {
-        "edit_prediction_provider": "copilot",
     },
     // others
     "telemetry": {

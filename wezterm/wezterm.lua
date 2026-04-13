@@ -61,6 +61,16 @@ config.automatically_reload_config = true
 -- Mouse
 config.mouse_bindings = {
     {
+        event = { Down = { streak = 1, button = 'Left' } },
+        mods = 'CTRL',
+        action = wezterm.action.Nop,
+    },
+    {
+        event = { Up = { streak = 1, button = 'Left' } },
+        mods = 'CTRL',
+        action = wezterm.action.OpenLinkAtMouseCursor,
+    },
+    {
         event = { Down = { streak = 1, button = 'Right' } },
         mods = 'NONE',
         action = wezterm.action.PasteFrom 'Clipboard',
