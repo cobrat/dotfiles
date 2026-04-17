@@ -1,10 +1,7 @@
-# .zshrc|symlink|
-# .zprofile|symlink|
 fish|symlink|.config
 .vimrc|symlink|
 .tmux.conf|symlink|
-# ghostty/config|symlink|.config
-wezterm|symlink|.config
-# helix|symlink|.config
+ghostty|symlink|.config
 zed/settings.json|symlink|.config
 zed/keymap.json|symlink|.config
+

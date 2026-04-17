@@ -1,166 +1,244 @@
 " ============================================================
-" .vimrc — synced with nvim/init.lua
+" .vimrc - simplified Vim config aligned with nvim/
 " ============================================================
 
+set nocompatible
 
-" ============================================================
 " General
-" ============================================================
+let mapleader = ' '
+let $LANG = 'en_US.UTF-8'
+
 set history=500
-filetype plugin on
-filetype indent on
-
 set autoread
-au FocusGained,BufEnter * silent! checktime
+set encoding=utf-8
+set ffs=unix,dos,mac
 
-let mapleader = " "
+filetype plugin indent on
+syntax enable
 
-
-" ============================================================
-" Core Options
-" ============================================================
-set number
-"set relativenumber
-set cursorline
-set scrolloff=10
-set sidescrolloff=10
-set colorcolumn=80
-set signcolumn=yes
-set updatetime=200
-set timeoutlen=400
-set noshowmode
-set completeopt=menuone,noinsert,noselect
-set mouse=a
-set splitbelow
-set splitright
-set pumheight=10
-set synmaxcol=300
-set undofile
-
-
-" ============================================================
-" UI
-" ============================================================
-let $LANG='en'
-set langmenu=en
-source $VIMRUNTIME/delmenu.vim
-source $VIMRUNTIME/menu.vim
-
-set wildmenu
-set wildmode=longest:full,full
-set wildignore=*.o,*~,*.pyc
-if has("win16") || has("win32")
-    set wildignore+=.git\*,.hg\*,.svn\*
-else
-    set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
+if exists('+mouse')
+  set mouse=a
+endif
+if exists('+mousescroll')
+  set mousescroll=ver:8,hor:6
+endif
+if exists('+undofile')
+  set undofile
 endif
 
-set backspace=eol,start,indent
-set whichwrap+=<,>,h,l
-set hidden
+" UI
+set number
+set cursorline
+set colorcolumn=80
+set scrolloff=10
+set sidescrolloff=10
+set splitbelow
+set splitright
+set nowrap
+set linebreak
+set list
+set pumheight=10
+set wildmenu
+set wildmode=longest:full,full
+set noshowmode
+set noruler
 
+if exists('+breakindent')
+  set breakindent
+endif
+if exists('+cursorlineopt')
+  set cursorlineopt=screenline,number
+endif
+if exists('+signcolumn')
+  set signcolumn=yes
+endif
+if exists('+completeopt')
+  set completeopt=menuone,noinsert,noselect
+endif
+if exists('+listchars')
+  set listchars=tab:>-,trail:-,nbsp:+,extends:>,precedes:<
+endif
+if exists('+fillchars')
+  set fillchars=fold:-
+endif
+
+" Editing
+set backspace=eol,start,indent
+set hidden
 set ignorecase
 set smartcase
 set hlsearch
 set incsearch
+set expandtab
+set shiftwidth=2
+set softtabstop=2
+set tabstop=2
+set autoindent
+set smartindent
+set virtualedit=block
+set iskeyword=@,48-57,_,192-255,-
+set updatetime=200
+set timeoutlen=400
 
-set lazyredraw
-set showmatch
-set mat=2
-set noerrorbells
-set novisualbell
-set t_vb=
+" Folding
+set foldmethod=indent
+set foldlevel=10
+set foldnestmax=10
 
-if has("gui_macvim")
-    autocmd GUIEnter * set vb t_vb=
-endif
-
-
-" ============================================================
-" Colors and Fonts
-" ============================================================
-syntax enable
-set regexpengine=0
+" Files
+set nobackup
+set nowritebackup
+set noswapfile
 
 try
-    colorscheme habamax
+  set switchbuf=useopen,usetab
 catch
 endtry
 
-set background=dark
-
-" Transparent background
-function! SetTransparentBg()
-    hi Normal           guibg=NONE ctermbg=NONE
-    hi NormalNC         guibg=NONE ctermbg=NONE
-    hi SignColumn       guibg=NONE ctermbg=NONE
-    hi LineNr           guibg=NONE ctermbg=NONE
-    hi CursorLineNr     guibg=NONE ctermbg=NONE
-    hi EndOfBuffer      guibg=NONE ctermbg=NONE
-endfunction
-
-call SetTransparentBg()
-autocmd ColorScheme * call SetTransparentBg()
-set encoding=utf8
-set ffs=unix,dos,mac
-
-if has("gui_running")
-    set guioptions-=T
-    set guioptions-=e
-    set t_Co=256
+set wildignore=*.o,*~,*.pyc
+if has('win16') || has('win32') || has('win64')
+  set wildignore+=.git\*,.hg\*,.svn\*
+else
+  set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
 endif
 
+" Colors
+try
+  colorscheme gruvbox
+catch
+  try
+    colorscheme habamax
+  catch
+  endtry
+endtry
+set background=dark
 
-" ============================================================
-" Files and Backups
-" ============================================================
-set nobackup
-set nowb
-set noswapfile
+function! s:SetTransparentBg() abort
+  highlight Normal guibg=NONE ctermbg=NONE
+  highlight NormalNC guibg=NONE ctermbg=NONE
+  highlight SignColumn guibg=NONE ctermbg=NONE
+  highlight LineNr guibg=NONE ctermbg=NONE
+  highlight CursorLineNr guibg=NONE ctermbg=NONE
+  highlight EndOfBuffer guibg=NONE ctermbg=NONE
+endfunction
 
-
-" ============================================================
-" Text, Tab and Indent
-" ============================================================
-set expandtab
-set smarttab
-set shiftwidth=4
-set tabstop=4
-set linebreak
-set smartindent
-set wrap
-
-
-" ============================================================
-" Status Line
-" ============================================================
+" Statusline
 let g:sl_modes = {
-    \ 'n': '--NORMAL--',  'i': '--INSERT--',  'v': '--VISUAL--',
-    \ 'V': '--V-LINE--',  "\<C-v>": '--V-BLOCK--',
-    \ 'c': '--COMMAND--', 'R': '--REPLACE--', 't': '--TERMINAL--'
-    \ }
+      \ 'n': '--NORMAL--',
+      \ 'i': '--INSERT--',
+      \ 'v': '--VISUAL--',
+      \ 'V': '--V-LINE--',
+      \ "\<C-v>": '--V-BLOCK--',
+      \ 'c': '--COMMAND--',
+      \ 'R': '--REPLACE--',
+      \ 't': '--TERMINAL--',
+      \ }
 
-function! SlStatus()
-    let m = mode()
-    let tag = get(g:sl_modes, m, '--' . toupper(m) . '--')
-    return ' ' . tag . ' %f%h%m%r %= Line:%-4l Col:%-3c %P '
+function! s:Statusline() abort
+  let l:mode = mode()
+  let l:tag = get(g:sl_modes, l:mode, '--' . toupper(l:mode) . '--')
+  return ' ' . l:tag . ' %f%h%m%r %= Ln:%-4l Col:%-3c %P '
 endfunction
 
 set laststatus=2
 set showtabline=0
-set statusline=%!SlStatus()
+let &statusline = '%!' . expand('<SID>') . 'Statusline()'
 
+" Functions
+function! s:RestoreCursor() abort
+  if line("'\"") > 1 && line("'\"") <= line('$')
+    execute "normal! g'\""
+  endif
+endfunction
 
-" ============================================================
-" Keymaps
-" ============================================================
-" Disable macro recording
-nnoremap q <nop>
+function! s:TrimTrailingWhitespace() abort
+  let l:save_cursor = getpos('.')
+  let l:old_search = getreg('/')
+  silent! %s/\s\+$//e
+  call setpos('.', l:save_cursor)
+  call setreg('/', l:old_search)
+endfunction
 
-" Clear highlight
-nnoremap <silent> <leader>c :noh<CR>
+function! s:CopyFilePath() abort
+  let l:path = expand('%:p')
+  let @+ = l:path
+  echo 'file: ' . l:path
+endfunction
 
-" Navigation
+function! s:NewScratchBuffer() abort
+  enew
+  setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile
+endfunction
+
+function! s:Explore(path) abort
+  execute 'edit' fnameescape(a:path)
+endfunction
+
+function! s:ToggleQuickfix() abort
+  let l:info = getqflist({ 'winid': 0 })
+  if get(l:info, 'winid', 0) != 0
+    cclose
+    return
+  endif
+  copen
+endfunction
+
+function! s:ToggleLocationList() abort
+  let l:info = getloclist(0, { 'winid': 0 })
+  if get(l:info, 'winid', 0) != 0
+    lclose
+    return
+  endif
+  if empty(getloclist(0))
+    echo 'Location list is empty'
+    return
+  endif
+  lopen
+endfunction
+
+function! s:SetupProse() abort
+  setlocal wrap
+  setlocal linebreak
+  setlocal spell
+  setlocal textwidth=80
+  setlocal colorcolumn=80
+endfunction
+
+function! s:ToggleBackground() abort
+  if &background ==# 'dark'
+    set background=light
+  else
+    set background=dark
+  endif
+endfunction
+
+" Autocommands
+augroup UserConfig
+  autocmd!
+  autocmd FocusGained,BufEnter * silent! checktime
+  autocmd FileChangedShellPost * echo 'File reloaded from disk'
+  autocmd BufReadPost * call <SID>RestoreCursor()
+  autocmd FileType * setlocal formatoptions-=c formatoptions-=o
+  autocmd FileType markdown,text,gitcommit call <SID>SetupProse()
+  autocmd ColorScheme * call <SID>SetTransparentBg()
+augroup END
+
+call <SID>SetTransparentBg()
+
+" General mappings
+nnoremap <silent> <Esc> :nohlsearch<CR>
+nnoremap <silent> <leader>c :nohlsearch<CR>
+
+nnoremap <silent> <C-s> :update<CR>
+inoremap <silent> <C-s> <C-o>:update<CR>
+xnoremap <silent> <C-s> <Esc>:update<CR>gv
+
+nnoremap go o<Esc>
+nnoremap gO O<Esc>
+
+nnoremap [p :execute 'put! ' . v:register<CR>
+nnoremap ]p :execute 'put ' . v:register<CR>
+
 nnoremap <expr> j v:count == 0 ? 'gj' : 'j'
 nnoremap <expr> k v:count == 0 ? 'gk' : 'k'
 nnoremap n nzzzv
@@ -168,88 +246,58 @@ nnoremap N Nzzzv
 nnoremap <C-d> <C-d>zz
 nnoremap <C-u> <C-u>zz
 
-" Paste / delete to void register
-xnoremap p "_dP
-nnoremap <leader>x "_d
-vnoremap <leader>x "_d
-
-" Window navigation
-nnoremap <C-j> <C-W>j
-nnoremap <C-k> <C-W>k
-nnoremap <C-h> <C-W>h
-nnoremap <C-l> <C-W>l
-
-" Window resize
-nnoremap <C-Up>    :resize +2<CR>
-nnoremap <C-Down>  :resize -2<CR>
-nnoremap <C-Left>  :vertical resize -2<CR>
-nnoremap <C-Right> :vertical resize +2<CR>
-
-" Indent stay in visual
 vnoremap < <gv
 vnoremap > >gv
 
-" Buffer ops
-nnoremap <leader>bb <C-^>
-nnoremap <leader>bn :bnext<CR>
-nnoremap <leader>bp :bprevious<CR>
-nnoremap <leader>bd :bd<CR>
+if has('clipboard')
+  nnoremap gy "+y
+  xnoremap gy "+y
+  nnoremap gY "+Y
+  nnoremap gp "+p
+  nnoremap gP "+P
+  xnoremap gp "+P
+  xnoremap gP "+P
+endif
 
-" Window ops
-nnoremap <leader>wv :vsplit<CR>
-nnoremap <leader>wh :split<CR>
-nnoremap <leader>wc :close<CR>
+" Window navigation
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
 
-" Copy file path to clipboard
-nnoremap <leader>fp :call CopyFilePath()<CR>
+nnoremap <C-Up> :resize +2<CR>
+nnoremap <C-Down> :resize -2<CR>
+nnoremap <C-Left> :vertical resize -2<CR>
+nnoremap <C-Right> :vertical resize +2<CR>
 
+" Buffer mappings
+nnoremap <leader>ba :b#<CR>
+nnoremap <leader>bd :bdelete<CR>
+nnoremap <leader>bD :bdelete!<CR>
+nnoremap <leader>bw :bwipeout<CR>
+nnoremap <leader>bW :bwipeout!<CR>
+nnoremap <leader>bs :call <SID>NewScratchBuffer()<CR>
 
-" ============================================================
-" Autocmds
-" ============================================================
-augroup UserConfig
-    autocmd!
+" Explore/edit mappings
+nnoremap <leader>ed :call <SID>Explore(getcwd())<CR>
+nnoremap <leader>ef :call <SID>Explore(expand('%:p:h'))<CR>
+nnoremap <leader>ei :edit $MYVIMRC<CR>
+nnoremap <leader>eo :edit $MYVIMRC<CR>
+nnoremap <leader>eq :call <SID>ToggleQuickfix()<CR>
+nnoremap <leader>eQ :call <SID>ToggleLocationList()<CR>
 
-    " Restore last cursor position on file open
-    autocmd BufReadPost * call RestoreCursor()
+" Other mappings
+nnoremap <leader>fp :call <SID>CopyFilePath()<CR>
+nnoremap <leader>or :vertical resize 80<CR>
+nnoremap <leader>ot :call <SID>TrimTrailingWhitespace()<CR>
 
-    " Trim trailing whitespace on save
-    autocmd BufWritePre
-        \ *.txt,*.js,*.py,*.wiki,*.sh,*.coffee
-        \ call CleanExtraSpaces()
-
-    " Spell + linebreak for prose filetypes
-    autocmd FileType markdown,text,gitcommit
-        \ setlocal linebreak spell
-
-augroup END
-
-" Buffer switching
-try
-    set switchbuf=useopen,usetab
-catch
-endtry
-
-
-" ============================================================
-" Functions
-" ============================================================
-function! RestoreCursor()
-    if line("'\"") > 1 && line("'\"") <= line("$")
-        exe "normal! g'\""
-    endif
-endfunction
-
-function! CleanExtraSpaces()
-    let save_cursor = getpos(".")
-    let old_query = getreg('/')
-    silent! %s/\s\+$//e
-    call setpos('.', save_cursor)
-    call setreg('/', old_query)
-endfunction
-
-function! CopyFilePath()
-    let path = expand("%:p")
-    let @+ = path
-    echo "file: " . path
-endfunction
+" Toggle mappings
+nnoremap \b :call <SID>ToggleBackground()<CR>
+nnoremap \c :set cursorline!<CR>
+nnoremap \C :set cursorcolumn!<CR>
+nnoremap \h :set hlsearch!<CR>
+nnoremap \l :set list!<CR>
+nnoremap \n :set number!<CR>
+nnoremap \r :set relativenumber!<CR>
+nnoremap \s :set spell!<CR>
+nnoremap \w :set wrap!<CR>

@@ -1,0 +1,31 @@
+# Fonts
+font-family = Monaspace Argon
+font-family = Symbols Nerd Font
+font-size = 14
+
+# Theme
+theme = Gruvbox Dark Hard
+
+# Window
+background-opacity = 0.9
+background-opacity-cells = true
+background-blur = 20
+window-padding-x = 10
+window-padding-y = 4,2
+scrollbar = never
+
+# Titlebar
+macos-titlebar-style = tabs
+macos-window-shadow = false
+macos-option-as-alt = true
+
+# Cursor
+cursor-style-blink = true
+shell-integration-features = no-cursor,ssh-env,ssh-terminfo
+
+# Mouse and clipboard
+copy-on-select = false
+right-click-action = paste
+
+# Disable bell indicators.
+bell-features = no-system,no-audio,no-attention,no-title,no-border
