@@ -35,7 +35,6 @@ set sidescrolloff=10
 set splitbelow
 set splitright
 set nowrap
-set linebreak
 set list
 set pumheight=10
 set wildmenu
@@ -113,37 +112,6 @@ catch
 endtry
 set background=dark
 
-function! s:SetTransparentBg() abort
-  highlight Normal guibg=NONE ctermbg=NONE
-  highlight NormalNC guibg=NONE ctermbg=NONE
-  highlight SignColumn guibg=NONE ctermbg=NONE
-  highlight LineNr guibg=NONE ctermbg=NONE
-  highlight CursorLineNr guibg=NONE ctermbg=NONE
-  highlight EndOfBuffer guibg=NONE ctermbg=NONE
-endfunction
-
-" Statusline
-let g:sl_modes = {
-      \ 'n': '--NORMAL--',
-      \ 'i': '--INSERT--',
-      \ 'v': '--VISUAL--',
-      \ 'V': '--V-LINE--',
-      \ "\<C-v>": '--V-BLOCK--',
-      \ 'c': '--COMMAND--',
-      \ 'R': '--REPLACE--',
-      \ 't': '--TERMINAL--',
-      \ }
-
-function! s:Statusline() abort
-  let l:mode = mode()
-  let l:tag = get(g:sl_modes, l:mode, '--' . toupper(l:mode) . '--')
-  return ' ' . l:tag . ' %f%h%m%r %= Ln:%-4l Col:%-3c %P '
-endfunction
-
-set laststatus=2
-set showtabline=0
-let &statusline = '%!' . expand('<SID>') . 'Statusline()'
-
 " Functions
 function! s:RestoreCursor() abort
   if line("'\"") > 1 && line("'\"") <= line('$')
@@ -161,7 +129,11 @@ endfunction
 
 function! s:CopyFilePath() abort
   let l:path = expand('%:p')
-  let @+ = l:path
+  if has('clipboard')
+    let @+ = l:path
+  else
+    let @" = l:path
+  endif
   echo 'file: ' . l:path
 endfunction
 
@@ -220,10 +192,7 @@ augroup UserConfig
   autocmd BufReadPost * call <SID>RestoreCursor()
   autocmd FileType * setlocal formatoptions-=c formatoptions-=o
   autocmd FileType markdown,text,gitcommit call <SID>SetupProse()
-  autocmd ColorScheme * call <SID>SetTransparentBg()
 augroup END
-
-call <SID>SetTransparentBg()
 
 " General mappings
 nnoremap <silent> <Esc> :nohlsearch<CR>
