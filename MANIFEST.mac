@@ -4,4 +4,3 @@ fish|symlink|.config
 ghostty|symlink|.config
 zed/settings.json|symlink|.config
 zed/keymap.json|symlink|.config
-

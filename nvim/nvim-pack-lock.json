@@ -18,19 +18,11 @@
     },
     "mini.nvim": {
       "rev": "a95dc67ecff78de138543a20c20f29f47111b122",
-      "src": "https://www.github.com/echasnovski/mini.nvim"
-    },
-    "nvim-lspconfig": {
-      "rev": "16812abf0e8d8175155f26143a8504e8253e92b0",
-      "src": "https://github.com/neovim/nvim-lspconfig"
+      "src": "https://github.com/nvim-mini/mini.nvim"
     },
     "nvim-treesitter": {
       "rev": "ae2081cfcd3719d74b600f8377e4a99d1ec19c4a",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter"
-    },
-    "nvim-treesitter-textobjects": {
-      "rev": "4e91b5d0394329a229725b021a8ea217099826ef",
-      "src": "https://github.com/nvim-treesitter/nvim-treesitter-textobjects"
     }
   }
 }

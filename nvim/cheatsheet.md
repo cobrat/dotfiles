@@ -1,344 +1,92 @@
 # Neovim Cheatsheet
 
-`<Leader>` = `<Space>`
+`<Leader>` = `<Space>`. Sections: **Built-in** (vanilla Neovim), **Custom**
+(from `lua/config/keymaps.lua`), **mini.nvim** (enabled modules).
 
 ---
 
-## Navigation
+## Motion
 
-### Cursor Movement (centered)
 | Key | Action |
 |-----|--------|
-| `j` / `k` | Down / Up (always centered) |
-| `{` / `}` | Paragraph backward / forward |
-| `<C-d>` / `<C-u>` | Half-page down / up |
-| `n` / `N` | Next / previous search match |
-| `w` / `b` / `e` | Word forward / backward / end |
-| `0` / `^` / `$` | Line start (col 0) / first char / end |
+| `h` / `j` / `k` / `l` | Left / Down / Up / Right |
+| `w` / `b` / `e` | Word forward / back / end |
+| `0` / `^` / `$` | Line start / first non-blank / end |
+| `{` / `}` | Paragraph back / forward |
 | `gg` / `G` | File start / end |
-| `%` | Jump to matching bracket |
 | `H` / `M` / `L` | Screen top / middle / bottom |
-
-### Window Navigation (mini.basics)
-| Key | Action |
-|-----|--------|
-| `<C-h/j/k/l>` | Move to window left/down/up/right |
-| `<C-w>s` / `<C-w>v` | Split horizontal / vertical |
-| `<C-w>q` | Close window |
-| `<C-w>+` / `<C-w>-` | Resize height (submode: repeat `+`/`-`) |
-
-### Marks & Jumps
-| Key | Action |
-|-----|--------|
-| `ma` | Set mark `a` |
-| `` `a `` | Jump to mark `a` (exact position) |
-| `'a` | Jump to mark `a` (line) |
-| `<C-o>` / `<C-i>` | Jump backward / forward in jumplist |
+| `<C-d>` / `<C-u>` | Half-page down / up |
+| `<C-f>` / `<C-b>` | Full page down / up |
+| `%` | Match bracket |
+| `f{c}` / `F{c}` | Jump to char forward / back (line-local) |
+| `t{c}` / `T{c}` | Jump before char forward / back |
+| `;` / `,` | Repeat last `f/F/t/T` / reverse |
+| `n` / `N` | Next / previous search match |
+| `*` / `#` | Search word under cursor forward / back |
+| `<C-o>` / `<C-i>` | Jumplist back / forward |
+| `<C-l>` | Clear search highlight (and redraw) |
 
 ---
 
-## Editing
+## Edit
 
-### Basic (mini.basics)
 | Key | Action |
 |-----|--------|
-| `<C-s>` | Save file |
-| `go` / `gO` | Add empty line below / above |
-| `gy` / `gY` | Yank to system clipboard |
-| `gp` / `gP` | Paste from system clipboard |
-| `[p` / `]p` | Paste above / below current line |
-| `u` / `<C-r>` | Undo / Redo |
+| `i` / `a` / `I` / `A` | Insert before / after / line-start / line-end |
+| `o` / `O` | Open line below / above |
+| `r{c}` / `R` | Replace char / enter replace mode |
+| `x` / `X` | Delete char forward / back |
+| `dd` / `yy` / `cc` | Delete / yank / change line |
+| `D` / `Y` / `C` | Same, from cursor to EOL |
+| `p` / `P` | Paste after / before |
+| `u` / `<C-r>` | Undo / redo |
 | `.` | Repeat last change |
+| `<` / `>` (visual) | Outdent / indent |
+| `~` | Toggle case |
 
-### Insert Mode Navigation (mini.basics)
-| Key | Action |
+### Text objects (pair with `d` / `c` / `y` / `v`)
+
+| Key | Object |
 |-----|--------|
-| `<M-h/j/k/l>` | Move cursor (insert/command mode) |
-
-### Text Objects (mini.ai)
-| Object | Around / Inside |
-|--------|----------------|
-| `w` | Word |
-| `s` | Sentence |
-| `p` | Paragraph |
-| `(` `)` `b` | Parentheses |
-| `[` `]` | Square brackets |
-| `{` `}` | Curly braces |
-| `<` `>` | Angle brackets |
-| `"` `'` `` ` `` | Quotes |
-| `t` | HTML/XML tag |
-| `f` | Function call |
-| `a` | Function argument |
-| `F` | Function definition (tree-sitter) |
-| `B` | Whole buffer |
-
-Prefix with `a` (around) or `i` (inside). Use `n`/`l` suffix for next/last:
-`vin(` = select inside next parentheses
-
-### Surround (mini.surround)
-| Key | Action |
-|-----|--------|
-| `sa{motion}{char}` | Add surround |
-| `sd{char}` | Delete surround |
-| `sr{old}{new}` | Replace surround |
-| `sf{char}` | Find surround (right) |
-| `sh{char}` | Find surround (left) |
-
-#### Markdown links (buffer-local)
-| Key | Action |
-|-----|--------|
-| `saiwL` | Add link around word |
-| `sdL` | Delete link |
-| `srLL` | Replace link URL |
-
-### Operators (mini.operators)
-| Key | Action |
-|-----|--------|
-| `gr{motion}` | Replace with register |
-| `gm{motion}` | Duplicate |
-| `gs{motion}` | Sort |
-| `g={motion}` | Evaluate (Lua expression) |
-| `(` / `)` | Swap argument left / right |
-
-### Comment (mini.comment)
-| Key | Action |
-|-----|--------|
-| `gc{motion}` | Toggle comment |
-| `gcc` | Toggle comment on line |
-
-### Split/Join (mini.splitjoin)
-| Key | Action |
-|-----|--------|
-| `gS` | Toggle split / join arguments |
+| `iw` / `aw` | Inside / around word |
+| `is` / `as` | Sentence |
+| `ip` / `ap` | Paragraph |
+| `i"` / `a"` | Inside / around quotes (also `'`, `` ` ``) |
+| `i(` / `a(` | Parens (also `{`, `[`, `<`) |
+| `it` / `at` | HTML/XML tag |
 
 ---
 
-## Completion (mini.completion)
+## Visual mode
 
 | Key | Action |
 |-----|--------|
-| `<Tab>` / `<S-Tab>` | Next / previous item in menu |
-| `<C-n>` / `<C-p>` | Next / previous item |
-| `<CR>` | Accept completion |
-| `<C-e>` | Abort completion |
-| `<C-space>` | Trigger completion manually |
-
-### Snippets (mini.snippets)
-| Key | Action |
-|-----|--------|
-| `<C-j>` | Expand snippet |
-| `<C-l>` | Next tabstop |
-| `<C-h>` | Previous tabstop |
+| `v` / `V` / `<C-v>` | Char / line / block visual |
+| `gv` | Re-select last selection |
+| `o` | Move to other end of selection |
 
 ---
 
-## File Explorer (mini.files)
+## Window & Buffer
 
 | Key | Action |
 |-----|--------|
-| `<Leader>ed` | Open explorer (cwd) |
-| `<Leader>ef` | Open explorer at current file |
-| `l` | Enter directory |
-| `L` | Enter directory / open file |
-| `h` | Go up to parent directory |
-| `q` | Close explorer |
-| `=` | Sync changes (rename/delete/create) |
-| `g?` | Show help |
-| `'c` | Bookmark: config dir |
-| `'p` | Bookmark: plugins dir |
-| `'w` | Bookmark: working directory |
+| `<C-w>s` / `<C-w>v` | Split horizontal / vertical |
+| `<C-w>h/j/k/l` | Move to window left/down/up/right |
+| `<C-w>q` | Close window |
+| `<C-w>+` / `<C-w>-` | Resize height |
+| `<C-w>>` / `<C-w><` | Resize width |
+| `<C-^>` | Alternate buffer |
+| `:b {name}` | Switch to buffer by name (Tab completes) |
 
 ---
 
-## Fuzzy Find (mini.pick) — `<Leader>f`
+## Folds (indent-based, see `options.lua`)
 
 | Key | Action |
 |-----|--------|
-| `<Leader>ff` | Files |
-| `<Leader>fg` | Live grep |
-| `<Leader>fG` | Grep word under cursor |
-| `<Leader>fb` | Buffers |
-| `<Leader>fh` | Help tags |
-| `<Leader>fH` | Highlight groups |
-| `<Leader>fl` | Lines (all buffers) |
-| `<Leader>fL` | Lines (current buffer) |
-| `<Leader>fr` | Resume last picker |
-| `<Leader>f/` | Search (`/`) history |
-| `<Leader>f:` | Command (`:`) history |
-| `<Leader>fd` | Diagnostics (workspace) |
-| `<Leader>fD` | Diagnostics (buffer) |
-| `<Leader>fR` | LSP references |
-| `<Leader>fs` | LSP workspace symbols (live) |
-| `<Leader>fS` | LSP document symbols |
-
-#### Inside picker
-| Key | Action |
-|-----|--------|
-| `<C-n>` / `<C-p>` | Next / previous item |
-| `<CR>` | Confirm |
-| `<Esc>` / `<C-c>` | Close |
-| `<Tab>` | Mark item |
-| `<C-l>` | Show info |
-
----
-
-## Buffer — `<Leader>b`
-
-| Key | Action |
-|-----|--------|
-| `<Leader>ba` | Alternate buffer (`b#`) |
-| `<Leader>bd` | Delete buffer (keep window) |
-| `<Leader>bD` | Delete buffer (force) |
-| `<Leader>bw` | Wipeout buffer |
-| `<Leader>bW` | Wipeout buffer (force) |
-| `<Leader>bs` | New scratch buffer |
-| `[b` / `]b` | Previous / next buffer (mini.bracketed) |
-
----
-
-## Git — `<Leader>g`
-
-| Key | Action |
-|-----|--------|
-| `<Leader>gc` | Commit |
-| `<Leader>gC` | Commit amend |
-| `<Leader>gd` | Diff (unstaged) |
-| `<Leader>gD` | Diff current file |
-| `<Leader>ga` | Diff staged |
-| `<Leader>gA` | Diff staged current file |
-| `<Leader>gl` | Log |
-| `<Leader>gL` | Log current file |
-| `<Leader>gs` | Show at cursor (mini.git) |
-| `<Leader>go` | Toggle diff overlay (mini.diff) |
-| `gh` / `gH` | Apply / reset hunk (mini.diff) |
-| `[h` / `]h` | Previous / next hunk (mini.bracketed) |
-
-#### Pick git (under `<Leader>f`)
-| Key | Action |
-|-----|--------|
-| `<Leader>fc` | Commits (all) |
-| `<Leader>fC` | Commits (current file) |
-| `<Leader>fm` | Modified hunks (all) |
-| `<Leader>fM` | Modified hunks (buffer) |
-| `<Leader>fa` | Staged hunks (all) |
-| `<Leader>fA` | Staged hunks (buffer) |
-
----
-
-## LSP — `<Leader>l`
-
-| Key | Action |
-|-----|--------|
-| `<Leader>la` | Code actions |
-| `<Leader>ld` | Diagnostic popup |
-| `<Leader>lf` | Format |
-| `<Leader>lh` | Hover |
-| `<Leader>li` | Implementation |
-| `<Leader>lr` | Rename |
-| `<Leader>lR` | References |
-| `<Leader>ls` | Go to definition |
-| `<Leader>lt` | Type definition |
-| `[d` / `]d` | Previous / next diagnostic |
-
-LSP setup notes:
-- `plugin/40_plugins.lua`: installs `nvim-lspconfig`,
-  `mason.nvim`, `mason-lspconfig.nvim`
-- `Config.lsp_servers`: Mason-managed servers to install and enable
-- `Config.treesitter_languages`: expected tree-sitter parsers
-- `Config.root_dir_with_fallback()`: lets servers attach on single files
-- `ensure_installed`: Mason-managed servers to auto-install
-- `automatic_enable = false`: Mason only installs; enabling is explicit via
-  `vim.lsp.enable(Config.lsp_servers)`
-- `after/lsp/*.lua`: per-server diffs; base config is from `nvim-lspconfig`
-
-LSP / Mason commands:
-| Command | Action |
-|-----|--------|
-| `:Mason` | Open Mason UI |
-| `:checkhealth vim.lsp` | Show enabled/active LSP status |
-| `:lsp enable <name>` | Enable an LSP config manually |
-| `:lsp disable <name>` | Disable an LSP config manually |
-| `:lsp restart <name>` | Restart a running LSP client |
-
----
-
-## Explore / Edit Config — `<Leader>e`
-
-| Key | Action |
-|-----|--------|
-| `<Leader>ed` | File explorer (cwd) |
-| `<Leader>ef` | File explorer (current file) |
-| `<Leader>ei` | Edit `init.lua` |
-| `<Leader>ek` | Edit keymaps config |
-| `<Leader>em` | Edit mini config |
-| `<Leader>en` | Show notification history |
-| `<Leader>eo` | Edit options config |
-| `<Leader>ep` | Edit plugins config |
-| `<Leader>eq` | Toggle quickfix list |
-| `<Leader>eQ` | Toggle location list |
-
----
-
-## Other — `<Leader>o`
-
-| Key | Action |
-|-----|--------|
-| `<Leader>or` | Resize window to default width |
-| `<Leader>ot` | Trim trailing whitespace |
-| `<Leader>oz` | Zoom window toggle |
-
----
-
-## Brackets Navigation (mini.bracketed) — `[` / `]`
-
-| Key | Action |
-|-----|--------|
-| `[b` / `]b` | Buffer |
-| `[d` / `]d` | Diagnostic |
-| `[f` / `]f` | File (on disk) |
-| `[h` / `]h` | Git hunk |
-| `[i` / `]i` | Indent change |
-| `[j` / `]j` | Jump (jumplist) |
-| `[l` / `]l` | Location list |
-| `[q` / `]q` | Quickfix |
-| `[t` / `]t` | Tree-sitter node |
-| `[u` / `]u` | Undo history |
-| `[x` / `]x` | Conflict marker |
-| `[y` / `]y` | Yank history |
-| `[p` / `]p` | Paste above / below |
-
----
-
-## Jump (mini.jump)
-
-Enhanced `fFtT` — works across lines, highlights matches.
-
-| Key | Action |
-|-----|--------|
-| `f{char}` | Jump forward to char |
-| `F{char}` | Jump backward to char |
-| `t{char}` | Jump forward before char |
-| `T{char}` | Jump backward before char |
-
-Repeat with `;` / `,`.
-
----
-
-## Toggles (mini.basics) — `\`
-
-| Key | Action |
-|-----|--------|
-| `\b` | Background light/dark |
-| `\c` | Cursor line |
-| `\C` | Cursor column |
-| `\d` | Diagnostics |
-| `\h` | Search highlight |
-| `\i` | Indent scope line |
-| `\l` | List (show whitespace) |
-| `\n` | Line numbers |
-| `\r` | Relative numbers |
-| `\s` | Spell check |
-| `\w` | Wrap |
+| `za` / `zo` / `zc` | Toggle / open / close |
+| `zR` / `zM` | Open all / close all |
 
 ---
 
@@ -346,46 +94,176 @@ Repeat with `;` / `,`.
 
 | Key | Action |
 |-----|--------|
-| `"ay` | Yank into register `a` |
-| `"ap` | Paste from register `a` |
-| `"+y` | Yank to system clipboard |
-| `"+p` | Paste from system clipboard |
-| `q{a}` | Record macro into register `a` |
-| `q` | Stop recording |
-| `@{a}` | Play macro `a` |
-| `@@` | Repeat last macro |
+| `"ay` / `"ap` | Yank / paste register `a` |
+| `"+y` / `"+p` | System clipboard |
+| `q{a}` … `q` | Record macro `a`, then stop |
+| `@{a}` / `@@` | Play macro / repeat last |
 
 ---
 
-## z commands (mini.clue)
+## Custom — normal/visual
 
 | Key | Action |
 |-----|--------|
-| `zz` | Center cursor |
-| `zt` / `zb` | Cursor to top / bottom |
-| `za` / `zo` / `zc` | Toggle / open / close fold |
-| `zR` / `zM` | Open all / close all folds |
-| `z=` | Spelling suggestions |
-| `zg` / `zw` | Add word to / mark as bad |
+| `K` | Diagnostic float on diagnostic line, else LSP hover |
+
+### Insert
+
+| Key | Action |
+|-----|--------|
+| `<Tab>` / `<S-Tab>` | Next / previous completion item (when popup open) |
+| `<C-y>` | Accept completion |
+| `<C-e>` | Cancel completion |
 
 ---
 
-## Markdown (buffer-local)
+## Custom `<Leader>`
+
+Leader = `<Space>`. Categories: `b` buffer, `e` explore, `f` find,
+`g` git, `l` language.
+
+### Buffer — `<Leader>b`
 
 | Key | Action |
 |-----|--------|
-| `saiwL` | Wrap word in markdown link |
-| `sdL` | Remove markdown link |
-| `srLL` | Replace link URL |
+| `<Leader>bd` | Delete buffer (keep window) |
+| `<Leader>bw` | Wipeout buffer |
+
+### Explore — `<Leader>e`
+
+| Key | Action |
+|-----|--------|
+| `<Leader>ee` | File explorer at cwd (mini.files) |
+| `<Leader>ef` | File explorer at current file |
+| `<Leader>em` | Show `:messages` history |
+| `<Leader>eq` | Toggle quickfix list |
+| `<Leader>el` | Toggle location list |
+
+### Find — `<Leader>f` (mini.pick)
+
+| Key | Action |
+|-----|--------|
+| `<Leader>ff` | Files |
+| `<Leader>fg` | Live grep (needs `ripgrep`) |
+| `<Leader>fb` | Buffers |
+| `<Leader>fh` | Help tags |
+| `<Leader>fr` | Resume last picker |
+
+More pickers: `:Pick <Tab>` (git_commits, git_hunks, diagnostic, …).
+
+### Git — `<Leader>g`
+
+| Key | Action |
+|-----|--------|
+| `<Leader>go` | Toggle diff overlay (mini.diff) |
+| `<Leader>gs` | Show at cursor (mini.git) — n, x |
+
+Direct commands: `:Git <subcmd>` for commit, diff, log, etc.
+
+### Language — `<Leader>l`
+
+| Key | Action |
+|-----|--------|
+| `<Leader>la` | Code action — n, x |
+| `<Leader>ld` | Go to definition |
+| `<Leader>lf` | Format (conform.nvim) — n, x |
+| `<Leader>li` | Go to implementation |
+| `<Leader>lr` | Rename symbol |
+| `<Leader>lt` | Type definition |
+
+`K` still shows diagnostic details on a flagged line, or hover otherwise.
+Native LSP defaults also still work: `gra` code action, `grn` rename,
+`grr` references, `gri` implementation.
 
 ---
 
-## Command Line (mini.cmdline)
+## mini.nvim
 
-Autocomplete and history navigation available in `:` mode.
+### mini.files — `<Leader>ee` / `<Leader>ef`
 
 | Key | Action |
 |-----|--------|
-| `<Tab>` / `<S-Tab>` | Next / previous completion |
-| `<C-n>` / `<C-p>` | History next / previous |
-| `<C-r>{reg}` | Insert register content |
+| `l` / `L` | Enter directory / open file |
+| `h` | Up one directory |
+| `q` | Close |
+| `=` | Sync pending edits (rename, delete, create) |
+| `g?` | Help |
+| `'p` | Bookmark: plugins dir |
+| `'w` | Bookmark: working directory |
+
+### mini.pick (inside picker)
+
+| Key | Action |
+|-----|--------|
+| `<C-n>` / `<C-p>` | Next / prev |
+| `<CR>` | Confirm |
+| `<Esc>` / `<C-c>` | Close |
+| `<Tab>` | Mark item |
+| `<C-l>` | Show info |
+
+### mini.surround
+
+| Key | Action |
+|-----|--------|
+| `sa{motion}{char}` | Add surround |
+| `sd{char}` | Delete surround |
+| `sr{old}{new}` | Replace surround |
+| `sf{char}` / `sh{char}` | Find surround right / left |
+
+### mini.operators
+
+| Key | Action |
+|-----|--------|
+| `gr{motion}` | Replace with register |
+| `gm{motion}` | Duplicate |
+| `gs{motion}` | Sort |
+| `g={motion}` | Evaluate (Lua) |
+
+### mini.diff
+
+| Key | Action |
+|-----|--------|
+| `gh` / `gH` | Apply / reset hunk |
+| `<Leader>go` | Toggle overlay |
+
+Signs in gutter: `+` add, `~` change, `-` delete.
+
+### mini.hipatterns
+
+Highlights `TODO`, `FIXME`, `HACK`, `NOTE`, and hex colors (`#rrggbb`).
+
+---
+
+## LSP commands (ex-mode)
+
+| Command | Action |
+|-----|--------|
+| `:Mason` | Open Mason UI |
+| `:checkhealth vim.lsp` | LSP status |
+| `:lsp enable <name>` | Enable an LSP config |
+| `:lsp disable <name>` | Disable an LSP config |
+| `:lsp restart <name>` | Restart a running client |
+
+Per-server configs live in `lsp/*.lua`.
+
+---
+
+## Diagnostics
+
+Configured in `lua/config/options.lua`:
+
+- No gutter signs, no virtual lines.
+- `●`-style end-of-line marker for WARN+.
+- Underline on all severities.
+- Not updated while in insert mode.
+- Press `K` on a flagged line to view the full message.
+
+---
+
+## Command line
+
+| Key | Action |
+|-----|--------|
+| `<Tab>` / `<S-Tab>` | Next / prev completion (fuzzy, pum) |
+| `<C-n>` / `<C-p>` | History next / prev |
+| `<C-r>{reg}` | Insert register contents |

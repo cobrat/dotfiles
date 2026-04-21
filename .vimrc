@@ -12,6 +12,7 @@ set history=500
 set autoread
 set encoding=utf-8
 set ffs=unix,dos,mac
+set path+=**
 
 filetype plugin indent on
 syntax enable
@@ -31,10 +32,10 @@ set number
 set cursorline
 set colorcolumn=80
 set scrolloff=10
-set sidescrolloff=10
 set splitbelow
 set splitright
 set nowrap
+set linebreak
 set list
 set pumheight=10
 set wildmenu
@@ -45,20 +46,29 @@ set noruler
 if exists('+breakindent')
   set breakindent
 endif
+if exists('+breakindentopt')
+  set breakindentopt=list:-1
+endif
 if exists('+cursorlineopt')
   set cursorlineopt=screenline,number
 endif
 if exists('+signcolumn')
-  set signcolumn=yes
+  set signcolumn=auto
 endif
 if exists('+completeopt')
-  set completeopt=menuone,noinsert,noselect
+  set completeopt=menuone,noselect
+endif
+if exists('+wildoptions')
+  set wildoptions=pum,fuzzy
 endif
 if exists('+listchars')
-  set listchars=tab:>-,trail:-,nbsp:+,extends:>,precedes:<
+  set listchars=extends:…,nbsp:␣,precedes:…,tab:>\ 
 endif
 if exists('+fillchars')
-  set fillchars=fold:-
+  set fillchars=fold:╌
+endif
+if exists('+shortmess')
+  set shortmess+=SWa
 endif
 
 " Editing
@@ -66,16 +76,17 @@ set backspace=eol,start,indent
 set hidden
 set ignorecase
 set smartcase
-set hlsearch
 set incsearch
 set expandtab
+set formatoptions=rqnl1j
 set shiftwidth=2
 set softtabstop=2
 set tabstop=2
-set autoindent
 set smartindent
 set virtualedit=block
 set iskeyword=@,48-57,_,192-255,-
+set formatlistpat=^\s*[0-9\-\+\*]\+[\.\)]*\s\+
+set complete=.,w,b,kspell
 set updatetime=200
 set timeoutlen=400
 
@@ -83,6 +94,7 @@ set timeoutlen=400
 set foldmethod=indent
 set foldlevel=10
 set foldnestmax=10
+set foldtext=
 
 " Files
 set nobackup
@@ -101,6 +113,11 @@ else
   set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
 endif
 
+if executable('rg')
+  set grepprg=rg\ --vimgrep\ --smart-case
+  set grepformat=%f:%l:%c:%m,%f:%l:%m
+endif
+
 " Colors
 try
   colorscheme gruvbox
@@ -112,7 +129,7 @@ catch
 endtry
 set background=dark
 
-" Functions
+" Helpers
 function! s:RestoreCursor() abort
   if line("'\"") > 1 && line("'\"") <= line('$')
     execute "normal! g'\""
@@ -120,30 +137,37 @@ function! s:RestoreCursor() abort
 endfunction
 
 function! s:TrimTrailingWhitespace() abort
-  let l:save_cursor = getpos('.')
-  let l:old_search = getreg('/')
-  silent! %s/\s\+$//e
-  call setpos('.', l:save_cursor)
-  call setreg('/', l:old_search)
-endfunction
-
-function! s:CopyFilePath() abort
-  let l:path = expand('%:p')
-  if has('clipboard')
-    let @+ = l:path
-  else
-    let @" = l:path
+  if &filetype ==# 'markdown'
+    return
   endif
-  echo 'file: ' . l:path
+  let l:view = winsaveview()
+  silent! keeppatterns %s/\s\+$//e
+  call winrestview(l:view)
 endfunction
 
-function! s:NewScratchBuffer() abort
-  enew
-  setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile
-endfunction
-
-function! s:Explore(path) abort
+function! s:OpenPath(path) abort
   execute 'edit' fnameescape(a:path)
+endfunction
+
+function! s:BufDrop(action) abort
+  let l:cur = bufnr('%')
+  let l:alt = bufnr('#')
+  let l:save_win = win_getid()
+
+  for l:winid in win_findbuf(l:cur)
+    call win_gotoid(l:winid)
+    if l:alt > 0 && l:alt != l:cur && bufexists(l:alt)
+      execute 'buffer' l:alt
+    else
+      enew
+    endif
+  endfor
+
+  if bufexists(l:cur)
+    silent! execute a:action l:cur
+  endif
+
+  call win_gotoid(l:save_win)
 endfunction
 
 function! s:ToggleQuickfix() abort
@@ -168,105 +192,47 @@ function! s:ToggleLocationList() abort
   lopen
 endfunction
 
-function! s:SetupProse() abort
+function! s:SetupMarkdown() abort
   setlocal wrap
   setlocal linebreak
-  setlocal spell
   setlocal textwidth=80
   setlocal colorcolumn=80
-endfunction
-
-function! s:ToggleBackground() abort
-  if &background ==# 'dark'
-    set background=light
-  else
-    set background=dark
-  endif
+  setlocal formatoptions+=t
+  setlocal formatoptions+=m
+  setlocal formatoptions-=l
+  setlocal breakat+=，、。；：？！
 endfunction
 
 " Autocommands
 augroup UserConfig
   autocmd!
-  autocmd FocusGained,BufEnter * silent! checktime
-  autocmd FileChangedShellPost * echo 'File reloaded from disk'
+  autocmd FocusGained * silent! checktime
   autocmd BufReadPost * call <SID>RestoreCursor()
+  autocmd BufWritePre * call <SID>TrimTrailingWhitespace()
   autocmd FileType * setlocal formatoptions-=c formatoptions-=o
-  autocmd FileType markdown,text,gitcommit call <SID>SetupProse()
+  autocmd FileType markdown call <SID>SetupMarkdown()
 augroup END
 
-" General mappings
-nnoremap <silent> <Esc> :nohlsearch<CR>
-nnoremap <silent> <leader>c :nohlsearch<CR>
+" Insert / general mappings
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
-nnoremap <silent> <C-s> :update<CR>
-inoremap <silent> <C-s> <C-o>:update<CR>
-xnoremap <silent> <C-s> <Esc>:update<CR>gv
+" Buffer — <Leader>b
+" Delete or wipe a buffer without closing its window first.
+nnoremap <silent> <leader>bd :call <SID>BufDrop('bdelete')<CR>
+nnoremap <silent> <leader>bw :call <SID>BufDrop('bwipeout')<CR>
 
-nnoremap go o<Esc>
-nnoremap gO O<Esc>
-
-nnoremap [p :execute 'put! ' . v:register<CR>
-nnoremap ]p :execute 'put ' . v:register<CR>
-
-nnoremap <expr> j v:count == 0 ? 'gj' : 'j'
-nnoremap <expr> k v:count == 0 ? 'gk' : 'k'
-nnoremap n nzzzv
-nnoremap N Nzzzv
-nnoremap <C-d> <C-d>zz
-nnoremap <C-u> <C-u>zz
-
-vnoremap < <gv
-vnoremap > >gv
-
-if has('clipboard')
-  nnoremap gy "+y
-  xnoremap gy "+y
-  nnoremap gY "+Y
-  nnoremap gp "+p
-  nnoremap gP "+P
-  xnoremap gp "+P
-  xnoremap gP "+P
-endif
-
-" Window navigation
-nnoremap <C-h> <C-w>h
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-l> <C-w>l
-
-nnoremap <C-Up> :resize +2<CR>
-nnoremap <C-Down> :resize -2<CR>
-nnoremap <C-Left> :vertical resize -2<CR>
-nnoremap <C-Right> :vertical resize +2<CR>
-
-" Buffer mappings
-nnoremap <leader>ba :b#<CR>
-nnoremap <leader>bd :bdelete<CR>
-nnoremap <leader>bD :bdelete!<CR>
-nnoremap <leader>bw :bwipeout<CR>
-nnoremap <leader>bW :bwipeout!<CR>
-nnoremap <leader>bs :call <SID>NewScratchBuffer()<CR>
-
-" Explore/edit mappings
-nnoremap <leader>ed :call <SID>Explore(getcwd())<CR>
-nnoremap <leader>ef :call <SID>Explore(expand('%:p:h'))<CR>
-nnoremap <leader>ei :edit $MYVIMRC<CR>
-nnoremap <leader>eo :edit $MYVIMRC<CR>
+" Explore — <Leader>e
+" Closest built-in Vim equivalent to the nvim file explorer workflow.
+nnoremap <leader>ee :call <SID>OpenPath(getcwd())<CR>
+nnoremap <leader>ef :call <SID>OpenPath(expand('%:p:h'))<CR>
+nnoremap <leader>em :messages<CR>
 nnoremap <leader>eq :call <SID>ToggleQuickfix()<CR>
-nnoremap <leader>eQ :call <SID>ToggleLocationList()<CR>
+nnoremap <leader>el :call <SID>ToggleLocationList()<CR>
 
-" Other mappings
-nnoremap <leader>fp :call <SID>CopyFilePath()<CR>
-nnoremap <leader>or :vertical resize 80<CR>
-nnoremap <leader>ot :call <SID>TrimTrailingWhitespace()<CR>
-
-" Toggle mappings
-nnoremap \b :call <SID>ToggleBackground()<CR>
-nnoremap \c :set cursorline!<CR>
-nnoremap \C :set cursorcolumn!<CR>
-nnoremap \h :set hlsearch!<CR>
-nnoremap \l :set list!<CR>
-nnoremap \n :set number!<CR>
-nnoremap \r :set relativenumber!<CR>
-nnoremap \s :set spell!<CR>
-nnoremap \w :set wrap!<CR>
+" Find — <Leader>f
+" Closest built-in Vim equivalents to the nvim mini.pick workflow.
+nnoremap <leader>ff :find<Space>
+nnoremap <leader>fg :grep<Space>
+nnoremap <leader>fb :buffers<CR>
+nnoremap <leader>fh :help<Space>

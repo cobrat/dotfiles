@@ -1,60 +1,58 @@
--- ┌────────────────────┐
--- │ Welcome to MiniMax │
--- └────────────────────┘
--- NOTE: requires Neovim ≥ v0.12.0-dev-2260+g6b4ec2264e (0.12 dev).
+-- Neovim configuration entry
+-- Requires Neovim 0.12+ (uses vim.pack, vim.lsp.config, winborder, etc.).
 --
--- Config structure:
--- ├ init.lua          Startup entry point (this file)
--- ├ plugin/           Auto-sourced on startup
--- ├── 10_options.lua  Built-in options
--- ├── 20_keymaps.lua  Key mappings
--- ├── 30_mini.lua     mini.nvim configuration
--- ├── 40_plugins.lua  Third-party plugins
--- └ after/lsp/        LSP overrides for configs provided by nvim-lspconfig
+-- Layout:
+-- ├ init.lua            Startup entry point (this file)
+-- ├ lua/config/         Required explicitly below (controlled order)
+-- ├── options.lua       Built-in options + autocmds
+-- ├── keymaps.lua       Key mappings
+-- ├── plugins.lua       mini.nvim + third-party plugins
+-- └ lsp/                Per-server native LSP configs
 
 -- Plugin manager: built-in `vim.pack`. Lockfile: 'nvim-pack-lock.json'.
 -- `:lua vim.pack.update()` to update, `:write` to confirm.
 
+-- Set leader before any mapping can be evaluated.
+vim.g.mapleader = ' '
+
+-- Disable netrw: file explorer is provided by mini.files.
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+vim.g.loaded_gzip = 1
+vim.g.loaded_tarPlugin = 1
+vim.g.loaded_zipPlugin = 1
+vim.g.loaded_tutor_mode_plugin = 1
+vim.g.loaded_remote_plugins = 1
+
 -- Global config table shared across scripts
 _G.Config = {}
 
--- mini.nvim: powers most of this config. See 'plugin/30_mini.lua'.
+-- mini.nvim powers several UI/editing modules configured in `config.plugins`.
 vim.pack.add({ 'https://github.com/nvim-mini/mini.nvim' })
 
--- Loading helpers. `now` = immediate (startup-critical), `later` = deferred.
--- See `:h MiniMisc.safely()`.
-local misc = require('mini.misc')
-Config.now = function(f) misc.safely('now', f) end
-Config.later = function(f) misc.safely('later', f) end
-Config.now_if_args = vim.fn.argc(-1) > 0 and Config.now or Config.later
+-- Defer work until after startup.
+Config.later = vim.schedule
+
+-- LSP `root_dir` with fallback to the file's directory so a standalone
+-- source file still attaches. Used by several `lsp/*.lua` configs.
 Config.root_dir_with_fallback = function(markers)
+  local all = vim.list_extend({ '.git' }, markers)
   return function(bufnr, on_dir)
     local fname = vim.api.nvim_buf_get_name(bufnr)
-    local root = vim.fs.root(fname, markers)
+    local root = vim.fs.root(fname, all)
     on_dir(root or vim.fs.dirname(fname))
   end
 end
+
 -- Autocommand helper. See `:h autocommand`.
 local gr = vim.api.nvim_create_augroup('custom-config', {})
 Config.new_autocmd = function(event, pattern, callback, desc)
-  local opts = {
-    group = gr,
-    pattern = pattern,
-    callback = callback,
-    desc = desc,
-  }
-  vim.api.nvim_create_autocmd(event, opts)
+  vim.api.nvim_create_autocmd(event, {
+    group = gr, pattern = pattern, callback = callback, desc = desc,
+  })
 end
 
--- vim.pack post-install/update hook. See `:h vim.pack-events`.
-Config.on_packchanged = function(plugin_name, kinds, callback, desc)
-  local f = function(ev)
-    local name, kind = ev.data.spec.name, ev.data.kind
-    local match = name == plugin_name
-      and vim.tbl_contains(kinds, kind)
-    if not match then return end
-    if not ev.data.active then vim.cmd.packadd(plugin_name) end
-    callback()
-  end
-  Config.new_autocmd('PackChanged', '*', f, desc)
-end
+-- Load configuration modules in explicit order.
+require('config.options')
+require('config.keymaps')
+require('config.plugins')

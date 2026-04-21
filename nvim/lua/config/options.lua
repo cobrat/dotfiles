@@ -1,17 +1,10 @@
--- ┌──────────────────────────┐
--- │ Built-in Neovim behavior │
--- └──────────────────────────┘
+-- Built-in Neovim behavior
 
 -- stylua: ignore start
 
 -- General ====================================================================
-vim.g.mapleader = ' ' -- Use `<Space>` as <Leader> key
-
-vim.o.mouse       = 'a'            -- Enable mouse
-vim.o.mousescroll = 'ver:8,hor:6'  -- Keep wheel scrolling less jumpy
-vim.o.undofile    = true           -- Enable persistent undo
-
-vim.o.shada = "'100,<50,s10,:1000,/100,@100,h" -- Limit ShaDa file
+vim.o.mouse    = 'a'
+vim.o.undofile = true
 
 -- UI =========================================================================
 vim.o.breakindent    = true       -- Indent wrapped lines to match line start
@@ -22,20 +15,19 @@ vim.o.cursorline     = true       -- Enable current line highlighting
 vim.o.linebreak      = true       -- Wrap lines at 'breakat' (if 'wrap' is set)
 vim.o.list           = true       -- Show helpful text indicators
 vim.o.number         = true       -- Show line numbers
-vim.o.pumborder      = 'single'   -- Use border in popup menu
 vim.o.pumheight      = 10         -- Make popup menu smaller
-vim.o.pummaxwidth    = 100        -- Make popup menu not too wide
 vim.o.ruler          = false      -- Don't show cursor coordinates
 vim.o.showcmdloc     = 'last'     -- Show partial commands in command area
-vim.o.shortmess      = 'CFOSWaco' -- Disable some built-in completion messages
 vim.o.showmode       = false      -- Don't show mode in command line
-vim.o.signcolumn     = 'number'   -- Overlay signs on line number column
+vim.o.signcolumn     = 'auto:1'   -- Show sign column when signs exist
 vim.o.splitbelow     = true       -- Horizontal splits will be below
 vim.o.splitkeep      = 'screen'   -- Reduce scroll during window split
 vim.o.splitright     = true       -- Vertical splits will be to the right
-vim.o.winborder      = 'single'   -- Use border in floating windows
+vim.o.winborder      = 'single'   -- Use border in floating windows (incl. pum)
 vim.o.scrolloff      = 10         -- Keep 10 lines above/below cursor
-vim.o.wrap           = false      -- Don't visually wrap lines (toggle with \w)
+vim.o.wrap           = false      -- Don't visually wrap lines
+
+vim.opt.shortmess:append('SWa')   -- Fewer search/write/swap messages
 
 vim.o.cursorlineopt  = 'screenline,number' -- Show cursor line per screen line
 
@@ -53,11 +45,9 @@ vim.o.expandtab     = true    -- Convert tabs to spaces
 vim.o.formatoptions = 'rqnl1j'-- Improve comment editing
 vim.o.ignorecase    = true    -- Ignore case during search
 vim.o.incsearch     = true    -- Show search matches while typing
-vim.o.infercase     = true    -- Infer case in built-in completion
 vim.o.shiftwidth    = 2       -- Use this number of spaces for indentation
 vim.o.smartcase     = true    -- Respect case if search pattern has upper case
 vim.o.smartindent   = true    -- Make indenting smart
-vim.o.spelloptions  = 'camel' -- Treat camelCase word parts as separate words
 vim.o.tabstop       = 2       -- Show tab as this number of spaces
 vim.o.virtualedit   = 'block' -- Allow going past end of line in blockwise mode
 
@@ -68,30 +58,23 @@ vim.o.iskeyword = '@,48-57,_,192-255,-'
 vim.o.formatlistpat = [[^\s*[0-9\-\+\*]\+[\.\)]*\s\+]]
 
 -- Built-in completion
-vim.o.complete        = '.,w,b,kspell'                  -- Use less sources
-vim.o.completeopt     = 'menuone,noselect,fuzzy,nosort' -- Use custom behavior
-vim.o.completetimeout = 100                             -- Limit sources delay
+vim.o.complete    = '.,w,b,kspell'                    -- sources
+vim.o.completeopt = 'menuone,noselect,fuzzy,popup'    -- behavior
+
+-- Cmdline: fuzzy match in wildmenu / pum.
+vim.o.wildoptions = 'pum,fuzzy'
 
 -- Autocommands ===============================================================
 
 -- Don't auto-wrap comments; don't insert comment leader after hitting 'o'.
 local f = function() vim.cmd('setlocal formatoptions-=c formatoptions-=o') end
-Config.new_autocmd('FileType', nil, f, "Proper 'formatoptions'")
+Config.new_autocmd('FileType', '*', f, "Proper 'formatoptions'")
 
 -- Reload buffer when file changed outside Neovim.
-local checktime_if_normal_mode = function()
-  if vim.fn.mode() ~= 'n' then return end
-  vim.cmd('silent! checktime')
-end
 Config.new_autocmd(
-  { 'FocusGained', 'BufEnter', 'CursorHold', 'CursorHoldI' },
-  '*',
-  checktime_if_normal_mode,
-  'Auto checktime'
-)
-Config.new_autocmd('FileChangedShellPost', '*', function()
-  vim.notify('File reloaded from disk', vim.log.levels.INFO)
-end, 'Notify on external file change')
+  'FocusGained', '*',
+  function() vim.cmd('silent! checktime') end,
+  'Auto checktime')
 
 -- Markdown: hard wrap text at 80 columns and wrap visually by screen line.
 local markdown_wrap = function()
@@ -106,23 +89,55 @@ local markdown_wrap = function()
 end
 Config.new_autocmd('FileType', 'markdown', markdown_wrap, 'Markdown wrap at 80')
 
+-- Trim trailing whitespace on save (skip filetypes that need it).
+local trim_skip = { markdown = true }
+local trim_trailing = function(ev)
+  if trim_skip[vim.bo[ev.buf].filetype] then return end
+  local view = vim.fn.winsaveview()
+  vim.cmd([[keeppatterns %s/\s\+$//e]])
+  vim.fn.winrestview(view)
+end
+Config.new_autocmd(
+  'BufWritePre', '*', trim_trailing, 'Trim trailing whitespace')
+
+-- Restore cursor position when reopening a file.
+local restore_cursor = function(ev)
+  local mark = vim.api.nvim_buf_get_mark(ev.buf, '"')
+  local lcount = vim.api.nvim_buf_line_count(ev.buf)
+  if mark[1] > 0 and mark[1] <= lcount then
+    pcall(vim.api.nvim_win_set_cursor, 0, mark)
+  end
+end
+Config.new_autocmd(
+  'BufReadPost', '*', restore_cursor, 'Restore cursor position')
+
+-- On LSP attach: enable autotrigger completion and inlay hints when supported.
+-- Accept menu item with <C-y>; navigate with <Tab>/<S-Tab> (see keymaps).
+local on_lsp_attach = function(ev)
+  local client = vim.lsp.get_client_by_id(ev.data.client_id)
+  if not client then return end
+  if client:supports_method('textDocument/completion') then
+    vim.lsp.completion.enable(
+      true, client.id, ev.buf, { autotrigger = true })
+  end
+  if client:supports_method('textDocument/inlayHint') then
+    vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
+  end
+end
+Config.new_autocmd('LspAttach', '*', on_lsp_attach, 'LSP attach setup')
+
 -- Diagnostics ================================================================
 
 -- See `:h vim.diagnostic.config()`.
 local diagnostic_opts = {
-  -- Show signs only for warnings and errors
-  signs = { priority = 9999, severity = { min = 'WARN', max = 'ERROR' } },
-
-  -- Underline all severities
-  underline = { severity = { min = 'HINT', max = 'ERROR' } },
-
-  -- Show error details on current line only
-  virtual_lines = false,
+  signs = false,
   virtual_text = {
-    current_line = true,
-    severity = { min = 'ERROR', max = 'ERROR' },
+    severity = { min = 'WARN' },
+    format = function() return '' end,
+    spacing = 0,
   },
-
+  virtual_lines = false,
+  underline = { severity = { min = 'HINT', max = 'ERROR' } },
   update_in_insert = false,
 }
 

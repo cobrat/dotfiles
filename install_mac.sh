@@ -1,6 +1,6 @@
 #!/bin/bash
-# This script installs the following commands in macos:
-# rg fd fzf bat fastfetch tmux zoxide eza jq perf
+# This script installs the following tools in macOS:
+# rg fd fzf bat fastfetch tmux zoxide eza jq
 # lazydocker lazygit procs mtr ncdu tldr shellcheck
 
 set -e  # Exit on error
@@ -32,7 +32,7 @@ packages=(
     mtr          # mtr - network diagnostic
     ncdu         # ncdu - disk usage analyzer
     tldr         # tldr - simplified man pages
-    shellcheck   # shellcheck - shell script linter
+    shellcheck   # shell script linter
 )
 
 echo "Installing CLI tools..."
