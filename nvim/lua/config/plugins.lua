@@ -1,7 +1,12 @@
 -- Plugins (mini.nvim + third-party setup)
 
+local Config = require('config.shared')
+
 local add = vim.pack.add
 local later = Config.later
+local mini_statusline = require('mini.statusline')
+local mini_files = require('mini.files')
+local mini_extra = require('mini.extra')
 
 -- mini.nvim ==================================================================
 -- See `:h mini.nvim-general-principles`.
@@ -29,15 +34,15 @@ local function file_size()
   return string.format('%.1fM', size / 1048576)
 end
 
-require('mini.statusline').setup({
+mini_statusline.setup({
   use_icons = false,
   content = {
     active = function()
-      local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 120 })
-      local filename = MiniStatusline.section_filename({ trunc_width = 140 })
-      local location = MiniStatusline.section_location({ trunc_width = 75 })
+      local mode, mode_hl = mini_statusline.section_mode({ trunc_width = 120 })
+      local filename = mini_statusline.section_filename({ trunc_width = 140 })
+      local location = mini_statusline.section_location({ trunc_width = 75 })
 
-      return MiniStatusline.combine_groups({
+      return mini_statusline.combine_groups({
         { hl = mode_hl,                  strings = { mode } },
         { hl = 'MiniStatuslineDevinfo',  strings = { git_section() } },
         '%<',
@@ -53,14 +58,14 @@ require('mini.statusline').setup({
 -- File explorer (Miller columns). `l`/`h` navigate in/out, `g?` for help.
 -- Manipulate by editing buffer text, then `=` to sync.
 later(function()
-  require('mini.files').setup({ content = { prefix = function() end } })
+  mini_files.setup({ content = { prefix = function() end } })
 
   -- Bookmarks available inside explorer (press `'p`, `'w`).
   local add_marks = function()
-    MiniFiles.set_bookmark('p',
+    mini_files.set_bookmark('p',
       vim.fs.joinpath(vim.fn.stdpath('data'), 'site/pack/core/opt'),
       { desc = 'Plugins' })
-    MiniFiles.set_bookmark(
+    mini_files.set_bookmark(
       'w', vim.fn.getcwd, { desc = 'Working directory' })
   end
   Config.new_autocmd(
@@ -69,12 +74,12 @@ later(function()
   -- Open explorer when launched with a directory arg.
   local arg0 = vim.fn.argv(0) --[[@as string]]
   if arg0 ~= '' and vim.fn.isdirectory(arg0) == 1 then
-    MiniFiles.open(vim.fn.fnamemodify(arg0, ':p'))
+    mini_files.open(vim.fn.fnamemodify(arg0, ':p'))
   end
 end)
 
 -- Extra mini.nvim functionality used by other modules (pickers, highlighters).
-later(function() require('mini.extra').setup() end)
+later(function() mini_extra.setup() end)
 
 -- Diff hunks vs Git index. Also feeds statusline devinfo.
 -- `gh`/`gH` apply/reset hunks; `<Leader>go` toggle overlay.
@@ -93,7 +98,7 @@ later(function() require('mini.git').setup() end)
 -- Highlight TODO/FIXME/NOTE/HACK and hex color strings.
 later(function()
   local hipatterns = require('mini.hipatterns')
-  local hi_words = MiniExtra.gen_highlighter.words
+  local hi_words = mini_extra.gen_highlighter.words
   hipatterns.setup({
     highlighters = {
       fixme = hi_words(

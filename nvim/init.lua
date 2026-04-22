@@ -24,8 +24,8 @@ vim.g.loaded_zipPlugin = 1
 vim.g.loaded_tutor_mode_plugin = 1
 vim.g.loaded_remote_plugins = 1
 
--- Global config table shared across scripts
-_G.Config = {}
+-- Shared config table used across the configuration modules.
+local Config = require('config.shared')
 
 -- mini.nvim powers several UI/editing modules configured in `config.plugins`.
 vim.pack.add({ 'https://github.com/nvim-mini/mini.nvim' })

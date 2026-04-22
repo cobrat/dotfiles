@@ -2,12 +2,6 @@
   "Lua.runtime.version": "LuaJIT",
   "Lua.workspace.checkThirdParty": false,
   "Lua.diagnostics.globals": [
-    "vim",
-    "Config",
-    "MiniDiff",
-    "MiniExtra",
-    "MiniFiles",
-    "MiniGit",
-    "MiniStatusline"
+    "vim"
   ]
 }

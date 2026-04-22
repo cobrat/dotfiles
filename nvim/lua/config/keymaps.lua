@@ -2,6 +2,9 @@
 -- │ Custom mappings │
 -- └─────────────────┘
 
+local mini_diff = require('mini.diff')
+local mini_git = require('mini.git')
+
 -- General mappings ===========================================================
 
 local map = function(modes, lhs, rhs, desc)
@@ -104,8 +107,8 @@ lmap('n', 'fh', '<Cmd>Pick help<CR>',      'Help tags')
 lmap('n', 'fr', '<Cmd>Pick resume<CR>',    'Resume')
 
 -- g is for 'Git'. Use `:Git <subcmd>` for commit/diff/log directly.
-local diff_overlay  = function() MiniDiff.toggle_overlay() end
-local git_at_cursor = function() MiniGit.show_at_cursor() end
+local diff_overlay  = function() mini_diff.toggle_overlay() end
+local git_at_cursor = function() mini_git.show_at_cursor() end
 lmap('n',          'go', diff_overlay,  'Diff overlay')
 lmap({ 'n', 'x' }, 'gs', git_at_cursor, 'Show at cursor')
 

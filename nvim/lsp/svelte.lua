@@ -1,3 +1,5 @@
+local Config = require('config.shared')
+
 return {
   cmd = { 'svelteserver', '--stdio' },
   filetypes = { 'svelte' },

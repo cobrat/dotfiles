@@ -1,5 +1,7 @@
 -- Built-in Neovim behavior
 
+local Config = require('config.shared')
+
 -- stylua: ignore start
 
 -- General ====================================================================
