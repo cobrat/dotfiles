@@ -2,3 +2,4 @@
 .zprofile|symlink|
 .vimrc|symlink|
 .tmux.conf|symlink|
+helix|symlink|.config

@@ -5,6 +5,7 @@ Personal configuration files for macOS and Ubuntu.
 ## Contents
 
 - **nvim** — Neovim config (`init.lua`)
+- **helix** — Helix editor config
 - **wezterm** — WezTerm terminal config
 - **zed** — Zed editor settings and keymap
 - **.zshrc / .zprofile** — Zsh shell config
