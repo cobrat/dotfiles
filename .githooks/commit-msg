@@ -1,0 +1,30 @@
+#!/bin/sh
+
+msg_file="$1"
+subject="$(sed -n '1p' "$msg_file")"
+
+case "$subject" in
+    Merge\ *|Revert\ *|fixup!\ *|squash!\ *)
+        exit 0
+        ;;
+esac
+
+pattern='^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([A-Za-z0-9._-]+\))?!?: .+'
+
+if printf '%s\n' "$subject" | grep -Eq "$pattern"; then
+    exit 0
+fi
+
+cat >&2 <<'EOF'
+Invalid commit message.
+
+Use Conventional Commits:
+  feat: add helix configuration
+  fix(tmux): correct status line
+  docs(helix): update cheatsheet
+
+Allowed types:
+  build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test
+EOF
+
+exit 1
