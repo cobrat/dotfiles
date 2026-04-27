@@ -178,13 +178,9 @@ Press `g`, then:
 
 ## Clipboard And Registers
 
-The current config sets:
-
-```toml
-default-yank-register = "+"
-```
-
-That makes normal yank and paste use the system clipboard by default.
+The current config keeps Helix's default register behavior. Normal yank,
+delete, change, and paste use Helix registers. Space-menu clipboard commands
+use the system clipboard.
 
 | Key | Action |
 |---|---|
@@ -438,7 +434,7 @@ Useful built-ins:
 | Theme | `gruvbox_dark_hard` |
 | Line numbers | Relative |
 | Indentation | Four spaces for common languages |
-| Clipboard | Default yank register is system clipboard |
+| Clipboard | Helix registers by default, Space menu for system clipboard |
 | Formatting | Auto format disabled |
 | Git | Diff gutter enabled |
 | File picker | Hidden files visible |

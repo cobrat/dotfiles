@@ -2,13 +2,16 @@ theme = "gruvbox_dark_hard"
 
 [editor]
 true-color = true
+undercurl = true
 line-number = "relative"
 cursorline = true
 color-modes = true
 scrolloff = 8
 rulers = [80]
 auto-format = false
-default-yank-register = "+"
+popup-border = "all"
+preview-completion-insert = false
+trim-final-newlines = true
 trim-trailing-whitespace = true
 gutters = [
     "diagnostics",
@@ -37,3 +40,6 @@ hidden = false
 
 [editor.indent-guides]
 render = true
+
+[editor.soft-wrap]
+enable = true
