@@ -1,6 +1,6 @@
 #!/bin/bash
 # This script installs the following commands in Ubuntu:
-# rg fd fzf bat fastfetch tmux zoxide eza jq perf
+# rg fd fzf bat fastfetch tmux zoxide eza jq starship perf
 # lazydocker lazygit procs mtr ncdu tldr shellcheck
 
 set -e  # Exit on error
@@ -23,6 +23,7 @@ apt_packages=(
     bat          # bat - better cat (binary is batcat on Ubuntu)
     tmux         # tmux - terminal multiplexer
     jq           # jq - JSON processor
+    starship     # starship - shell prompt
     mtr          # mtr - network diagnostic
     ncdu         # ncdu - disk usage analyzer
     tldr         # tldr - simplified man pages

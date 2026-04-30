@@ -39,13 +39,6 @@ if status is-interactive
     end
 
     if command -q fzf
-        set -e FZF_DEFAULT_COMMAND
-        set -e FZF_CTRL_T_COMMAND
-        set -e FZF_ALT_C_COMMAND
-        set -e FZF_DEFAULT_OPTS
-        set -e FZF_CTRL_T_OPTS
-        set -e FZF_ALT_C_OPTS
-
         if command -q fd
             set -gx FZF_DEFAULT_COMMAND \
                 "fd --hidden --strip-cwd-prefix --exclude .git"
@@ -78,19 +71,13 @@ if status is-interactive
         alias ls="eza --long --color=always --no-user"
         alias l="eza --color=always --no-user"
         alias la="eza -la --color=always --no-user"
-
-        function tree
-            eza --tree --level=3 --all --ignore-glob='.git' \
-                --color=always $argv
-        end
-
-        function dtree
-            eza --tree --level=3 --all --only-dirs \
-                --ignore-glob='.git' --color=always $argv
-        end
     end
 
     if command -q lazygit
         alias lg="lazygit"
+    end
+
+    if command -q starship
+        starship init fish | source
     end
 end
