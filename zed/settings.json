@@ -8,6 +8,15 @@
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
     // ui
+    "outline_panel": {
+        "dock": "right"
+    },
+    "collaboration_panel": {
+        "dock": "right"
+    },
+    "git_panel": {
+        "dock": "right"
+    },
     "agent_servers": {
         "codex-acp": {
             "type": "registry"
@@ -31,7 +40,8 @@
         "quick_actions": false,
         "selections_menu": false,
     },
-    "project_panel": { "entry_spacing": "standard" },
+    "project_panel": { "dock": "right",
+                       "entry_spacing": "standard" },
     "tabs": { "file_icons": true },
     // buffer
     "buffer_font_family": "Monaspace Argon",
@@ -74,6 +84,7 @@
     },
     // ai
     "agent": {
+        "dock": "left",
         "tool_permissions": {
             "default": "allow"
         },
