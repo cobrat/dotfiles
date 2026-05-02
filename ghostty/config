@@ -1,7 +1,8 @@
 # Fonts
 font-size = 14
 font-family = Monaspace Argon
-font-style-bold = SemiBold
+font-synthetic-style = no-bold,no-italic,no-bold-italic
+font-feature = -calt,-liga,-dlig
 
 # Theme
 theme = Gruvbox Dark Hard

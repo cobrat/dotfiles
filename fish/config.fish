@@ -16,6 +16,11 @@ end
 
 set -gx LANG en_US.UTF-8
 
+if command -q hx
+    set -gx EDITOR hx
+    set -gx VISUAL hx
+end
+
 # Syntax highlighting colors
 set -g fish_color_command green
 set -g fish_color_param normal

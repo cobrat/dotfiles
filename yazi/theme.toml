@@ -1,0 +1,30 @@
+[flavor]
+dark = "gruvbox-dark"
+light = "gruvbox-dark"
+
+[status]
+sep_left = { open = "", close = "" }
+sep_right = { open = "", close = "" }
+
+[indicator]
+padding = { open = "", close = "" }
+
+[which]
+separator = " > "
+
+[icon]
+globs = []
+dirs = []
+files = []
+exts = []
+conds = []
+
+[cmp]
+icon_file = "f"
+icon_folder = "d"
+icon_command = ">"
+
+[help]
+icon_info = "i"
+icon_warn = "!"
+icon_error = "x"

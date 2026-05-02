@@ -2,5 +2,6 @@
 .zprofile|symlink|
 .vimrc|symlink|
 .tmux.conf|symlink|
-starship.toml|symlink|.config
+starship/starship.toml|symlink|.config|starship.toml
 helix|symlink|.config
+yazi|symlink|.config

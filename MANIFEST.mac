@@ -1,8 +1,9 @@
 fish|symlink|.config
 .vimrc|symlink|
 .tmux.conf|symlink|
-starship.toml|symlink|.config
+starship/starship.toml|symlink|.config|starship.toml
 ghostty|symlink|.config
 helix|symlink|.config
+yazi|symlink|.config
 zed/settings.json|symlink|.config
 zed/keymap.json|symlink|.config

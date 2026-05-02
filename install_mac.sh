@@ -1,6 +1,6 @@
 #!/bin/bash
 # This script installs the following tools in macOS:
-# rg fd fzf bat fastfetch tmux zoxide eza jq starship
+# rg fd fzf bat fastfetch tmux zoxide eza jq starship yazi
 # lazydocker lazygit procs mtr ncdu tldr shellcheck
 
 set -e  # Exit on error
@@ -27,6 +27,7 @@ packages=(
     eza          # eza - modern ls
     jq           # jq - JSON processor
     starship     # starship - shell prompt
+    yazi         # yazi - terminal file manager
     lazydocker   # lazydocker - Docker TUI
     lazygit      # lazygit - Git TUI
     procs        # procs - modern ps

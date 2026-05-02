@@ -8,7 +8,8 @@ SCRIPT_DIR="$( cd "$( dirname "$BASH_SOURCE[0]" )" && pwd )"
 
 symlinkFile() {
     filename="$SCRIPT_DIR/$1"
-    destination="$HOME/$2/$1"
+    target="${3:-$1}"
+    destination="$HOME/$2/$target"
 
     mkdir -p $(dirname "$destination")
 
@@ -35,10 +36,11 @@ deployManifest() {
         filename=$(echo $row | cut -d \| -f 1)
         operation=$(echo $row | cut -d \| -f 2)
         destination=$(echo $row | cut -d \| -f 3)
+        target=$(echo $row | cut -d \| -f 4)
 
         case $operation in
             symlink)
-                symlinkFile $filename $destination
+                symlinkFile $filename $destination $target
                 ;;
 
             *)
