@@ -1,5 +1,5 @@
 " ============================================================
-" .vimrc - simplified Vim config aligned with nvim/
+" .vimrc - simplified Vim config
 " ============================================================
 
 set nocompatible
@@ -223,7 +223,7 @@ nnoremap <silent> <leader>bd :call <SID>BufDrop('bdelete')<CR>
 nnoremap <silent> <leader>bw :call <SID>BufDrop('bwipeout')<CR>
 
 " Explore — <Leader>e
-" Closest built-in Vim equivalent to the nvim file explorer workflow.
+" Built-in Vim file explorer mappings.
 nnoremap <leader>ee :call <SID>OpenPath(getcwd())<CR>
 nnoremap <leader>ef :call <SID>OpenPath(expand('%:p:h'))<CR>
 nnoremap <leader>em :messages<CR>
@@ -231,7 +231,7 @@ nnoremap <leader>eq :call <SID>ToggleQuickfix()<CR>
 nnoremap <leader>el :call <SID>ToggleLocationList()<CR>
 
 " Find — <Leader>f
-" Closest built-in Vim equivalents to the nvim mini.pick workflow.
+" Built-in Vim find mappings.
 nnoremap <leader>ff :find<Space>
 nnoremap <leader>fg :grep<Space>
 nnoremap <leader>fb :buffers<CR>

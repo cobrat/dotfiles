@@ -4,8 +4,7 @@ Personal configuration files for macOS and Ubuntu.
 
 ## Contents
 
-- **nvim** — Neovim config (`init.lua`)
-- **helix** — Helix editor config
+- **nvim** — Minimal Neovim config (`init.lua`)
 - **starship** — Shell prompt config
 - **yazi** — Terminal file manager config
 - **wezterm** — WezTerm terminal config

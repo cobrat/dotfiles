@@ -16,9 +16,9 @@ end
 
 set -gx LANG en_US.UTF-8
 
-if command -q hx
-    set -gx EDITOR hx
-    set -gx VISUAL hx
+if command -q nvim
+    set -gx EDITOR nvim
+    set -gx VISUAL nvim
 end
 
 # Syntax highlighting colors

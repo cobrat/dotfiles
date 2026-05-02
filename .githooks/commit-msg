@@ -19,9 +19,9 @@ cat >&2 <<'EOF'
 Invalid commit message.
 
 Use Conventional Commits:
-  feat: add helix configuration
+  feat: add nvim configuration
   fix(tmux): correct status line
-  docs(helix): update cheatsheet
+  docs(nvim): update notes
 
 Allowed types:
   build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test

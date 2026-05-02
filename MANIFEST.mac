@@ -3,7 +3,7 @@ fish|symlink|.config
 .tmux.conf|symlink|
 starship/starship.toml|symlink|.config|starship.toml
 ghostty|symlink|.config
-helix|symlink|.config
+nvim|symlink|.config
 yazi|symlink|.config
 zed/settings.json|symlink|.config
 zed/keymap.json|symlink|.config
