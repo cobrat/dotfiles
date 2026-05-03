@@ -1,5 +1,5 @@
-# Show idle cwd vs running command in the terminal/window title (OSC 2).
-# Works with tmux when `setw -g allow-rename on` is set (.tmux.conf).
+# Window title behavior similar to Fish + tmux forwarding (OSC 2).
+# Idle: user@hostname: abbreviated pwd. Running first line of command shown.
 
 [[ $TERM == dumb ]] && return 0
 
@@ -20,7 +20,6 @@ _dotfiles_title_precmd() {
   local idle="${USER}@${host}: ${dir}"
   printf '\033]2;%s\033\\' "$( _dotfiles_title_sanitize "$idle" )"
 
-  # Undocked Terminal.app directory proxy icon (skipped under tmux).
   if [[ ${TERM_PROGRAM:-} == Apple_Terminal && -z ${TMUX:-} ]]; then
     printf '\e]7;%s\a' "$PWD"
   fi

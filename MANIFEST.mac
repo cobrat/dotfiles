@@ -7,5 +7,6 @@ starship/starship.toml|symlink|.config|starship.toml
 ghostty|symlink|.config
 nvim|symlink|.config
 yazi|symlink|.config
+zellij|symlink|.config
 zed/settings.json|symlink|.config
 zed/keymap.json|symlink|.config

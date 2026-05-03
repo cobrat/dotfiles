@@ -6,7 +6,7 @@ zmodule environment
 zmodule git
 # Applies correct bindkeys for input events.
 zmodule input
-# Terminal title while idle / running: zsh/extra/tmux-title.zsh (covers preexec; Zim termtitle cannot).
+# Idle / running titles: Fish-like strings via zsh/extra/tmux-title.zsh (tmux forwards #{pane_title}).
 # Utility aliases and functions. Adds colour to ls, grep and less.
 zmodule utility
 

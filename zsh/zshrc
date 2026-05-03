@@ -60,9 +60,6 @@ else
   echo "Zim: ${ZIM_HOME}/init.zsh missing — incomplete install." >&2
 fi
 
-readonly _TITLE_ZSH=$_THIS_ZDOTDIR/extra/tmux-title.zsh
-[[ -r $_TITLE_ZSH ]] && source $_TITLE_ZSH
-
 # --- Tooling (mise, fuzzy nav, pager previews, prompts)
 
 if command -v mise &>/dev/null; then
@@ -106,3 +103,6 @@ fi
 if command -v starship &>/dev/null; then
   eval "$(starship init zsh)"
 fi
+
+readonly _TITLE_ZSH=$_THIS_ZDOTDIR/extra/tmux-title.zsh
+[[ -r $_TITLE_ZSH ]] && source $_TITLE_ZSH
