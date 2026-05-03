@@ -79,7 +79,6 @@ symbol = ".NET "
 [directory]
 truncation_length = 1
 truncate_to_repo = false
-fish_style_pwd_dir_length = 1
 read_only = " ro"
 
 [docker_context]

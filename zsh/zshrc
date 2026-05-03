@@ -1,0 +1,108 @@
+# shellcheck shell=zsh disable=2034 # Zsh-first config; tooling may lint this file loosely.
+# Interactive PATH/tooling here; Zim drives completion, highlighting, autosuggestions;
+# Starship handles the prompt (see starship/starship.toml). zsh/zimrc has no Zim theme modules.
+
+# Directory that holds zsh configs in this repo (resolves symlink target).
+readonly _THIS_ZDOTDIR="${${(%):-%x}:A:h}"
+readonly _EXTRA_ZSH=$_THIS_ZDOTDIR/extra/commands.zsh
+[[ -r $_EXTRA_ZSH ]] && source $_EXTRA_ZSH
+
+# PATH — prepend local tool dirs ahead of inherited PATH.
+if [[ -d /opt/homebrew/bin ]]; then
+  path=(
+    /opt/homebrew/bin
+    /opt/homebrew/sbin
+    $path
+  )
+fi
+[[ -d $HOME/.local/bin ]] && path=($HOME/.local/bin $path)
+[[ -d $HOME/.cargo/bin ]] && path=($HOME/.cargo/bin $path)
+[[ -d $HOME/.local/share/bob/nvim-bin ]] && path=($HOME/.local/share/bob/nvim-bin $path)
+typeset -U path PATH
+export PATH
+
+export LANG=${LANG:-en_US.UTF-8}
+
+if command -v nvim &>/dev/null; then
+  export EDITOR=nvim
+  export VISUAL=nvim
+fi
+
+[[ -o interactive ]] || return
+
+# --- Zim (https://zimfw.sh) — ZIM_CONFIG_FILE must name the zimrc before `zimfw init`.
+export ZIM_CONFIG_FILE=${ZIM_CONFIG_FILE:-$HOME/.config/zsh/zimrc}
+export ZIM_HOME=${ZIM_HOME:-${ZDOTDIR:-$HOME}/.zim}
+
+# Autosuggestions: slightly faster prompt refresh with Zim’s module order.
+ZSH_AUTOSUGGEST_MANUAL_REBIND=1
+
+# Prefer degit over git clone — uses curl/wget tarballs instead of git, often survives bad GitHub HTTPS.
+zstyle ':zim:zmodule' use 'degit'
+
+if [[ ! -e ${ZIM_HOME}/zimfw.zsh ]]; then
+  if (( ${+commands[curl]} )); then
+    curl -fsSL --create-dirs -o "${ZIM_HOME}/zimfw.zsh" \
+      https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
+  else
+    mkdir -p "$ZIM_HOME" && wget -nv -O "${ZIM_HOME}/zimfw.zsh" \
+      https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
+  fi
+fi
+
+if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZIM_CONFIG_FILE} ]]; then
+  # Installs or refreshes modules when ~/.zimrc changes.
+  source "${ZIM_HOME}/zimfw.zsh" init
+fi
+if [[ -r ${ZIM_HOME}/init.zsh ]]; then
+  source "${ZIM_HOME}/init.zsh"
+else
+  echo "Zim: ${ZIM_HOME}/init.zsh missing — incomplete install." >&2
+fi
+
+readonly _TITLE_ZSH=$_THIS_ZDOTDIR/extra/tmux-title.zsh
+[[ -r $_TITLE_ZSH ]] && source $_TITLE_ZSH
+
+# --- Tooling (mise, fuzzy nav, pager previews, prompts)
+
+if command -v mise &>/dev/null; then
+  eval "$(mise activate zsh)"
+fi
+
+if command -v zoxide &>/dev/null; then
+  eval "$(zoxide init zsh)"
+  alias j=z
+fi
+
+if command -v fzf &>/dev/null; then
+  if command -v fd &>/dev/null; then
+    export FZF_DEFAULT_COMMAND='fd --hidden --strip-cwd-prefix --exclude .git'
+    export FZF_ALT_C_COMMAND='fd --type=d --hidden --strip-cwd-prefix --exclude .git'
+  fi
+  export FZF_DEFAULT_OPTS='--height 50% --layout=default --border --color=hl:#2dd4bf'
+  if command -v bat &>/dev/null; then
+    export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :500 {}'"
+  else
+    export FZF_CTRL_T_OPTS="--preview 'sed -n \"1,500p\" {}'"
+  fi
+  if command -v eza &>/dev/null; then
+    export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
+  else
+    export FZF_ALT_C_OPTS="--preview 'find {} -maxdepth 3 -print | head -200'"
+  fi
+  source <(fzf --zsh)
+fi
+
+if command -v eza &>/dev/null; then
+  alias ls='eza --long --color=always --no-user'
+  alias l='eza --color=always --no-user'
+  alias la='eza -la --color=always --no-user'
+fi
+
+if command -v lazygit &>/dev/null; then
+  alias lg=lazygit
+fi
+
+if command -v starship &>/dev/null; then
+  eval "$(starship init zsh)"
+fi

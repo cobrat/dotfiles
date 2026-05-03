@@ -36,6 +36,12 @@ map('n', '<Leader>n', '<Cmd>nohlsearch<CR>', {
   desc = 'Clear search highlight',
 })
 
+map({ 'n', 'x' }, '<Leader>bf', function()
+  require('conform').format({ async = true, lsp_format = 'fallback' })
+end, {
+  desc = 'Format buffer or visual selection',
+})
+
 map('n', '<C-h>', '<C-w>h', {
   desc = 'Move to left split',
 })

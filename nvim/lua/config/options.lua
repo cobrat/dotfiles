@@ -71,6 +71,8 @@ opt.updatetime = 250
 -- Diagnostics
 
 vim.diagnostic.config({
+  -- Do not refresh diagnostics on every insert-mode change (default false; set explicitly).
+  update_in_insert = false,
   severity_sort = true,
   signs = {
     text = {

@@ -7,11 +7,28 @@ set -e
 SCRIPT_DIR="$( cd "$( dirname "$BASH_SOURCE[0]" )" && pwd )"
 
 symlinkFile() {
-    filename="$SCRIPT_DIR/$1"
-    target="${3:-$1}"
-    destination="$HOME/$2/$target"
+    local repo_path="$1"
+    local dest_field="$2"
+    local link_name="$3"
+    local filename="$SCRIPT_DIR/$repo_path"
+    local destination
 
-    mkdir -p $(dirname "$destination")
+    # Third field is the directory under $HOME (e.g. ".config"), or "-" to place
+    # the symlink directly in $HOME (fourth field must be the final name, e.g. ".zshrc").
+    # If the third field is empty, the default link path under $HOME is ${link_name:-$repo_path}.
+    if [[ "$dest_field" == "-" ]]; then
+        if [[ -z "$link_name" ]]; then
+            echo "[ERROR] $repo_path: destination \"-\" requires a target name (4th column)."
+            exit 1
+        fi
+        destination="$HOME/$link_name"
+    elif [[ -n "$dest_field" ]]; then
+        destination="$HOME/$dest_field/${link_name:-$repo_path}"
+    else
+        destination="$HOME/${link_name:-$repo_path}"
+    fi
+
+    mkdir -p "$(dirname "$destination")"
 
     if [ -L "$destination" ]; then
         echo "[WARNING] $filename already symlinked"

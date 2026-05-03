@@ -1,0 +1,24 @@
+# Zim modules (see https://github.com/zimfw/install template, minus Zim prompt themes — Starship replaces them).
+
+# Sets sane Zsh built-in environment options.
+zmodule environment
+# Provides handy git aliases and functions.
+zmodule git
+# Applies correct bindkeys for input events.
+zmodule input
+# Terminal title while idle / running: zsh/extra/tmux-title.zsh (covers preexec; Zim termtitle cannot).
+# Utility aliases and functions. Adds colour to ls, grep and less.
+zmodule utility
+
+# Prompt: Starship (~/.zshrc). Do not enable asciiship / git-info / duration-info here — they fight Starship.
+
+# Additional completion definitions for Zsh.
+zmodule zsh-users/zsh-completions --fpath src
+# Enables and configures smart extensive tab completion; must run after completions on fpath.
+zmodule completion
+
+# Fish-like syntax highlighting; must stay after completion.
+zmodule zsh-users/zsh-syntax-highlighting
+# Fish-like history search; must stay after syntax highlighting.
+zmodule zsh-users/zsh-history-substring-search
+zmodule zsh-users/zsh-autosuggestions

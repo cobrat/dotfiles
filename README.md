@@ -5,7 +5,7 @@ selected files and directories into `$HOME`.
 
 ## What Is Included
 
-- `fish/` - Fish shell setup, PATH entries, aliases, fzf, zoxide and starship.
+- `zsh/` - Zsh with [Zim](https://github.com/zimfw/zimfw) (`zsh/zimrc` → `~/.config/zsh/zimrc`, **no** built-in Zim prompt); **Starship** is started from `zsh/zshrc` (PATH, mise, zoxide, fzf, eza there). **`~/.zim/`** bootstrap (`degit` as set in `zshrc`).
 - `nvim/` - Minimal Neovim config with `<Space>` leader and relative numbers.
 - `yazi/` - Yazi config using Neovim as the editor and a Gruvbox flavor.
 - `ghostty/` - Ghostty terminal font, theme, window and cursor settings.
@@ -45,7 +45,20 @@ Manifest rows use this format:
 source|operation|destination-dir|optional-target-name
 ```
 
-Only `symlink` is currently supported. For example:
+Only `symlink` is currently supported. The symlink is created at
+`$HOME/<destination-dir>/<optional-target-name>`. If `destination-dir` is empty,
+the path is `$HOME/<optional-target-name>`; if the name is also omitted, it
+defaults to `source` (the first column), so `nvim|symlink|.config` links to
+`$HOME/.config/nvim`.
+
+Use `-` as `destination-dir` when the link must sit directly in `$HOME` and the
+repo path is not the final name (for example `zsh/zshrc` → `~/.zshrc`):
+
+```text
+zsh/zshrc|symlink|-|.zshrc
+```
+
+Another example:
 
 ```text
 starship/starship.toml|symlink|.config|starship.toml

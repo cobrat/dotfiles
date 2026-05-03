@@ -1,0 +1,2 @@
+# Minimal ~/.zprofile (login shells).
+# Prefer interactive setup in ~/.zshrc alongside Zim/Starship.
