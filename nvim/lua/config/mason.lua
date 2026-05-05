@@ -12,6 +12,7 @@ require('mason-tool-installer').setup({
     'json-lsp',
     'lua-language-server',
     'pyright',
+    'stylua',
     'taplo',
     'typescript-language-server',
     'yaml-language-server',

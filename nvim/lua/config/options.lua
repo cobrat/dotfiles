@@ -4,17 +4,15 @@ local opt = vim.opt
 
 -- UI
 
-opt.cmdheight = 0
+opt.cmdheight = 1
 opt.cursorline = true
 opt.number = true
-opt.pumborder = 'rounded'
-opt.pumheight = 10
 opt.relativenumber = true
 -- Large value keeps cursor line vertically centered; see :help 'scrolloff'.
 opt.scrolloff = 999
 opt.scrolloffpad = 1
 opt.showmode = false
-opt.signcolumn = 'auto:1'
+opt.signcolumn = 'yes'
 opt.smoothscroll = true
 opt.termguicolors = true
 opt.winborder = 'rounded'
@@ -27,18 +25,10 @@ opt.statuscolumn = '%s %{v:virtnum ? "" : (v:relnum == 0 ? v:lnum : v:relnum)} '
 
 -- Editing
 
-opt.autocomplete = true
 opt.autoread = true
 opt.autowrite = true
 opt.backup = false
 opt.clipboard = 'unnamedplus'
-opt.completeopt = {
-  'menu',
-  'popup',
-  'fuzzy',
-  'noselect',
-  'nearest',
-}
 opt.confirm = true
 opt.expandtab = true
 opt.jumpoptions = 'view'
@@ -85,6 +75,12 @@ vim.diagnostic.config({
   virtual_text = {
     prefix = '>',
   },
+})
+
+vim.api.nvim_create_autocmd('TextYankPost', {
+  callback = function()
+    vim.highlight.on_yank()
+  end,
 })
 
 -- Reload files changed outside Neovim.

@@ -9,8 +9,8 @@ Leader: `<Space>`
 | Key | Action |
 | --- | --- |
 | `h` | Move left |
-| `j` | Move down |
-| `k` | Move up |
+| `j` | Move down by display line |
+| `k` | Move up by display line |
 | `l` | Move right |
 | `w` | Move to next word |
 | `b` | Move to previous word |
@@ -74,6 +74,7 @@ Leader: `<Space>`
 | `N` | Previous search match |
 | `*` | Search word under cursor forward |
 | `#` | Search word under cursor backward |
+| `<C-l>` | Clear search highlight |
 
 ### Windows and Tabs
 
@@ -120,14 +121,18 @@ Leader: `<Space>`
 | Key | Action |
 | --- | --- |
 | `<Leader>d` | Delete without yank |
+| `<Leader>bf` | Format buffer or visual selection |
+
+### Completion
+
+| Key | Action |
+| --- | --- |
+| `<Tab>` | Accept or select completion |
+| `<S-Tab>` | Select previous completion |
 
 ### Splits
 
 | Key | Action |
 | --- | --- |
-| `<C-h>` | Move to left split |
-| `<C-j>` | Move to lower split |
-| `<C-k>` | Move to upper split |
-| `<C-l>` | Move to right split |
 | `<Leader>sv` | Vertical split |
 | `<Leader>sh` | Horizontal split |

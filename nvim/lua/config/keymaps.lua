@@ -1,5 +1,15 @@
 local map = vim.keymap.set
 
+map({ 'n', 'x' }, 'j', 'v:count == 0 ? "gj" : "j"', {
+  expr = true,
+  desc = 'Move down by display line',
+})
+
+map({ 'n', 'x' }, 'k', 'v:count == 0 ? "gk" : "k"', {
+  expr = true,
+  desc = 'Move up by display line',
+})
+
 map('x', '<', '<gv', {
   desc = 'Unindent selection',
 })
@@ -32,7 +42,7 @@ map('n', 'N', 'Nzzzv', {
   desc = 'Previous search match',
 })
 
-map('n', '<Leader>n', '<Cmd>nohlsearch<CR>', {
+map('n', '<C-l>', '<Cmd>nohlsearch<CR>', {
   desc = 'Clear search highlight',
 })
 
@@ -40,22 +50,6 @@ map({ 'n', 'x' }, '<Leader>bf', function()
   require('conform').format({ async = true, lsp_format = 'fallback' })
 end, {
   desc = 'Format buffer or visual selection',
-})
-
-map('n', '<C-h>', '<C-w>h', {
-  desc = 'Move to left split',
-})
-
-map('n', '<C-j>', '<C-w>j', {
-  desc = 'Move to lower split',
-})
-
-map('n', '<C-k>', '<C-w>k', {
-  desc = 'Move to upper split',
-})
-
-map('n', '<C-l>', '<C-w>l', {
-  desc = 'Move to right split',
 })
 
 map('n', '<Leader>sv', '<Cmd>vsplit<CR>', {
