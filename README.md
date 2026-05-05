@@ -8,7 +8,6 @@ selected files and directories into `$HOME`.
 - `zsh/` - Zsh with [Zim](https://github.com/zimfw/zimfw) (`zsh/zimrc` → `~/.config/zsh/zimrc`, **no** built-in Zim prompt); **Starship** is started from `zsh/zshrc` (PATH, mise, zoxide, fzf, eza there). **`~/.zim/`** bootstrap (`degit` as set in `zshrc`).
 - `nvim/` - Minimal Neovim config with `<Space>` leader and relative numbers.
 - `yazi/` - Yazi config using Neovim as the editor and a Gruvbox flavor.
-- `zellij/` - Zellij config with a Gruvbox Dark Hard-style theme, simplified rectangular UI separators, pane frames, and hybrid shortcuts: `Alt` for common actions, modes for advanced actions.
 - `ghostty/` - Ghostty terminal font, theme, window and cursor settings.
 - `starship/` - Starship prompt config.
 - `zed/` - Zed settings and keymap.

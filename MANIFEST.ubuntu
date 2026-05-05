@@ -6,4 +6,3 @@ zsh/zimrc|symlink|.config|zsh/zimrc
 starship/starship.toml|symlink|.config|starship.toml
 nvim|symlink|.config
 yazi|symlink|.config
-zellij|symlink|.config
