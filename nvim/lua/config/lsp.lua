@@ -1,11 +1,12 @@
--- Server definitions: nvim-lspconfig (runtime lsp/*.lua). Customizations only here.
+-- Server definitions: nvim-lspconfig (runtime lsp/*.lua).
+-- Customizations only here.
 
 -- Less RPC log I/O than default WARN (see :help lsp-log).
 vim.lsp.log.set_level('ERROR')
 
--- Do not use nvim_get_runtime_file('', true) for workspace.library: it indexes every
--- runtimepath entry and makes lua-language-server slow. .luarc.json / extra paths ->
--- add there for plugin-heavy projects.
+-- Do not use nvim_get_runtime_file('', true) for workspace.library: it indexes
+-- every runtimepath entry and slows lua-language-server.
+-- Add paths in .luarc.json for plugin-heavy projects.
 vim.lsp.config('lua_ls', {
   settings = {
     Lua = {
@@ -19,7 +20,7 @@ vim.lsp.config('lua_ls', {
           vim.fn.stdpath('config'),
         },
       },
-      -- Fewer editor/LSP round-trips than upstream defaults; re-enable if you rely on these.
+      -- Fewer LSP round-trips than upstream defaults; re-enable if needed.
       codeLens = { enable = false },
       hint = { enable = false },
     },

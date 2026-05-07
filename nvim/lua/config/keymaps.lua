@@ -26,6 +26,21 @@ map('x', 'K', ":move '<-2<CR>gv=gv", {
   desc = 'Move selection up',
 })
 
+map('n', 'K', function()
+  local diagnostics = vim.diagnostic.get(0, { lnum = vim.fn.line('.') - 1 })
+
+  if #diagnostics > 0 then
+    vim.diagnostic.open_float(nil, {
+      focus = false,
+      scope = 'line',
+    })
+  else
+    vim.lsp.buf.hover()
+  end
+end, {
+  desc = 'Show diagnostics or hover',
+})
+
 map('x', 'p', '"_dP', {
   desc = 'Paste without yanking selection',
 })
@@ -52,14 +67,6 @@ end, {
   desc = 'Format buffer or visual selection',
 })
 
-map('n', '<Leader>sv', '<Cmd>vsplit<CR>', {
-  desc = 'Vertical split',
-})
-
-map('n', '<Leader>sh', '<Cmd>split<CR>', {
-  desc = 'Horizontal split',
-})
-
 map('n', '<Leader>e', function()
   require('oil').toggle_float()
 end, {
@@ -82,4 +89,23 @@ map('n', '<Leader>fg', '<Cmd>FzfLua live_grep<CR>', {
 
 map('n', '<Leader>fb', '<Cmd>FzfLua buffers<CR>', {
   desc = 'Find buffers',
+})
+
+map('n', '<Leader>fd', function()
+  local abspath = vim.fn.expand('%:p')
+  if abspath == '' then
+    vim.notify('fzf hunks: buffer has no file path', vim.log.levels.WARN)
+    return
+  end
+  local fzf_path = require('fzf-lua.path')
+  local root = fzf_path.git_root({ cwd = vim.fn.expand('%:p:h') }, true)
+  if not root then
+    vim.notify('fzf hunks: not in a git work tree', vim.log.levels.WARN)
+    return
+  end
+  require('fzf-lua').git_hunks({
+    file = fzf_path.relative_to(abspath, root),
+  })
+end, {
+  desc = 'Fzf git hunks (current file)',
 })

@@ -61,7 +61,7 @@ opt.updatetime = 250
 -- Diagnostics
 
 vim.diagnostic.config({
-  -- Do not refresh diagnostics on every insert-mode change (default false; set explicitly).
+  -- Do not refresh diagnostics on every insert-mode change (explicit default).
   update_in_insert = false,
   severity_sort = true,
   signs = {
@@ -72,9 +72,7 @@ vim.diagnostic.config({
       [vim.diagnostic.severity.HINT] = 'H',
     },
   },
-  virtual_text = {
-    prefix = '>',
-  },
+  virtual_text = false,
 })
 
 vim.api.nvim_create_autocmd('TextYankPost', {

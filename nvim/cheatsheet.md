@@ -115,6 +115,7 @@ Leader: `<Space>`
 | `<Leader>ff` | Find files with fzf-lua |
 | `<Leader>fg` | Live grep with fzf-lua |
 | `<Leader>fb` | Find buffers with fzf-lua |
+| `<Leader>fd` | Git hunks in current file (fzf-lua) |
 
 ### Editing
 
@@ -122,6 +123,30 @@ Leader: `<Space>`
 | --- | --- |
 | `<Leader>d` | Delete without yank |
 | `<Leader>bf` | Format buffer or visual selection |
+| `gcc` / `gc`… | Built-in comment toggle (`:help commenting`) |
+
+### mini.surround (defaults)
+
+Normal **`sa`** = surround **add**: **`sa`** + surrounding id + motion (e.g.
+**`saiw)`** wraps inner word in `()`). **`sd`** delete, **`sr`** replace.
+
+| Key | Action |
+| --- | --- |
+| `sa` + id + motion | Add surrounding around motion/textobject |
+| `sd` + id | Delete surrounding |
+| `sr` + old + new | Replace surrounding |
+| `sf` / `sF` + id | Move to surrounding (right / left) |
+| `sh` + id | Highlight surrounding briefly |
+
+**Extended search:** insert **`n`** (next) or **`l`** (last) before id — e.g.
+`sdnf`, `srlf(`.
+
+**Visual:** `sa` + id around selection.
+
+**Ids:** `)`, `(`, brackets, `t` tag, `f` function call, `?` prompt; see
+`:help mini.surround`.
+
+Plugin uses **`s…` maps**; use **`cl`** for built-in substitute (`s`).
 
 ### Completion
 
@@ -130,9 +155,10 @@ Leader: `<Space>`
 | `<Tab>` | Accept or select completion |
 | `<S-Tab>` | Select previous completion |
 
-### Splits
+### Git (gitsigns)
 
 | Key | Action |
 | --- | --- |
-| `<Leader>sv` | Vertical split |
-| `<Leader>sh` | Horizontal split |
+| `<Leader>gh` | Inline preview at cursor hunk |
+| `<Leader>gn` | Next hunk (gitsigns) / next vimdiff change |
+| `<Leader>gp` | Previous hunk / prev vimdiff change |

@@ -5,7 +5,7 @@ require('mason').setup({
 })
 
 require('mason-tool-installer').setup({
-  -- Defer ensure_installed until the UI is up (ms). LSP still finds tools on PATH once done.
+  -- Delay ensure_installed until Mason UI shows (ms).
   start_delay = 3000,
   ensure_installed = {
     'bash-language-server',

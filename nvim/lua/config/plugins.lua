@@ -13,9 +13,8 @@ vim.pack.add({
     version = vim.version.range('1'),
   },
   'https://github.com/lewis6991/gitsigns.nvim',
-  'https://github.com/numToStr/Comment.nvim',
   'https://github.com/windwp/nvim-autopairs',
-  'https://github.com/kylechui/nvim-surround',
+  'https://github.com/nvim-mini/mini.surround',
 }, {
   confirm = false,
   load = true,
