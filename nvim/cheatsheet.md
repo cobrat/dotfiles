@@ -91,12 +91,13 @@ Leader: `<Space>`
 | `gt` | Next tab |
 | `gT` | Previous tab |
 
-### LSP Defaults
+### LSP
 
 | Key | Action |
 | --- | --- |
 | `K` | Hover documentation |
-| `<C-]>` | Go to definition |
+| `gd` | Go to definition |
+| `gD` | Go to declaration |
 | `gra` | Code action |
 | `gri` | Go to implementation |
 | `grn` | Rename symbol |

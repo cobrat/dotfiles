@@ -41,6 +41,14 @@ end, {
   desc = 'Show diagnostics or hover',
 })
 
+map('n', 'gd', vim.lsp.buf.definition, {
+  desc = 'Go to definition',
+})
+
+map('n', 'gD', vim.lsp.buf.declaration, {
+  desc = 'Go to declaration',
+})
+
 map('x', 'p', '"_dP', {
   desc = 'Paste without yanking selection',
 })

@@ -17,7 +17,6 @@ vim.lsp.config('lua_ls', {
         checkThirdParty = false,
         library = {
           vim.env.VIMRUNTIME,
-          vim.fn.stdpath('config'),
         },
       },
       -- Fewer LSP round-trips than upstream defaults; re-enable if needed.
