@@ -16,6 +16,8 @@ zmodule utility
 zmodule zsh-users/zsh-completions --fpath src
 # Enables and configures smart extensive tab completion; must run after completions on fpath.
 zmodule completion
+# Fuzzy completion menu for Tab; must load after completion and before widget-wrapping modules.
+zmodule Aloxaf/fzf-tab
 
 # Fish-like syntax highlighting; must stay after completion.
 zmodule zsh-users/zsh-syntax-highlighting
