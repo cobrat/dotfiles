@@ -4,7 +4,7 @@
 
 set -e
 
-SCRIPT_DIR="$( cd "$( dirname "$BASH_SOURCE[0]" )" && pwd )"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 symlinkFile() {
     local repo_path="$1"
@@ -45,32 +45,29 @@ symlinkFile() {
 }
 
 deployManifest() {
-    for row in $(cat $SCRIPT_DIR/$1); do
-        if [[ "$row" =~ ^#.* ]]; then
+    while IFS= read -r row || [[ -n "$row" ]]; do
+        if [[ -z "$row" || "$row" =~ ^#.* ]]; then
             continue
         fi
 
-        filename=$(echo $row | cut -d \| -f 1)
-        operation=$(echo $row | cut -d \| -f 2)
-        destination=$(echo $row | cut -d \| -f 3)
-        target=$(echo $row | cut -d \| -f 4)
+        IFS='|' read -r filename operation destination target <<< "$row"
 
         case $operation in
             symlink)
-                symlinkFile $filename $destination $target
+                symlinkFile "$filename" "$destination" "$target"
                 ;;
 
             *)
                 echo "[WARNING] Unknown operation $operation. Skipping..."
                 ;;
         esac
-    done
+    done < "$SCRIPT_DIR/$1"
 }
 
-if [ -z "$@" ]; then
+if [ "$#" -eq 0 ]; then
     echo "Usage: $0 <MANIFEST>"
     echo "ERROR: no MANIFEST file is provided"
     exit 1
 fi
 
-deployManifest $1
+deployManifest "$1"

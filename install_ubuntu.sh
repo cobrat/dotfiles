@@ -56,12 +56,12 @@ fi
 # Create symlinks for fd and bat if needed
 if command -v fdfind &> /dev/null && ! command -v fd &> /dev/null; then
     echo "Creating symlink: fd -> fdfind"
-    sudo ln -sf $(which fdfind) /usr/local/bin/fd
+    sudo ln -sf "$(command -v fdfind)" /usr/local/bin/fd
 fi
 
 if command -v batcat &> /dev/null && ! command -v bat &> /dev/null; then
     echo "Creating symlink: bat -> batcat"
-    sudo ln -sf $(which batcat) /usr/local/bin/bat
+    sudo ln -sf "$(command -v batcat)" /usr/local/bin/bat
 fi
 
 # Install zoxide (requires Rust/Cargo or manual installation)
@@ -115,6 +115,21 @@ if ! command -v procs &> /dev/null; then
     rm procs procs.zip
 else
     echo "✓ procs is already installed"
+fi
+
+zim_home="${ZIM_HOME:-$HOME/.zim}"
+if [[ ! -e "$zim_home/zimfw.zsh" ]]; then
+    echo "Installing Zim framework..."
+    mkdir -p "$zim_home"
+    if command -v curl &> /dev/null; then
+        curl -fsSL -o "$zim_home/zimfw.zsh" \
+            https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
+    else
+        wget -nv -O "$zim_home/zimfw.zsh" \
+            https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
+    fi
+else
+    echo "✓ Zim framework is already installed"
 fi
 
 echo ""

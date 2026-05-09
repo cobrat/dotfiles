@@ -5,7 +5,7 @@ selected files and directories into `$HOME`.
 
 ## What Is Included
 
-- `zsh/` - Zsh with [Zim](https://github.com/zimfw/zimfw) (`zsh/zimrc` → `~/.config/zsh/zimrc`, **no** built-in Zim prompt); **Starship** is started from `zsh/zshrc` (PATH, mise, zoxide, fzf, eza there). **`~/.zim/`** bootstrap (`degit` as set in `zshrc`).
+- `zsh/` - Zsh with [Zim](https://github.com/zimfw/zimfw) (`zsh/zimrc` → `~/.config/zsh/zimrc`, **no** built-in Zim prompt); **Starship** is started from `zsh/zshrc` (PATH, mise, zoxide, fzf, eza there). The install scripts bootstrap `~/.zim/`; `zshrc` only initializes an existing Zim install.
 - `nvim/` - Minimal Neovim config with `<Space>` leader and relative numbers.
 - `yazi/` - Yazi config using Neovim as the editor and a Gruvbox flavor.
 - `ghostty/` - Ghostty terminal font, theme, window and cursor settings.

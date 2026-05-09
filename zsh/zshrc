@@ -21,11 +21,19 @@ fi
 typeset -U path PATH
 export PATH
 
-export LANG=${LANG:-en_US.UTF-8}
+export LANG=en_US.UTF-8
+export LC_MESSAGES=en_US.UTF-8
+unset LC_ALL
 
 if command -v nvim &>/dev/null; then
   export EDITOR=nvim
   export VISUAL=nvim
+elif command -v vim &>/dev/null; then
+  export EDITOR=vim
+  export VISUAL=vim
+else
+  export EDITOR=vi
+  export VISUAL=vi
 fi
 
 [[ -o interactive ]] || return 0
@@ -46,16 +54,8 @@ ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 zstyle ':zim:zmodule' use 'degit'
 
 if [[ ! -e ${ZIM_HOME}/zimfw.zsh ]]; then
-  if (( ${+commands[curl]} )); then
-    curl -fsSL --create-dirs -o "${ZIM_HOME}/zimfw.zsh" \
-      https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
-  else
-    mkdir -p "$ZIM_HOME" && wget -nv -O "${ZIM_HOME}/zimfw.zsh" \
-      https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
-  fi
-fi
-
-if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZIM_CONFIG_FILE} ]]; then
+  echo "Zim: ${ZIM_HOME}/zimfw.zsh missing. Run install_mac.sh or install_ubuntu.sh." >&2
+elif [[ ! ${ZIM_HOME}/init.zsh -nt ${ZIM_CONFIG_FILE} ]]; then
   # Installs or refreshes modules when ~/.zimrc changes.
   source "${ZIM_HOME}/zimfw.zsh" init
 fi
@@ -76,6 +76,22 @@ if command -v zoxide &>/dev/null; then
   alias j=z
 fi
 
+_dotfiles_fzf_preview() {
+  if [[ -d "$realpath" ]]; then
+    if command -v eza >/dev/null 2>&1; then
+      eza --tree --color=always "$realpath" | head -200
+    else
+      find "$realpath" -maxdepth 3 -print | head -200
+    fi
+  elif [[ -f "$realpath" ]]; then
+    if command -v bat >/dev/null 2>&1; then
+      bat --color=always -n --line-range :200 "$realpath"
+    else
+      sed -n "1,200p" "$realpath"
+    fi
+  fi
+}
+
 if command -v fzf &>/dev/null; then
   if command -v fd &>/dev/null; then
     export FZF_DEFAULT_COMMAND='fd --hidden --strip-cwd-prefix --exclude .git'
@@ -83,8 +99,8 @@ if command -v fzf &>/dev/null; then
   fi
   export FZF_DEFAULT_OPTS='--height 50% --layout=default --border --color=hl:#2dd4bf'
   zstyle ':fzf-tab:*' fzf-flags --height=50% --layout=default --border '--color=hl:#2dd4bf'
-  zstyle ':fzf-tab:complete:cd:*' fzf-preview 'if command -v eza >/dev/null 2>&1; then eza --tree --color=always "$realpath" | head -200; else find "$realpath" -maxdepth 3 -print | head -200; fi'
-  zstyle ':fzf-tab:complete:*:*' fzf-preview 'if [[ -d "$realpath" ]]; then if command -v eza >/dev/null 2>&1; then eza --tree --color=always "$realpath" | head -200; else find "$realpath" -maxdepth 3 -print | head -200; fi; elif [[ -f "$realpath" ]]; then if command -v bat >/dev/null 2>&1; then bat --color=always -n --line-range :200 "$realpath"; else sed -n "1,200p" "$realpath"; fi; fi'
+  zstyle ':fzf-tab:complete:cd:*' fzf-preview '_dotfiles_fzf_preview'
+  zstyle ':fzf-tab:complete:*:*' fzf-preview '_dotfiles_fzf_preview'
   if command -v bat &>/dev/null; then
     export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :500 {}'"
   else
@@ -95,7 +111,9 @@ if command -v fzf &>/dev/null; then
   else
     export FZF_ALT_C_OPTS="--preview 'find {} -maxdepth 3 -print | head -200'"
   fi
-  source <(fzf --zsh)
+  if [[ -t 0 && -t 1 ]]; then
+    source <(fzf --zsh)
+  fi
 fi
 
 if command -v eza &>/dev/null; then

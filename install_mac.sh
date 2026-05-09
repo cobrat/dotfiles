@@ -8,7 +8,7 @@ set -e  # Exit on error
 # Check if Homebrew is installed
 if ! command -v brew &> /dev/null; then
     echo "Error: Homebrew is not installed. Please install it first:"
-    echo '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+    echo "/bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
     exit 1
 fi
 
@@ -46,6 +46,15 @@ for package in "${packages[@]}"; do
         brew install "$package"
     fi
 done
+
+zim_home="${ZIM_HOME:-$HOME/.zim}"
+if [[ ! -e "$zim_home/zimfw.zsh" ]]; then
+    echo "Installing Zim framework..."
+    curl -fsSL --create-dirs -o "$zim_home/zimfw.zsh" \
+        https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
+else
+    echo "✓ Zim framework is already installed"
+fi
 
 echo ""
 echo "✅ All tools installed successfully!"

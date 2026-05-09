@@ -23,7 +23,7 @@ tree() {
   elif command -v tree &>/dev/null; then
     command tree "${@}"
   else
-    echo 'tree: eza is not installed' >&2
+    echo 'tree: neither eza nor tree is installed' >&2
     return 127
   fi
 }
