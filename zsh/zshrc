@@ -18,6 +18,8 @@ fi
 [[ -d $HOME/.local/bin ]] && path=($HOME/.local/bin $path)
 [[ -d $HOME/.cargo/bin ]] && path=($HOME/.cargo/bin $path)
 [[ -d $HOME/.local/share/bob/nvim-bin ]] && path=($HOME/.local/share/bob/nvim-bin $path)
+export VOLTA_HOME=${VOLTA_HOME:-$HOME/.volta}
+[[ -d $VOLTA_HOME/bin ]] && path=($VOLTA_HOME/bin $path)
 typeset -U path PATH
 export PATH
 
