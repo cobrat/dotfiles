@@ -117,6 +117,31 @@ Leader: `<Space>`
 | `<Leader>fg` | Live grep with fzf-lua |
 | `<Leader>fb` | Find buffers with fzf-lua |
 | `<Leader>fd` | Git hunks in current file (fzf-lua) |
+| `[b` | Previous buffer |
+| `]b` | Next buffer |
+| `<Leader><Leader>` | Alternate buffer |
+| `<Leader>bd` | Delete current buffer |
+
+### Oil (defaults)
+
+| Key | Action |
+| --- | --- |
+| `g?` | Show help |
+| `<CR>` | Open file or enter directory |
+| `<C-s>` | Open in vertical split |
+| `<C-h>` | Open in horizontal split |
+| `<C-t>` | Open in new tab |
+| `<C-p>` | Preview entry |
+| `<C-c>` | Close Oil |
+| `<C-l>` | Refresh |
+| `-` | Go to parent directory |
+| `_` | Open current working directory |
+| `` ` `` | Change cwd to current Oil directory |
+| `g~` | Change tab cwd to current Oil directory |
+| `gs` | Change sort |
+| `gx` | Open externally |
+| `g.` | Toggle hidden files |
+| `g\` | Toggle trash |
 
 ### Editing
 

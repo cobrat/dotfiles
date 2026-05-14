@@ -49,7 +49,15 @@ map('n', 'gD', vim.lsp.buf.declaration, {
   desc = 'Go to declaration',
 })
 
-map('x', 'p', '"_dP', {
+map('n', 'p', 'p`]', {
+  desc = 'Paste after cursor and jump to end',
+})
+
+map('n', 'P', 'P`]', {
+  desc = 'Paste before cursor and jump to end',
+})
+
+map('x', 'p', '"_dP`]', {
   desc = 'Paste without yanking selection',
 })
 
@@ -97,6 +105,22 @@ map('n', '<Leader>fg', '<Cmd>FzfLua live_grep<CR>', {
 
 map('n', '<Leader>fb', '<Cmd>FzfLua buffers<CR>', {
   desc = 'Find buffers',
+})
+
+map('n', '[b', '<Cmd>bprevious<CR>', {
+  desc = 'Previous buffer',
+})
+
+map('n', ']b', '<Cmd>bnext<CR>', {
+  desc = 'Next buffer',
+})
+
+map('n', '<Leader><Leader>', '<C-^>', {
+  desc = 'Alternate buffer',
+})
+
+map('n', '<Leader>bd', '<Cmd>bdelete<CR>', {
+  desc = 'Delete buffer',
 })
 
 map('n', '<Leader>fd', function()

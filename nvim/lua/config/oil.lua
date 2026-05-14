@@ -6,20 +6,6 @@ require('oil').setup({
     max_width = 0.8,
     padding = 2,
   },
-  keymaps = {
-    ['g?'] = 'actions.show_help',
-    ['h'] = { 'actions.parent', mode = 'n' },
-    ['l'] = {
-      mode = 'n',
-      desc = 'Enter directory under cursor',
-      callback = function()
-        local e = require('oil').get_cursor_entry()
-        if e and e.type == 'directory' then
-          require('oil').select()
-        end
-      end,
-    },
-  },
   view_options = {
     show_hidden = true,
   },
