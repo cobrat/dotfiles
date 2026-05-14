@@ -8,8 +8,8 @@ opt.cmdheight = 1
 opt.cursorline = true
 opt.number = true
 opt.relativenumber = true
--- Large value keeps cursor line vertically centered; see :help 'scrolloff'.
-opt.scrolloff = 999
+-- Keep a few lines of context above/below without forcing vertical centering.
+opt.scrolloff = 8
 opt.scrolloffpad = 1
 opt.showmode = false
 opt.signcolumn = 'yes'
