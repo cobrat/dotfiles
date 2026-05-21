@@ -10,7 +10,6 @@ selected files and directories into `$HOME`.
 - `yazi/` - Yazi config using Neovim as the editor and a Gruvbox flavor.
 - `ghostty/` - Ghostty terminal font, theme, window and cursor settings.
 - `starship/` - Starship prompt config.
-- `zed/` - Zed settings and keymap.
 - `.vimrc` - Vim config.
 - `.tmux.conf` - tmux config.
 - `.githooks/` - Git hooks, including Conventional Commit message checks.
