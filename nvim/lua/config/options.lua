@@ -6,6 +6,7 @@ local opt = vim.opt
 
 opt.cmdheight = 1
 opt.cursorline = true
+opt.laststatus = 2
 opt.number = true
 opt.relativenumber = true
 -- Keep a few lines of context above/below without forcing vertical centering.
