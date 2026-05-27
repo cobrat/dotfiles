@@ -1,5 +1,5 @@
--- Load order: options and plugins before keymaps (maps call Oil/FzfLua) and
--- autocmds (yank highlight uses 0.13 vim.hl API).
+-- Load order: options + plugins before keymaps (maps call Oil/FzfLua),
+-- autocmds last.
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 

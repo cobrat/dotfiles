@@ -5,14 +5,10 @@ opt.number = true
 opt.relativenumber = true
 opt.cursorline = true
 opt.signcolumn = 'yes'
--- scrolloff=0: no forced scroll near EOF (removes last-lines "snap"). Middle of
--- file loses extra context above/below cursor; gj/gk handle wrap (keymaps).
-opt.scrolloff = 0
-opt.scrolloffpad = 0
+-- Leave scrolloff/scrolloffpad at 0 on purpose: no forced scroll near EOF.
 opt.showmode = false -- lualine shows mode; hide the built-in --INSERT-- line.
 opt.termguicolors = true
 opt.winborder = 'rounded'
-opt.wrap = true
 opt.linebreak = true -- wrap at word boundaries, not mid-word.
 opt.breakindent = true
 opt.colorcolumn = '80'
@@ -21,7 +17,6 @@ opt.colorcolumn = '80'
 opt.expandtab = true
 opt.shiftwidth = 4
 opt.tabstop = 4
-opt.smartindent = true
 opt.mouse = 'a'
 opt.confirm = true
 opt.undofile = true

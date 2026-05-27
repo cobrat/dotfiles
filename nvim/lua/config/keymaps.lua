@@ -28,17 +28,20 @@ map({ 'n', 'x' }, 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true })
 map({ 'n', 'x' }, 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true })
 
 -- normal!: avoid recursive maps. v:count1 keeps prefixes like `5n` working.
-local function map_scroll(key, motion, desc)
+local function map_search(key)
   map('n', key, function()
-    vim.cmd.normal({ vim.v.count1 .. motion, bang = true })
+    vim.cmd.normal({ vim.v.count1 .. key, bang = true })
     center_view()
-  end, { desc = desc })
+  end, { desc = key == 'n' and 'Next search match and center'
+    or 'Previous search match and center' })
 end
 
 -- Files and buffers
 map('n', '<leader>e', '<cmd>Oil<cr>', { desc = 'Open file explorer' })
 map('n', '<leader>q', close_buffer, { desc = 'Close buffer' })
 map('n', '<leader><leader>', '<C-^>', { desc = 'Previous buffer' })
+map('n', '<leader>ff', '<cmd>FzfLua files<cr>', { desc = 'Find files' })
+map('n', '<leader>fg', '<cmd>FzfLua live_grep<cr>', { desc = 'Live grep' })
 map('n', '<leader>fb', '<cmd>FzfLua buffers<cr>', { desc = 'Pick buffer' })
 map('n', '<leader>u', '<cmd>UndotreeToggle<cr>', { desc = 'Toggle undotree' })
 
@@ -50,10 +53,8 @@ map('n', 'Q', '<nop>', { desc = 'Disable Ex mode' })
 map('n', '<Esc>', '<cmd>nohlsearch<cr>', { desc = 'Clear search highlight' })
 
 map('n', 'J', 'mzJ`z', { desc = 'Join line without moving cursor' })
-map_scroll('<C-d>', '<C-d>', 'Scroll down and center')
-map_scroll('<C-u>', '<C-u>', 'Scroll up and center')
-map_scroll('n', 'n', 'Next search match and center')
-map_scroll('N', 'N', 'Previous search match and center')
+map_search('n')
+map_search('N')
 
 -- Visual: keep selection after indent/move; paste without touching register 0.
 map('x', 'J', ":m '>+1<CR>gv=gv", { desc = 'Move selection down' })

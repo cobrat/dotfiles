@@ -16,9 +16,7 @@ require('gruvbox').setup({
   transparent_mode = true, -- terminal background shows through (Ghostty theme).
   italic = {
     strings = false,
-    emphasis = true,
     comments = false,
-    operators = false,
     folds = false,
   },
   overrides = {
@@ -26,26 +24,16 @@ require('gruvbox').setup({
     htmlBoldItalic = { italic = false },
   },
 })
-vim.o.background = 'dark'
 vim.cmd.colorscheme('gruvbox')
 
 local rounded = { border = 'rounded' }
 require('oil').setup({
-  default_file_explorer = true,
   -- Filename column is always shown; do not put "name" in columns (oil errors).
   columns = {
     'icon',
     'permissions',
     'size',
     { 'mtime', format = '%Y-%m-%d %H:%M' },
-  },
-  view_options = {
-    show_hidden = false, -- g. in oil buffer toggles hidden files.
-    natural_order = true,
-    sort = {
-      { 'type', 'asc' },
-      { 'name', 'asc' },
-    },
   },
   float = rounded,
   confirmation = rounded,
