@@ -47,7 +47,7 @@ vim.api.nvim_create_autocmd(
 
 vim.api.nvim_create_autocmd('BufWritePre', {
   callback = function(event)
-    if not vim.bo[event.buf].modifiable then
+    if not vim.bo[event.buf].modifiable or vim.bo[event.buf].filetype == 'markdown' then
       return
     end
     local view = vim.fn.winsaveview()

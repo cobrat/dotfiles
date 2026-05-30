@@ -55,7 +55,14 @@ require('blink.cmp').setup({
   },
   completion = {
     documentation = { auto_show = false },
-    list = { selection = { preselect = false, auto_insert = false } },
+    list = {
+      selection = {
+        preselect = function(ctx)
+          return not require('blink.cmp').snippet_active({ direction = 1 })
+        end,
+        auto_insert = true,
+      },
+    },
     menu = { border = 'rounded' },
   },
   sources = { default = { 'lsp', 'path', 'buffer' } },

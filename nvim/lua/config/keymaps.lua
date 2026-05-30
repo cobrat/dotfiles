@@ -71,12 +71,3 @@ map('x', 'K', ":m '<-2<CR>gv=gv", { desc = 'Move selection up' })
 map('x', '<', '<gv', { desc = 'Unindent selection' })
 map('x', '>', '>gv', { desc = 'Indent selection' })
 map('x', '<leader>p', [["_dP]], { desc = 'Paste without overwriting register' })
-
-for _, spec in ipairs({
-  { '<A-h>', '<C-w><', 'Decrease window width' },
-  { '<A-l>', '<C-w>>', 'Increase window width' },
-  { '<A-j>', '<C-w>-', 'Decrease window height' },
-  { '<A-k>', '<C-w>+', 'Increase window height' },
-}) do
-  map('n', spec[1], spec[2], { desc = spec[3] })
-end
