@@ -5,11 +5,10 @@ opt.number = true
 opt.relativenumber = true
 opt.cursorline = true
 opt.signcolumn = 'yes'
--- Leave scrolloff/scrolloffpad at 0 on purpose: no forced scroll near EOF.
-opt.showmode = false -- lualine shows mode; hide the built-in --INSERT-- line.
+opt.showmode = false -- lualine shows mode
 opt.termguicolors = true
 opt.winborder = 'rounded'
-opt.linebreak = true -- wrap at word boundaries, not mid-word.
+opt.linebreak = true
 opt.breakindent = true
 opt.colorcolumn = '80'
 
@@ -24,8 +23,8 @@ opt.swapfile = false
 
 -- Search
 opt.ignorecase = true
-opt.smartcase = true -- upper-case in pattern disables ignorecase.
-opt.inccommand = 'split' -- live substitute preview in a split.
+opt.smartcase = true
+opt.inccommand = 'split'
 
 if vim.fn.executable('rg') == 1 then
   opt.grepprg = 'rg --vimgrep'
@@ -36,6 +35,23 @@ opt.splitbelow = true
 opt.splitright = true
 opt.updatetime = 250
 opt.timeoutlen = 300
--- popup: info docs float; fuzzy: fuzzy match in built-in completion (0.11+).
-opt.completeopt = 'menu,menuone,noselect,popup,fuzzy'
+opt.completeopt = 'menu,menuone,noselect'
 opt.wildmode = 'longest:full,full'
+
+vim.api.nvim_create_autocmd('TextYankPost', { callback = vim.hl.hl_op })
+
+vim.api.nvim_create_autocmd(
+  { 'BufEnter', 'FocusGained' },
+  { command = 'checktime' }
+)
+
+vim.api.nvim_create_autocmd('BufWritePre', {
+  callback = function(event)
+    if not vim.bo[event.buf].modifiable then
+      return
+    end
+    local view = vim.fn.winsaveview()
+    vim.cmd([[keeppatterns %s/\s\+$//e]])
+    vim.fn.winrestview(view)
+  end,
+})

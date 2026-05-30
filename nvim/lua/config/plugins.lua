@@ -1,10 +1,15 @@
--- vim.pack (0.12+); plugin revisions pinned in nvim-pack-lock.json.
 vim.pack.add({
+  'https://github.com/neovim/nvim-lspconfig',
+  'https://github.com/williamboman/mason.nvim',
+  'https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim',
+  {
+    src = 'https://github.com/Saghen/blink.cmp',
+    version = vim.version.range('1'),
+  },
   'https://github.com/ellisonleao/gruvbox.nvim',
   'https://github.com/ibhagwan/fzf-lua',
-  'https://github.com/mbbill/undotree',
   'https://github.com/nvim-lualine/lualine.nvim',
-  'https://github.com/nvim-tree/nvim-web-devicons', -- lualine + oil icons
+  'https://github.com/nvim-tree/nvim-web-devicons',
   'https://github.com/stevearc/oil.nvim',
 }, {
   confirm = false,
@@ -13,7 +18,7 @@ vim.pack.add({
 
 require('gruvbox').setup({
   contrast = 'hard',
-  transparent_mode = true, -- terminal background shows through (Ghostty theme).
+  transparent_mode = true,
   italic = {
     strings = false,
     comments = false,
@@ -26,19 +31,13 @@ require('gruvbox').setup({
 })
 vim.cmd.colorscheme('gruvbox')
 
-local rounded = { border = 'rounded' }
+local border = { border = 'rounded' }
 require('oil').setup({
-  -- Filename column is always shown; do not put "name" in columns (oil errors).
-  columns = {
-    'icon',
-    'permissions',
-    'size',
-    { 'mtime', format = '%Y-%m-%d %H:%M' },
-  },
-  float = rounded,
-  confirmation = rounded,
-  progress = rounded,
-  lsp_file_methods = { enabled = false }, -- no LSP stack in this config yet.
+  columns = { 'icon', 'permissions', 'size', { 'mtime', format = '%Y-%m-%d %H:%M' } },
+  float = border,
+  confirmation = border,
+  progress = border,
+  lsp_file_methods = { enabled = true },
 })
 
 require('lualine').setup({
@@ -49,4 +48,14 @@ require('lualine').setup({
   },
 })
 
-require('fzf-lua').setup({ fzf_colors = true })
+require('fzf-lua').setup({
+  fzf_colors = true,
+  git = {
+    files = { git_icons = true, file_icons = true },
+    status = { git_icons = true, file_icons = true },
+    hunks = { git_icons = true },
+  },
+  lsp = {
+    file_icons = true,
+  },
+})
