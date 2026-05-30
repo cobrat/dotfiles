@@ -52,6 +52,9 @@ export ZIM_HOME=${ZIM_HOME:-${ZDOTDIR:-$HOME}/.zim}
 # Autosuggestions: slightly faster prompt refresh with Zim’s module order.
 ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 
+# Emacs line editor (override vi default from EDITOR=nvim).
+bindkey -e
+
 # Prefer degit over git clone — uses curl/wget tarballs instead of git, often survives bad GitHub HTTPS.
 zstyle ':zim:zmodule' use 'degit'
 
