@@ -7,7 +7,7 @@ selected files and directories into `$HOME`.
 
 - `zsh/` - Zsh with [Zim](https://github.com/zimfw/zimfw) (`zsh/zimrc` → `~/.config/zsh/zimrc`, **no** built-in Zim prompt); **Starship** is started from `zsh/zshrc` (PATH, mise, zoxide, fzf, eza there). The install scripts bootstrap `~/.zim/`; `zshrc` only initializes an existing Zim install.
 - `nvim/` - Neovim 0.13 config (`vim.pack`, gruvbox, oil.nvim, fzf-lua, lualine).
-- `yazi/` - Yazi config using Neovim as the editor and a Gruvbox flavor.
+- `yazi/` - Yazi: Vim keys, `[0,1,1]` layout, Gruvbox dark flavor (`ya pkg`), flat statusline, Neovim editor. After deploy run `ya pkg install`.
 - `ghostty/` - Ghostty terminal font, theme, window and cursor settings.
 - `starship/` - Starship prompt config.
 - `.vimrc` - Vim config.

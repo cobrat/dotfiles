@@ -1,4 +1,14 @@
+#:schema https://yazi-rs.github.io/schemas/yazi.json
+
+# Dired-like: one file list, metadata in the line, dirs first.
+[mgr]
+ratio          = [ 0, 1, 1 ]
+linemode       = "size"
+sort_dir_first = true
+show_hidden    = false
+show_symlink   = true
+
 [opener]
 edit = [
-    { run = "nvim %s", desc = "Neovim", for = "unix", block = true },
+  { run = "nvim %s", desc = "Neovim", for = "unix", block = true },
 ]

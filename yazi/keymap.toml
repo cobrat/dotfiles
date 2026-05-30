@@ -1,0 +1,12 @@
+#:schema https://yazi-rs.github.io/schemas/keymap.json
+
+# Yazi defaults are already Vim-style (hjkl, v/V visual, y/p yank/paste, / find, etc.).
+# Only add Emacs dired habits on top; do not replace [mgr].keymap.
+
+[mgr]
+prepend_keymap = [
+  { on = "^",       run = "leave",  desc = "Parent directory (dired ^)" },
+  { on = "<Enter>", run = "enter",  desc = "Enter directory" },
+  { on = "<CR>",    run = "enter",  desc = "Enter directory" },
+  { on = "+",       run = "create", desc = "Create file or directory (dired +)" },
+]
