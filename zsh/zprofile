@@ -1,2 +1,10 @@
 # Minimal ~/.zprofile (login shells).
 # Prefer interactive setup in ~/.zshrc alongside Zim/Starship.
+
+# PATH for login shells and GUI apps that skip interactive zshrc.
+if [[ -d /opt/homebrew/bin ]]; then
+  path=(/opt/homebrew/bin /opt/homebrew/sbin $path)
+fi
+[[ -d $HOME/.local/bin ]] && path=($HOME/.local/bin $path)
+typeset -U path PATH
+export PATH
