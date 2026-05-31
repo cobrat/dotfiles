@@ -9,6 +9,7 @@ selected files and directories into `$HOME`.
 - `nvim/` - Neovim 0.13 config (`vim.pack`, gruvbox, oil.nvim, fzf-lua, lualine).
 - `yazi/` - Yazi: Vim keys, `[0,1,1]` layout, Gruvbox dark flavor (`ya pkg`), flat statusline, Neovim editor. After deploy run `ya pkg install`.
 - `ghostty/` - Ghostty terminal font, theme, window and cursor settings.
+- `zed/` - Minimal Zed editor settings: Vim mode and relative line numbers.
 - `starship/` - Starship prompt config.
 - `.vimrc` - Vim config.
 - `.tmux.conf` - tmux config.

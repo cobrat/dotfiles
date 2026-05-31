@@ -1,6 +1,7 @@
 .DS_Store
 **/.DS_Store
 nvim.log
+zed/prompts/
 
 # Cursor hooks (local agent automation; not shared via dotfiles)
 .cursor/hooks.json

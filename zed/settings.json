@@ -1,0 +1,75 @@
+{
+  "disable_ai": true,
+
+  "buffer_font_family": "Monaspace Argon",
+  "buffer_font_size": 14.0,
+  "buffer_font_weight": 300.0,
+  "theme": {
+    "light": "Gruvbox Light",
+    "dark": "Gruvbox Dark"
+  },
+
+  "vim_mode": true,
+  "relative_line_numbers": "enabled",
+  "soft_wrap": "editor_width",
+  "use_smartcase_search": true,
+  "show_completion_documentation": false,
+  "colorize_brackets": true,
+
+  "prettier": {
+    "allowed": true
+  },
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false
+  },
+  "session": {
+    "trust_all_worktrees": true
+  },
+
+  "tabs": {
+    "file_icons": true
+  },
+  "status_bar": {
+    "show_active_file": true,
+    "line_endings_button": true
+  },
+  "toolbar": {
+    "breadcrumbs": false,
+    "quick_actions": false,
+    "selections_menu": false,
+    "agent_review": false
+  },
+  "title_bar": {
+    "show_branch_status_icon": true
+  },
+
+  "project_panel": {
+    "dock": "left",
+    "diagnostic_badges": true,
+    "git_status_indicator": true
+  },
+  "outline_panel": {
+    "dock": "left"
+  },
+  "collaboration_panel": {
+    "button": false,
+    "dock": "left"
+  },
+  "agent": {
+    "button": false,
+    "dock": "right"
+  },
+  "git_panel": {
+    "dock": "left"
+  },
+
+  "gutter": {
+    "runnables": false
+  },
+  "vim": {
+    "gdefault": true,
+    "use_smartcase_find": true,
+    "toggle_relative_line_numbers": true
+  }
+}
