@@ -38,7 +38,15 @@ opt.timeoutlen = 300
 opt.completeopt = 'menu,menuone,noselect'
 opt.wildmode = 'longest:full,full'
 
-vim.api.nvim_create_autocmd('TextYankPost', { callback = vim.hl.hl_op })
+vim.api.nvim_create_autocmd('TextYankPost', {
+  callback = function()
+    if vim.hl and vim.hl.hl_op then
+      vim.hl.hl_op()
+    else
+      vim.highlight.on_yank()
+    end
+  end,
+})
 
 vim.api.nvim_create_autocmd(
   { 'BufEnter', 'FocusGained' },
