@@ -1,124 +1,71 @@
 " ============================================================
-" .vimrc - simplified Vim config
+" .vimrc - Vim config aligned with nvim defaults
 " ============================================================
 
 set nocompatible
+scriptencoding utf-8
 
-" General
 let mapleader = ' '
-let $LANG = 'en_US.UTF-8'
-
-set history=500
-set autoread
-set encoding=utf-8
-set ffs=unix,dos,mac
-set path+=**
+let maplocalleader = ' '
 
 filetype plugin indent on
 syntax enable
 
-if exists('+mouse')
-  set mouse=a
-endif
-if exists('+mousescroll')
-  set mousescroll=ver:8,hor:6
-endif
-if exists('+undofile')
-  set undofile
-endif
-
 " UI
 set number
+if exists('+relativenumber')
+  set relativenumber
+endif
 set cursorline
-set colorcolumn=80
-set scrolloff=10
-set splitbelow
-set splitright
-set nowrap
+set showmode
+if exists('+signcolumn')
+  set signcolumn=yes
+endif
+if exists('+termguicolors')
+  set termguicolors
+endif
 set linebreak
-set list
-set pumheight=10
-set wildmenu
-set wildmode=longest:full,full
-set noshowmode
-set noruler
-
 if exists('+breakindent')
   set breakindent
 endif
-if exists('+breakindentopt')
-  set breakindentopt=list:-1
-endif
-if exists('+cursorlineopt')
-  set cursorlineopt=screenline,number
-endif
-if exists('+signcolumn')
-  set signcolumn=auto
-endif
-if exists('+completeopt')
-  set completeopt=menuone,noselect
-endif
-if exists('+wildoptions')
-  set wildoptions=pum,fuzzy
-endif
-if exists('+listchars')
-  set listchars=extends:…,nbsp:␣,precedes:…,tab:>\ 
-endif
-if exists('+fillchars')
-  set fillchars=fold:╌
-endif
-if exists('+shortmess')
-  set shortmess+=SWa
-endif
+set colorcolumn=80
 
 " Editing
-set backspace=eol,start,indent
+set expandtab
+set shiftwidth=4
+set tabstop=4
+set mouse=a
+set confirm
+if exists('+undofile')
+  set undofile
+endif
+set noswapfile
 set hidden
+set backspace=indent,eol,start
+
+" Search
 set ignorecase
 set smartcase
 set incsearch
-set expandtab
-set formatoptions=rqnl1j
-set shiftwidth=2
-set softtabstop=2
-set tabstop=2
-set smartindent
-set virtualedit=block
-set iskeyword=@,48-57,_,192-255,-
-set formatlistpat=^\s*[0-9\-\+\*]\+[\.\)]*\s\+
-set complete=.,w,b,kspell
-set updatetime=200
-set timeoutlen=400
-
-" Folding
-set foldmethod=indent
-set foldlevel=10
-set foldnestmax=10
-set foldtext=
-
-" Files
-set nobackup
-set nowritebackup
-set noswapfile
-
-try
-  set switchbuf=useopen,usetab
-catch
-endtry
-
-set wildignore=*.o,*~,*.pyc
-if has('win16') || has('win32') || has('win64')
-  set wildignore+=.git\*,.hg\*,.svn\*
-else
-  set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
+if exists('+inccommand')
+  set inccommand=split
 endif
 
 if executable('rg')
-  set grepprg=rg\ --vimgrep\ --smart-case
-  set grepformat=%f:%l:%c:%m,%f:%l:%m
+  set grepprg=rg\ --vimgrep
+  set grepformat=%f:%l:%c:%m
 endif
 
-" Colors
+set splitbelow
+set splitright
+set updatetime=250
+set timeoutlen=300
+if exists('+completeopt')
+  set completeopt=menu,menuone,noselect
+endif
+set wildmenu
+set wildmode=longest:full,full
+
 try
   colorscheme gruvbox
 catch
@@ -129,15 +76,27 @@ catch
 endtry
 set background=dark
 
-" Helpers
-function! s:RestoreCursor() abort
-  if line("'\"") > 1 && line("'\"") <= line('$')
-    execute "normal! g'\""
+function! s:CloseBuffer() abort
+  if &buflisted
+    bdelete
+  else
+    close
   endif
 endfunction
 
+function! s:CenterView() abort
+  let l:height = winheight(0)
+  let l:cursor = line('.')
+  let l:last = line('$')
+  let l:margin = float2nr(l:height / 2)
+  if l:cursor <= l:margin || l:cursor > l:last - l:margin
+    return
+  endif
+  normal! zz
+endfunction
+
 function! s:TrimTrailingWhitespace() abort
-  if &filetype ==# 'markdown'
+  if !&modifiable || &filetype ==# 'markdown'
     return
   endif
   let l:view = winsaveview()
@@ -145,94 +104,86 @@ function! s:TrimTrailingWhitespace() abort
   call winrestview(l:view)
 endfunction
 
-function! s:OpenPath(path) abort
-  execute 'edit' fnameescape(a:path)
-endfunction
-
-function! s:BufDrop(action) abort
-  let l:cur = bufnr('%')
-  let l:alt = bufnr('#')
-  let l:save_win = win_getid()
-
-  for l:winid in win_findbuf(l:cur)
-    call win_gotoid(l:winid)
-    if l:alt > 0 && l:alt != l:cur && bufexists(l:alt)
-      execute 'buffer' l:alt
-    else
-      enew
-    endif
-  endfor
-
-  if bufexists(l:cur)
-    silent! execute a:action l:cur
-  endif
-
-  call win_gotoid(l:save_win)
-endfunction
-
-function! s:ToggleQuickfix() abort
-  let l:info = getqflist({ 'winid': 0 })
-  if get(l:info, 'winid', 0) != 0
-    cclose
+function! s:HighlightYank() abort
+  if !exists('v:event') || get(v:event, 'operator', '') !=# 'y'
     return
   endif
-  copen
-endfunction
 
-function! s:ToggleLocationList() abort
-  let l:info = getloclist(0, { 'winid': 0 })
-  if get(l:info, 'winid', 0) != 0
-    lclose
+  if exists('w:last_yank_match')
+    silent! call matchdelete(w:last_yank_match)
+    unlet w:last_yank_match
+  endif
+
+  let l:start = getpos("'[")
+  let l:end = getpos("']")
+  if l:start[1] <= 0 || l:end[1] <= 0
     return
   endif
-  if empty(getloclist(0))
-    echo 'Location list is empty'
-    return
+
+  let l:positions = []
+  if l:start[1] == l:end[1]
+    call add(l:positions, [l:start[1], l:start[2], max([1, l:end[2] - l:start[2] + 1])])
+  else
+    call add(l:positions, [l:start[1], l:start[2]])
+    for lnum in range(l:start[1] + 1, l:end[1] - 1)
+      call add(l:positions, [lnum])
+    endfor
+    call add(l:positions, [l:end[1], 1, l:end[2]])
   endif
-  lopen
+
+  let w:last_yank_match = matchaddpos('IncSearch', l:positions, 10)
+  if exists('*timer_start')
+    call timer_start(150, function('<SID>ClearYankHighlight', [win_getid(), w:last_yank_match]))
+  endif
 endfunction
 
-function! s:SetupMarkdown() abort
-  setlocal wrap
-  setlocal linebreak
-  setlocal textwidth=80
-  setlocal colorcolumn=80
-  setlocal formatoptions+=t
-  setlocal formatoptions+=m
-  setlocal formatoptions-=l
-  setlocal breakat+=，、。；：？！
+function! s:ClearYankHighlight(winid, matchid, timer) abort
+  if exists('*win_execute') && win_id2win(a:winid) > 0
+    call win_execute(a:winid, 'silent! call matchdelete(' . a:matchid . ')')
+    call win_execute(a:winid, 'silent! unlet w:last_yank_match')
+  else
+    silent! call matchdelete(a:matchid)
+  endif
 endfunction
 
-" Autocommands
 augroup UserConfig
   autocmd!
-  autocmd FocusGained * silent! checktime
-  autocmd BufReadPost * call <SID>RestoreCursor()
+  autocmd TextYankPost * call <SID>HighlightYank()
+  autocmd BufEnter,FocusGained * silent! checktime
   autocmd BufWritePre * call <SID>TrimTrailingWhitespace()
-  autocmd FileType * setlocal formatoptions-=c formatoptions-=o
-  autocmd FileType markdown call <SID>SetupMarkdown()
 augroup END
 
-" Insert / general mappings
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+" Movement
+nnoremap <expr> j v:count == 0 ? 'gj' : 'j'
+xnoremap <expr> j v:count == 0 ? 'gj' : 'j'
+nnoremap <expr> k v:count == 0 ? 'gk' : 'k'
+xnoremap <expr> k v:count == 0 ? 'gk' : 'k'
 
-" Buffer — <Leader>b
-" Delete or wipe a buffer without closing its window first.
-nnoremap <silent> <leader>bd :call <SID>BufDrop('bdelete')<CR>
-nnoremap <silent> <leader>bw :call <SID>BufDrop('bwipeout')<CR>
+nnoremap <silent> n n:call <SID>CenterView()<CR>
+nnoremap <silent> N N:call <SID>CenterView()<CR>
 
-" Explore — <Leader>e
-" Built-in Vim file explorer mappings.
-nnoremap <leader>ee :call <SID>OpenPath(getcwd())<CR>
-nnoremap <leader>ef :call <SID>OpenPath(expand('%:p:h'))<CR>
-nnoremap <leader>em :messages<CR>
-nnoremap <leader>eq :call <SID>ToggleQuickfix()<CR>
-nnoremap <leader>el :call <SID>ToggleLocationList()<CR>
-
-" Find — <Leader>f
-" Built-in Vim find mappings.
+" Core commands
+nnoremap <leader>e :Explore<CR>
+nnoremap <silent> <leader>q :call <SID>CloseBuffer()<CR>
+nnoremap <leader><leader> <C-^>
 nnoremap <leader>ff :find<Space>
 nnoremap <leader>fg :grep<Space>
-nnoremap <leader>fb :buffers<CR>
-nnoremap <leader>fh :help<Space>
+nnoremap <leader>fb :buffers<CR>:buffer<Space>
+
+" Clipboard and registers
+nnoremap <leader>y "+y
+xnoremap <leader>y "+y
+nnoremap <leader>Y "+Y
+nnoremap <leader>d "_d
+xnoremap <leader>d "_d
+xnoremap <leader>p "_dP
+
+nnoremap Q <Nop>
+nnoremap <Esc> :nohlsearch<CR>
+nnoremap J mzJ`z
+
+" Visual editing
+xnoremap J :m '>+1<CR>gv=gv
+xnoremap K :m '<-2<CR>gv=gv
+xnoremap < <gv
+xnoremap > >gv
