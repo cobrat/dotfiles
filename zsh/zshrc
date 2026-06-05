@@ -141,3 +141,6 @@ fi
 
 _TITLE_ZSH=$_THIS_ZDOTDIR/extra/tmux-title.zsh
 [[ -r $_TITLE_ZSH ]] && source $_TITLE_ZSH
+
+# Hermes Agent — ensure ~/.local/bin is on PATH
+export PATH="$HOME/.local/bin:$PATH"
