@@ -1,0 +1,8 @@
+[language-server.ruff]
+command = "ruff"
+args = ["server"]
+
+[[language]]
+name = "python"
+roots = ["pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", ".git"]
+language-servers = ["ruff"]

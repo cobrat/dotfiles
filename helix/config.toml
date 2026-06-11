@@ -1,0 +1,31 @@
+theme = "gruvbox-material"
+
+[editor]
+line-number = "relative"
+mouse = false
+cursorline = true
+scrolloff = 8
+rulers = [80]
+bufferline = "multiple"
+color-modes = true
+true-color = true
+
+[editor.file-picker]
+hidden = false
+
+[editor.indent-guides]
+render = true
+character = "┆"
+skip-levels = 1
+
+[editor.cursor-shape]
+normal = "block"
+insert = "bar"
+select = "underline"
+
+[editor.soft-wrap]
+enable = true
+
+[keys.normal.space]
+q = ":buffer-close"
+# space = "goto_last_accessed_file"
