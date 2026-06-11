@@ -10,5 +10,5 @@ show_symlink   = true
 
 [opener]
 edit = [
-  { run = "nvim %s", desc = "Neovim", for = "unix", block = true },
+  { run = "zsh -ic 'vim \"$@\"' -- %s", desc = "Vim", for = "unix", block = true },
 ]
