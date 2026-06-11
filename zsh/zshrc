@@ -103,9 +103,6 @@ if command -v fzf &>/dev/null; then
     export FZF_ALT_C_COMMAND='fd --type=d --hidden --strip-cwd-prefix --exclude .git'
   fi
   export FZF_DEFAULT_OPTS='--height 50% --layout=default --border --color=hl:#2dd4bf'
-  zstyle ':fzf-tab:*' fzf-flags --height=50% --layout=default --border '--color=hl:#2dd4bf'
-  zstyle ':fzf-tab:complete:cd:*' fzf-preview '_dotfiles_fzf_preview'
-  zstyle ':fzf-tab:complete:*:*' fzf-preview '_dotfiles_fzf_preview'
   if command -v bat &>/dev/null; then
     export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :500 {}'"
   else
