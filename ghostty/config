@@ -1,16 +1,15 @@
 # Fonts
 font-size = 14
 font-family = Monaspace Argon
+font-style-bold = SemiBold
+font-style-bold-italic = SemiBold Italic
 font-synthetic-style = no-bold,no-italic,no-bold-italic
 font-feature = -calt,-liga,-dlig
 
 # Theme
-theme = Gruvbox Dark Hard
+theme = Dark+
 
 # Window
-background-opacity = 0.9
-background-opacity-cells = true
-background-blur = 20
 window-padding-x = 10
 window-padding-y = 4,2
 scrollbar = never
@@ -21,7 +20,6 @@ macos-window-shadow = false
 macos-option-as-alt = true
 
 # Cursor
-cursor-style-blink = true
 shell-integration-features = no-cursor,ssh-env,ssh-terminfo
 
 # Mouse and clipboard
@@ -29,4 +27,4 @@ copy-on-select = false
 right-click-action = copy-or-paste
 
 # Disable bell indicators.
-bell-features = no-system,no-audio,no-attention,no-title,no-border
+bell-features = no-attention,no-title
