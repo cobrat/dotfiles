@@ -1,7 +1,8 @@
-theme = "gruvbox-material"
+theme = "dark_plus"
 
 [editor]
 line-number = "relative"
+clipboard-provider = "pasteboard"
 mouse = false
 cursorline = true
 scrolloff = 8
