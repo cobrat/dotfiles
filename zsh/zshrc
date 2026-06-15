@@ -141,3 +141,6 @@ _TITLE_ZSH=$_THIS_ZDOTDIR/extra/tmux-title.zsh
 
 # Hermes Agent — ensure ~/.local/bin is on PATH
 export PATH="$HOME/.local/bin:$PATH"
+
+# opencode
+export PATH=/Users/wzh/.opencode/bin:$PATH
