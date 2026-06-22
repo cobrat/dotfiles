@@ -1,14 +1,14 @@
-theme = "dark_plus"
+theme = "github_dark_dimmed"
 
 [editor]
 line-number = "relative"
 clipboard-provider = "pasteboard"
-mouse = false
+mouse = true
 cursorline = true
 scrolloff = 8
 rulers = [80]
 bufferline = "multiple"
-color-modes = true
+# color-modes = true
 true-color = true
 
 [editor.file-picker]
@@ -29,4 +29,3 @@ enable = true
 
 [keys.normal.space]
 q = ":buffer-close"
-# space = "goto_last_accessed_file"
