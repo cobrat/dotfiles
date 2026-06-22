@@ -1,6 +1,6 @@
 #!/bin/bash
 # This script installs the following tools in macOS:
-# rg fd fzf bat fastfetch tmux zoxide eza jq starship yazi
+# rg fd fzf bat fastfetch tmux zoxide eza jq starship helix yazi
 # lazydocker lazygit procs mtr ncdu tldr shellcheck
 
 set -e  # Exit on error
@@ -27,6 +27,7 @@ packages=(
     eza          # eza - modern ls
     jq           # jq - JSON processor
     starship     # starship - shell prompt
+    helix        # hx - modal editor
     yazi         # yazi - terminal file manager
     lazydocker   # lazydocker - Docker TUI
     lazygit      # lazygit - Git TUI
@@ -46,15 +47,6 @@ for package in "${packages[@]}"; do
         brew install "$package"
     fi
 done
-
-zim_home="${ZIM_HOME:-$HOME/.zim}"
-if [[ ! -e "$zim_home/zimfw.zsh" ]]; then
-    echo "Installing Zim framework..."
-    curl -fsSL --create-dirs -o "$zim_home/zimfw.zsh" \
-        https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
-else
-    echo "✓ Zim framework is already installed"
-fi
 
 echo ""
 echo "✅ All tools installed successfully!"

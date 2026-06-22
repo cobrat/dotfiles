@@ -1,6 +1,6 @@
 #!/bin/bash
 # This script installs the following commands in Ubuntu:
-# rg fd fzf bat fastfetch tmux zoxide eza jq starship perf
+# rg fd fzf bat fastfetch tmux zoxide eza jq starship helix perf
 # lazydocker lazygit procs mtr ncdu tldr shellcheck
 
 set -e  # Exit on error
@@ -24,6 +24,7 @@ apt_packages=(
     tmux         # tmux - terminal multiplexer
     jq           # jq - JSON processor
     starship     # starship - shell prompt
+    helix        # hx - modal editor
     mtr          # mtr - network diagnostic
     ncdu         # ncdu - disk usage analyzer
     tldr         # tldr - simplified man pages
@@ -115,21 +116,6 @@ if ! command -v procs &> /dev/null; then
     rm procs procs.zip
 else
     echo "✓ procs is already installed"
-fi
-
-zim_home="${ZIM_HOME:-$HOME/.zim}"
-if [[ ! -e "$zim_home/zimfw.zsh" ]]; then
-    echo "Installing Zim framework..."
-    mkdir -p "$zim_home"
-    if command -v curl &> /dev/null; then
-        curl -fsSL -o "$zim_home/zimfw.zsh" \
-            https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
-    else
-        wget -nv -O "$zim_home/zimfw.zsh" \
-            https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
-    fi
-else
-    echo "✓ Zim framework is already installed"
 fi
 
 echo ""

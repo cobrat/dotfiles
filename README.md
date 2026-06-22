@@ -5,11 +5,10 @@ selected files and directories into `$HOME`.
 
 ## What Is Included
 
-- `zsh/` - Zsh with [Zim](https://github.com/zimfw/zimfw) (`zsh/zimrc` → `~/.config/zsh/zimrc`, **no** built-in Zim prompt); **Starship** is started from `zsh/zshrc` (PATH, mise, zoxide, fzf, eza there). The install scripts bootstrap `~/.zim/`; `zshrc` only initializes an existing Zim install.
-- `nvim/` - Neovim 0.13 config (`vim.pack`, gruvbox, oil.nvim, fzf-lua, lualine).
-- `yazi/` - Yazi: Vim keys, `[0,1,1]` layout, Gruvbox dark flavor (`ya pkg`), flat statusline, Vim opener via zsh alias. After deploy run `ya pkg install`.
+- `zsh/` - Minimal Zsh without a framework: `zprofile` keeps login-shell PATH usable, `zshrc` handles interactive history, built-in completion, mise, zoxide, fzf, eza aliases, yazi helpers, and Starship.
+- `helix/` - Helix editor config with relative line numbers, GitHub Dark Dimmed theme, hidden-file picker, indent guides, soft wrap, and visible bufferline.
+- `yazi/` - Yazi with `[0,1,1]` layout, mtime line mode, hidden files shown, Flexoki Dark flavor (`ya pkg`), flat statusline, and Helix opener. After deploy run `ya pkg install`.
 - `ghostty/` - Ghostty terminal font, theme, window and cursor settings.
-- `zed/` - Minimal Zed editor settings: Vim mode and relative line numbers.
 - `starship/` - Starship prompt config.
 - `.vimrc` - Vim config.
 - `.tmux.conf` - tmux config.
@@ -48,8 +47,8 @@ source|operation|destination-dir|optional-target-name
 Only `symlink` is currently supported. The symlink is created at
 `$HOME/<destination-dir>/<optional-target-name>`. If `destination-dir` is empty,
 the path is `$HOME/<optional-target-name>`; if the name is also omitted, it
-defaults to `source` (the first column), so `nvim|symlink|.config` links to
-`$HOME/.config/nvim`.
+defaults to `source` (the first column), so `yazi|symlink|.config` links to
+`$HOME/.config/yazi`.
 
 Use `-` as `destination-dir` when the link must sit directly in `$HOME` and the
 repo path is not the final name (for example `zsh/zshrc` → `~/.zshrc`):

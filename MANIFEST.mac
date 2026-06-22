@@ -1,4 +1,3 @@
-zsh/zimrc|symlink|.config|zsh/zimrc
 zsh/zshrc|symlink|-|.zshrc
 zsh/zprofile|symlink|-|.zprofile
 .vimrc|symlink|
@@ -6,6 +5,4 @@ zsh/zprofile|symlink|-|.zprofile
 starship/starship.toml|symlink|.config|starship.toml
 ghostty|symlink|.config
 helix|symlink|.config
-nvim|symlink|.config
 yazi|symlink|.config
-zed|symlink|.config
