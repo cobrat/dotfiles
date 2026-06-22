@@ -1,11 +1,23 @@
-# Minimal ~/.zprofile (login shells).
-# Prefer interactive setup in ~/.zshrc alongside Zim/Starship.
+# Minimal login environment. Keep interactive setup in ~/.zshrc.
 
-# PATH for login shells and GUI apps that skip interactive zshrc.
+unset ZIM_HOME ZIM_CONFIG_FILE ZSH_AUTOSUGGEST_MANUAL_REBIND
+
 if [[ -d /opt/homebrew/bin ]]; then
-  path=(/opt/homebrew/bin /opt/homebrew/sbin $path)
+  path=(
+    /opt/homebrew/bin
+    /opt/homebrew/sbin
+    $path
+  )
 fi
 [[ -d $HOME/.local/bin ]] && path=($HOME/.local/bin $path)
+[[ -d $HOME/.local/share/mise/shims ]] && path=($HOME/.local/share/mise/shims $path)
+[[ -d $HOME/.cargo/bin ]] && path=($HOME/.cargo/bin $path)
+[[ -d $HOME/.local/share/bob/nvim-bin ]] && path=($HOME/.local/share/bob/nvim-bin $path)
+
+export VOLTA_HOME=${VOLTA_HOME:-$HOME/.volta}
+[[ -d $VOLTA_HOME/bin ]] && path=($VOLTA_HOME/bin $path)
+[[ -d $HOME/.local/bin ]] && path=($HOME/.local/bin $path)
+[[ -d $HOME/.opencode/bin ]] && path=($HOME/.opencode/bin $path)
+
 typeset -U path PATH
 export PATH
-

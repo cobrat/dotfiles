@@ -1,13 +1,9 @@
-# shellcheck shell=zsh disable=2034 # Zsh-first config; tooling may lint this file loosely.
-# Interactive PATH/tooling here; Zim drives completion, highlighting, autosuggestions;
-# Starship handles the prompt (see starship/starship.toml). zsh/zimrc has no Zim theme modules.
+# Zsh config without a framework. Keep login PATH in zprofile; keep
+# interactive behavior here.
 
-# Directory that holds zsh configs in this repo (resolves symlink target).
-_THIS_ZDOTDIR="${${(%):-%x}:A:h}"
-_EXTRA_ZSH=$_THIS_ZDOTDIR/extra/commands.zsh
-[[ -r $_EXTRA_ZSH ]] && source $_EXTRA_ZSH
+unset ZIM_HOME ZIM_CONFIG_FILE ZSH_AUTOSUGGEST_MANUAL_REBIND
 
-# PATH — prepend local tool dirs ahead of inherited PATH.
+# PATH
 if [[ -d /opt/homebrew/bin ]]; then
   path=(
     /opt/homebrew/bin
@@ -16,21 +12,29 @@ if [[ -d /opt/homebrew/bin ]]; then
   )
 fi
 [[ -d $HOME/.local/bin ]] && path=($HOME/.local/bin $path)
+[[ -d $HOME/.local/share/mise/shims ]] && path=($HOME/.local/share/mise/shims $path)
 [[ -d $HOME/.cargo/bin ]] && path=($HOME/.cargo/bin $path)
 [[ -d $HOME/.local/share/bob/nvim-bin ]] && path=($HOME/.local/share/bob/nvim-bin $path)
+
 export VOLTA_HOME=${VOLTA_HOME:-$HOME/.volta}
 [[ -d $VOLTA_HOME/bin ]] && path=($VOLTA_HOME/bin $path)
+[[ -d $HOME/.local/bin ]] && path=($HOME/.local/bin $path)
+[[ -d $HOME/.opencode/bin ]] && path=($HOME/.opencode/bin $path)
+
 typeset -U path PATH
 export PATH
 
+# Locale
 export LANG=en_US.UTF-8
 export LC_MESSAGES=en_US.UTF-8
 unset LC_ALL
 
-if command -v nvim &>/dev/null; then
+# Editor
+if command -v nvim >/dev/null 2>&1; then
   export EDITOR=nvim
   export VISUAL=nvim
-elif command -v vim &>/dev/null; then
+  alias vim=nvim
+elif command -v vim >/dev/null 2>&1; then
   export EDITOR=vim
   export VISUAL=vim
 else
@@ -45,102 +49,95 @@ if [[ -n ${_DOTFILES_ZSH_INTERACTIVE_LOADED:-} ]]; then
 fi
 typeset -g _DOTFILES_ZSH_INTERACTIVE_LOADED=1
 
-# --- Zim (https://zimfw.sh) — ZIM_CONFIG_FILE must name the zimrc before `zimfw init`.
-export ZIM_CONFIG_FILE=${ZIM_CONFIG_FILE:-$HOME/.config/zsh/zimrc}
-export ZIM_HOME=${ZIM_HOME:-${ZDOTDIR:-$HOME}/.zim}
+# History
+HISTFILE=${HISTFILE:-$HOME/.zsh_history}
+HISTSIZE=10000
+SAVEHIST=10000
+setopt append_history
+setopt extended_history
+setopt hist_ignore_dups
+setopt hist_ignore_space
+setopt share_history
 
-# Autosuggestions: slightly faster prompt refresh with Zim’s module order.
-ZSH_AUTOSUGGEST_MANUAL_REBIND=1
-
-# Emacs line editor (override vi default from EDITOR=nvim).
+# Shell behavior
+setopt auto_cd
+setopt interactive_comments
+setopt no_beep
 bindkey -e
 
-# Prefer degit over git clone — uses curl/wget tarballs instead of git, often survives bad GitHub HTTPS.
-zstyle ':zim:zmodule' use 'degit'
+# Completion
+autoload -Uz compinit
+compinit
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 
-if [[ ! -e ${ZIM_HOME}/zimfw.zsh ]]; then
-  echo "Zim: ${ZIM_HOME}/zimfw.zsh missing. Run install_mac.sh or install_ubuntu.sh." >&2
-elif [[ ! ${ZIM_HOME}/init.zsh -nt ${ZIM_CONFIG_FILE} ]]; then
-  # Installs or refreshes modules when ~/.zimrc changes.
-  source "${ZIM_HOME}/zimfw.zsh" init
-fi
-if [[ -r ${ZIM_HOME}/init.zsh ]]; then
-  source "${ZIM_HOME}/init.zsh"
-else
-  echo "Zim: ${ZIM_HOME}/init.zsh missing — incomplete install." >&2
-fi
-
-# --- Tooling (mise, fuzzy nav, pager previews, prompts)
-
-if command -v mise &>/dev/null; then
+# Tooling
+if command -v mise >/dev/null 2>&1; then
   eval "$(mise activate zsh)"
 fi
 
-if command -v zoxide &>/dev/null; then
+if command -v zoxide >/dev/null 2>&1; then
   eval "$(zoxide init zsh)"
   alias j=z
 fi
 
-_dotfiles_fzf_preview() {
-  if [[ -d "$realpath" ]]; then
-    if command -v eza >/dev/null 2>&1; then
-      eza --tree --color=always "$realpath" | head -200
-    else
-      find "$realpath" -maxdepth 3 -print | head -200
-    fi
-  elif [[ -f "$realpath" ]]; then
-    if command -v bat >/dev/null 2>&1; then
-      bat --color=always -n --line-range :200 "$realpath"
-    else
-      sed -n "1,200p" "$realpath"
-    fi
-  fi
-}
-
-if command -v fzf &>/dev/null; then
-  if command -v fd &>/dev/null; then
+if command -v fzf >/dev/null 2>&1; then
+  if command -v fd >/dev/null 2>&1; then
     export FZF_DEFAULT_COMMAND='fd --hidden --strip-cwd-prefix --exclude .git'
     export FZF_ALT_C_COMMAND='fd --type=d --hidden --strip-cwd-prefix --exclude .git'
   fi
-  export FZF_DEFAULT_OPTS='--height 50% --layout=default --border --color=hl:#2dd4bf'
-  if command -v bat &>/dev/null; then
-    export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :500 {}'"
-  else
-    export FZF_CTRL_T_OPTS="--preview 'sed -n \"1,500p\" {}'"
-  fi
-  if command -v eza &>/dev/null; then
-    export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
-  else
-    export FZF_ALT_C_OPTS="--preview 'find {} -maxdepth 3 -print | head -200'"
-  fi
+  export FZF_DEFAULT_OPTS='--height 50% --layout=default --border'
   if [[ -t 0 && -t 1 ]]; then
     source <(fzf --zsh)
   fi
 fi
 
-if command -v eza &>/dev/null; then
+if command -v eza >/dev/null 2>&1; then
   alias ls='eza --long --color=always --no-user'
   alias l='eza --color=always --no-user'
   alias la='eza -la --color=always --no-user'
 fi
 
-if command -v lazygit &>/dev/null; then
+if command -v lazygit >/dev/null 2>&1; then
   alias lg=lazygit
 fi
 
-if command -v nvim &>/dev/null; then
-  alias vim=nvim
-fi
+yy() {
+  if ! command -v yazi >/dev/null 2>&1; then
+    echo 'yy: yazi is not installed' >&2
+    return 127
+  fi
 
-if command -v starship &>/dev/null; then
+  local cwd_file cwd
+  cwd_file=$(mktemp "${TMPDIR:-/tmp}/zsh-yazi-cwd.XXXXXX") || return 1
+  yazi "${@}" --cwd-file="$cwd_file"
+  cwd=$(command cat "$cwd_file") || true
+  command rm -f "$cwd_file"
+
+  if [[ -n $cwd && $cwd != "$PWD" ]]; then
+    builtin cd -- "$cwd" || return 1
+  fi
+}
+
+tree() {
+  if command -v eza >/dev/null 2>&1; then
+    eza --tree --level=3 --all --ignore-glob='.git' --color=always "${@}"
+  elif command -v tree >/dev/null 2>&1; then
+    command tree "${@}"
+  else
+    echo 'tree: neither eza nor tree is installed' >&2
+    return 127
+  fi
+}
+
+dtree() {
+  if ! command -v eza >/dev/null 2>&1; then
+    echo 'dtree: eza is not installed' >&2
+    return 127
+  fi
+  eza --tree --level=3 --all --only-dirs --ignore-glob='.git' --color=always "${@}"
+}
+
+if command -v starship >/dev/null 2>&1 && [[ -t 1 ]]; then
   eval "$(starship init zsh)"
 fi
-
-_TITLE_ZSH=$_THIS_ZDOTDIR/extra/tmux-title.zsh
-[[ -r $_TITLE_ZSH ]] && source $_TITLE_ZSH
-
-# Hermes Agent — ensure ~/.local/bin is on PATH
-export PATH="$HOME/.local/bin:$PATH"
-
-# opencode
-export PATH=/Users/wzh/.opencode/bin:$PATH
