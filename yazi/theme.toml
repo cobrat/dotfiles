@@ -1,8 +1,8 @@
 #:schema https://yazi-rs.github.io/schemas/theme.json
 
 [flavor]
-dark  = "gruvbox-dark"
-light = "gruvbox-dark"
+dark  = "flexoki-dark"
+light = "flexoki-dark"
 
 # Flat statusline (no Powerline arrows).
 [status]
