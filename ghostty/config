@@ -7,7 +7,7 @@ font-synthetic-style = no-bold,no-italic,no-bold-italic
 font-feature = -calt,-liga,-dlig
 
 # Theme
-theme = Dark+
+theme = Spacegray Eighties Dull
 
 # Window
 window-padding-x = 10
