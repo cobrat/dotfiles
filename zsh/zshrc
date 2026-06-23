@@ -1,9 +1,10 @@
 # Zsh config without a framework. Keep login PATH in zprofile; keep
 # interactive behavior here.
 
+# Drop old framework state inherited from parent shells.
 unset ZIM_HOME ZIM_CONFIG_FILE ZSH_AUTOSUGGEST_MANUAL_REBIND
 
-# PATH
+# PATH: local tools first, system paths after.
 if [[ -d /opt/homebrew/bin ]]; then
   path=(
     /opt/homebrew/bin
@@ -21,6 +22,7 @@ export VOLTA_HOME=${VOLTA_HOME:-$HOME/.volta}
 [[ -d $HOME/.local/bin ]] && path=($HOME/.local/bin $path)
 [[ -d $HOME/.opencode/bin ]] && path=($HOME/.opencode/bin $path)
 
+# Keep the first occurrence of each path entry.
 typeset -U path PATH
 export PATH
 
@@ -42,8 +44,10 @@ else
   export VISUAL=vi
 fi
 
+# Scripts only need PATH, locale, and editor settings.
 [[ -o interactive ]] || return 0
 
+# Avoid duplicate hooks and aliases if this file is sourced twice.
 if [[ -n ${_DOTFILES_ZSH_INTERACTIVE_LOADED:-} ]]; then
   return 0
 fi
@@ -65,7 +69,7 @@ setopt interactive_comments
 setopt no_beep
 bindkey -e
 
-# Completion
+# Native Zsh completion; no plugin manager.
 autoload -Uz compinit
 compinit
 zstyle ':completion:*' menu select
@@ -102,6 +106,7 @@ if command -v lazygit >/dev/null 2>&1; then
   alias lg=lazygit
 fi
 
+# Open yazi and cd to its final directory on exit.
 yy() {
   if ! command -v yazi >/dev/null 2>&1; then
     echo 'yy: yazi is not installed' >&2
@@ -119,6 +124,7 @@ yy() {
   fi
 }
 
+# Directory tree helpers.
 tree() {
   if command -v eza >/dev/null 2>&1; then
     eza --tree --level=3 --all --ignore-glob='.git' --color=always "${@}"
@@ -138,6 +144,7 @@ dtree() {
   eza --tree --level=3 --all --only-dirs --ignore-glob='.git' --color=always "${@}"
 }
 
+# Start the prompt only for real terminals, keeping script output clean.
 if command -v starship >/dev/null 2>&1 && [[ -t 1 ]]; then
   eval "$(starship init zsh)"
 fi

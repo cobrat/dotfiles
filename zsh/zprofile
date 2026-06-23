@@ -1,7 +1,9 @@
 # Minimal login environment. Keep interactive setup in ~/.zshrc.
 
+# Drop old framework state inherited by login shells.
 unset ZIM_HOME ZIM_CONFIG_FILE ZSH_AUTOSUGGEST_MANUAL_REBIND
 
+# PATH only; no aliases, completions, or prompt here.
 if [[ -d /opt/homebrew/bin ]]; then
   path=(
     /opt/homebrew/bin
@@ -19,5 +21,6 @@ export VOLTA_HOME=${VOLTA_HOME:-$HOME/.volta}
 [[ -d $HOME/.local/bin ]] && path=($HOME/.local/bin $path)
 [[ -d $HOME/.opencode/bin ]] && path=($HOME/.opencode/bin $path)
 
+# Keep the first occurrence of each path entry.
 typeset -U path PATH
 export PATH
