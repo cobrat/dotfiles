@@ -10,7 +10,6 @@ selected files and directories into `$HOME`.
 - `yazi/` - Yazi with `[0,1,1]` layout, mtime line mode, hidden files shown, Flexoki Dark flavor (`ya pkg`), flat statusline, and Helix opener. After deploy run `ya pkg install`.
 - `ghostty/` - Ghostty terminal font, theme, window and cursor settings.
 - `starship/` - Starship prompt config.
-- `.vimrc` - Vim config.
 - `.tmux.conf` - tmux config.
 - `.githooks/` - Git hooks, including Conventional Commit message checks.
 
@@ -31,6 +30,24 @@ Install CLI dependencies first, then deploy the relevant manifest.
 ./install_ubuntu.sh
 ./deploy.sh MANIFEST.ubuntu
 ```
+
+### Linux VPS: Helix + tmux Only
+
+Run this from a cloned repo:
+
+```sh
+./install_vps_hx_tmux.sh
+```
+
+Or bootstrap directly on a fresh machine:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/cobrat/dotfiles/main/install_vps_hx_tmux.sh | bash
+```
+
+The VPS script installs `tmux` and `hx`, clones this repo to `~/.dotfiles` when
+needed, then links `.tmux.conf` and `helix/` into `$HOME`. Existing target files
+are backed up with a timestamp suffix before new symlinks are created.
 
 ## Deployment
 

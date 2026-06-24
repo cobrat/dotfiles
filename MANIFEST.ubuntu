@@ -1,6 +1,5 @@
 zsh/zshrc|symlink|-|.zshrc
 zsh/zprofile|symlink|-|.zprofile
-.vimrc|symlink|
 .tmux.conf|symlink|
 starship/starship.toml|symlink|.config|starship.toml
 helix|symlink|.config
