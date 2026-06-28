@@ -1,19 +1,18 @@
 #!/usr/bin/env bash
-# Install and deploy the Helix and tmux parts of this dotfiles repo on a Linux VPS.
+# Install Helix/tmux and download their config files on a Linux VPS.
 #
 # The script has four phases:
-#   1. Install the small set of packages needed by tmux, Helix, and repo cloning.
+#   1. Install the small set of packages needed by tmux, Helix, and downloads.
 #   2. Ensure `hx` exists, falling back to the official Helix binary release.
-#   3. Find this dotfiles checkout, or clone it when run through curl | bash.
-#   4. Symlink only the tmux and Helix config into the target user's HOME.
+#   3. Download only .tmux.conf and Helix config files from this dotfiles repo.
+#   4. Write those files into the target user's HOME, backing up conflicts.
 
 set -Eeuo pipefail
 
 # These defaults make direct bootstrap possible:
 #   curl -fsSL .../install_vps_hx_tmux.sh | bash
-DOTFILES_REPO_URL="${DOTFILES_REPO_URL:-https://github.com/cobrat/dotfiles.git}"
 DOTFILES_BRANCH="${DOTFILES_BRANCH:-main}"
-DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
+DOTFILES_RAW_BASE="${DOTFILES_RAW_BASE:-}"
 SKIP_INSTALL=0
 ORIGINAL_PATH="$PATH"
 
@@ -26,14 +25,13 @@ usage() {
 Usage: $0 [options]
 
 Options:
-  --repo-dir DIR     Clone/use the dotfiles repo at DIR (default: ~/.dotfiles)
-  --repo-url URL     Git repository URL (default: $DOTFILES_REPO_URL)
-  --branch BRANCH    Git branch to clone/update (default: $DOTFILES_BRANCH)
-  --skip-install     Only link configs; do not install packages
+  --raw-base URL     Raw file URL prefix (default: GitHub raw URL for branch)
+  --branch BRANCH    Branch to download from when --raw-base is omitted
+  --skip-install     Only download configs; do not install packages
   -h, --help         Show this help
 
 Environment overrides:
-  DOTFILES_REPO_URL, DOTFILES_BRANCH, DOTFILES_DIR
+  DOTFILES_RAW_BASE, DOTFILES_BRANCH
 USAGE
 }
 
@@ -64,14 +62,9 @@ run_sudo() {
 parse_args() {
   while [[ "$#" -gt 0 ]]; do
     case "$1" in
-      --repo-dir)
-        [[ "$#" -ge 2 ]] || die "--repo-dir requires a path"
-        DOTFILES_DIR="$2"
-        shift 2
-        ;;
-      --repo-url)
-        [[ "$#" -ge 2 ]] || die "--repo-url requires a URL"
-        DOTFILES_REPO_URL="$2"
+      --raw-base)
+        [[ "$#" -ge 2 ]] || die "--raw-base requires a URL"
+        DOTFILES_RAW_BASE="$2"
         shift 2
         ;;
       --branch)
@@ -108,7 +101,7 @@ install_packages() {
     log "Installing base packages with apt"
     run_sudo apt-get update
     run_sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y \
-      ca-certificates curl git tmux tar xz-utils
+      ca-certificates curl tmux tar xz-utils
     # Some distro repositories do not package Helix or ship an older package
     # name. Treat package-manager Helix as best effort; the release fallback
     # below will install a working hx if this command fails.
@@ -117,36 +110,36 @@ install_packages() {
     fi
   elif command -v dnf >/dev/null 2>&1; then
     log "Installing base packages with dnf"
-    run_sudo dnf install -y ca-certificates curl git tmux tar xz
+    run_sudo dnf install -y ca-certificates curl tmux tar xz
     if ! command -v hx >/dev/null 2>&1; then
       run_sudo dnf install -y helix || true
     fi
   elif command -v yum >/dev/null 2>&1; then
     log "Installing base packages with yum"
-    run_sudo yum install -y ca-certificates curl git tmux tar xz
+    run_sudo yum install -y ca-certificates curl tmux tar xz
     if ! command -v hx >/dev/null 2>&1; then
       run_sudo yum install -y helix || true
     fi
   elif command -v pacman >/dev/null 2>&1; then
     log "Installing base packages with pacman"
-    run_sudo pacman -Sy --needed --noconfirm ca-certificates curl git tmux tar xz
+    run_sudo pacman -Sy --needed --noconfirm ca-certificates curl tmux tar xz
     if ! command -v hx >/dev/null 2>&1; then
       run_sudo pacman -S --needed --noconfirm helix || true
     fi
   elif command -v apk >/dev/null 2>&1; then
     log "Installing base packages with apk"
-    run_sudo apk add --no-cache ca-certificates curl git tmux tar xz
+    run_sudo apk add --no-cache ca-certificates curl tmux tar xz
     if ! command -v hx >/dev/null 2>&1; then
       run_sudo apk add --no-cache helix || true
     fi
   elif command -v zypper >/dev/null 2>&1; then
     log "Installing base packages with zypper"
-    run_sudo zypper --non-interactive install ca-certificates curl git tmux tar xz
+    run_sudo zypper --non-interactive install ca-certificates curl tmux tar xz
     if ! command -v hx >/dev/null 2>&1; then
       run_sudo zypper --non-interactive install helix || true
     fi
   else
-    die "Unsupported Linux package manager. Install curl, git, tmux, tar, and xz first, then rerun with --skip-install."
+    die "Unsupported Linux package manager. Install curl, tmux, tar, and xz first, then rerun with --skip-install."
   fi
 }
 
@@ -221,93 +214,106 @@ ensure_commands() {
   fi
 }
 
-discover_script_repo() {
-  local script_path script_dir
-  script_path="${BASH_SOURCE[0]:-$0}"
-  script_dir="$(cd -- "$(dirname -- "$script_path")" >/dev/null 2>&1 && pwd -P || true)"
-
-  # When run from a normal checkout, use that checkout. When run through
-  # curl | bash, there is no adjacent repo, so prepare_repo clones one.
-  if [[ -n "$script_dir" && -f "$script_dir/.tmux.conf" && -d "$script_dir/helix" ]]; then
-    printf '%s\n' "$script_dir"
-    return
-  fi
-
-  printf '%s\n' ""
-}
-
-prepare_repo() {
-  local local_repo
-  local_repo="$(discover_script_repo)"
-
-  if [[ -n "$local_repo" ]]; then
-    log "Using local dotfiles repo at $local_repo"
-    printf '%s\n' "$local_repo"
-    return
-  fi
-
-  command -v git >/dev/null 2>&1 || die "git is required to clone the dotfiles repo."
-
-  if [[ -d "$DOTFILES_DIR/.git" ]]; then
-    log "Updating dotfiles repo at $DOTFILES_DIR"
-    git -C "$DOTFILES_DIR" fetch --depth=1 origin "$DOTFILES_BRANCH"
-    if git -C "$DOTFILES_DIR" rev-parse --verify "$DOTFILES_BRANCH" >/dev/null 2>&1; then
-      git -C "$DOTFILES_DIR" checkout "$DOTFILES_BRANCH"
-    else
-      git -C "$DOTFILES_DIR" checkout -b "$DOTFILES_BRANCH" "origin/$DOTFILES_BRANCH"
-    fi
-    git -C "$DOTFILES_DIR" pull --ff-only origin "$DOTFILES_BRANCH"
-  elif [[ -e "$DOTFILES_DIR" ]]; then
-    die "$DOTFILES_DIR already exists but is not a git repo."
+config_base_url() {
+  if [[ -n "$DOTFILES_RAW_BASE" ]]; then
+    printf '%s\n' "${DOTFILES_RAW_BASE%/}"
   else
-    log "Cloning dotfiles repo to $DOTFILES_DIR"
-    git clone --depth=1 --branch "$DOTFILES_BRANCH" "$DOTFILES_REPO_URL" "$DOTFILES_DIR"
+    printf 'https://raw.githubusercontent.com/cobrat/dotfiles/%s\n' "$DOTFILES_BRANCH"
   fi
-
-  DOTFILES_DIR="$(cd "$DOTFILES_DIR" && pwd -P)"
-  [[ -f "$DOTFILES_DIR/.tmux.conf" && -d "$DOTFILES_DIR/helix" ]] || die "Dotfiles repo is missing .tmux.conf or helix/."
-  printf '%s\n' "$DOTFILES_DIR"
 }
 
-link_config() {
-  local source_path="$1"
-  local dest_path="$2"
+unique_backup_path() {
+  local target_path="$1"
+  local base_path
+  local candidate_path
+  local counter=1
+
+  base_path="${target_path}.bak.$(date +%Y%m%d%H%M%S)"
+  candidate_path="$base_path"
+
+  while [[ -e "$candidate_path" || -L "$candidate_path" ]]; do
+    candidate_path="${base_path}.${counter}"
+    counter=$((counter + 1))
+  done
+
+  printf '%s\n' "$candidate_path"
+}
+
+backup_existing_path() {
+  local target_path="$1"
   local backup_path
 
-  [[ -e "$source_path" ]] || die "Missing source path: $source_path"
-  mkdir -p "$(dirname "$dest_path")"
+  if [[ -e "$target_path" || -L "$target_path" ]]; then
+    # VPS images often ship default config files. Preserve them instead of
+    # overwriting so the install can be reversed manually.
+    backup_path="$(unique_backup_path "$target_path")"
+    mv "$target_path" "$backup_path"
+    warn "Backed up existing $target_path to $backup_path"
+  fi
+}
 
-  if [[ -L "$dest_path" && "$(readlink "$dest_path")" == "$source_path" ]]; then
-    log "Already linked: $dest_path"
+ensure_real_dir() {
+  local dir_path="$1"
+
+  # Older versions of this script could leave ~/.config/helix as a symlink.
+  # Replace that symlink with a real directory for downloaded files.
+  if [[ -L "$dir_path" ]]; then
+    backup_existing_path "$dir_path"
+  elif [[ -e "$dir_path" && ! -d "$dir_path" ]]; then
+    backup_existing_path "$dir_path"
+  fi
+
+  mkdir -p "$dir_path"
+}
+
+download_config_file() {
+  local raw_base="$1"
+  local repo_path="$2"
+  local dest_path="$3"
+  local url tmp_path
+
+  url="${raw_base}/${repo_path}"
+  tmp_path="$(mktemp)"
+
+  log "Downloading $repo_path"
+  if ! curl -fL "$url" -o "$tmp_path"; then
+    rm -f "$tmp_path"
+    die "Failed to download $url"
+  fi
+
+  mkdir -p "$(dirname "$dest_path")"
+  if [[ -f "$dest_path" && ! -L "$dest_path" ]] && cmp -s "$tmp_path" "$dest_path"; then
+    rm -f "$tmp_path"
+    log "Already up to date: $dest_path"
     return
   fi
 
-  if [[ -e "$dest_path" || -L "$dest_path" ]]; then
-    # VPS images often ship default config files. Preserve them instead of
-    # overwriting so the install can be reversed manually.
-    backup_path="${dest_path}.bak.$(date +%Y%m%d%H%M%S)"
-    mv "$dest_path" "$backup_path"
-    warn "Backed up existing $dest_path to $backup_path"
-  fi
-
-  ln -s "$source_path" "$dest_path"
-  log "Linked $dest_path -> $source_path"
+  backup_existing_path "$dest_path"
+  mv "$tmp_path" "$dest_path"
+  chmod 644 "$dest_path"
+  log "Installed $dest_path"
 }
 
-deploy_configs() {
-  local repo_dir="$1"
-  repo_dir="$(cd "$repo_dir" && pwd -P)"
+download_configs() {
+  local raw_base
+  raw_base="$(config_base_url)"
 
-  link_config "$repo_dir/.tmux.conf" "$HOME/.tmux.conf"
-  link_config "$repo_dir/helix" "$HOME/.config/helix"
+  command -v curl >/dev/null 2>&1 || die "curl is required to download config files."
+
+  log "Downloading configs from $raw_base"
+  ensure_real_dir "$HOME/.config/helix"
+  download_config_file "$raw_base" ".tmux.conf" "$HOME/.tmux.conf"
+  download_config_file "$raw_base" "helix/config.toml" "$HOME/.config/helix/config.toml"
+  download_config_file "$raw_base" "helix/languages.toml" "$HOME/.config/helix/languages.toml"
 }
 
 print_summary() {
   printf '\nDone.\n'
   printf '  tmux: %s\n' "$(command -v tmux)"
   printf '  hx:   %s\n' "$(command -v hx)"
-  printf '  tmux config: %s\n' "$HOME/.tmux.conf"
-  printf '  hx config:   %s\n' "$HOME/.config/helix"
+  printf '  config source: %s\n' "$(config_base_url)"
+  printf '  tmux config:   %s\n' "$HOME/.tmux.conf"
+  printf '  hx config dir:  %s\n' "$HOME/.config/helix"
 
   if [[ ":$ORIGINAL_PATH:" != *":$HOME/.local/bin:"* && -x "$HOME/.local/bin/hx" ]]; then
     printf '\nNote: hx was installed to %s.\n' "$HOME/.local/bin"
@@ -318,16 +324,14 @@ print_summary() {
 main() {
   parse_args "$@"
   if [[ "${EUID:-$(id -u)}" -eq 0 && -n "${SUDO_USER:-}" && "${SUDO_USER:-}" != "root" ]]; then
-    warn "Running via sudo; configs will be linked under $HOME. Run without sudo to configure your normal user."
+    warn "Running via sudo; configs will be installed under $HOME. Run without sudo to configure your normal user."
   fi
 
-  # Order matters: package installation gives us git/curl/tmux, command checks
-  # fill in missing Helix, and repo preparation supplies the config sources.
+  # Order matters: package installation gives us curl/tmux, command checks fill
+  # in missing Helix, and config download writes the final user config files.
   install_packages
   ensure_commands
-  local repo_dir
-  repo_dir="$(prepare_repo)"
-  deploy_configs "$repo_dir"
+  download_configs
   print_summary
 }
 

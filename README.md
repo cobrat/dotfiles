@@ -33,21 +33,22 @@ Install CLI dependencies first, then deploy the relevant manifest.
 
 ### Linux VPS: Helix + tmux Only
 
-Run this from a cloned repo:
-
-```sh
-./install_vps_hx_tmux.sh
-```
-
-Or bootstrap directly on a fresh machine:
+Bootstrap directly on a fresh machine:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/cobrat/dotfiles/main/install_vps_hx_tmux.sh | bash
 ```
 
-The VPS script installs `tmux` and `hx`, clones this repo to `~/.dotfiles` when
-needed, then links `.tmux.conf` and `helix/` into `$HOME`. Existing target files
-are backed up with a timestamp suffix before new symlinks are created.
+Or run the script directly if the file is already present:
+
+```sh
+./install_vps_hx_tmux.sh
+```
+
+The VPS script installs `tmux` and `hx`, then downloads only `.tmux.conf`,
+`helix/config.toml`, and `helix/languages.toml` into `$HOME`. Existing target
+files are backed up with a timestamp suffix before the downloaded files are
+installed.
 
 ## Deployment
 
