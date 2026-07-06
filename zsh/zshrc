@@ -148,3 +148,6 @@ dtree() {
 if command -v starship >/dev/null 2>&1 && [[ -t 1 ]]; then
   eval "$(starship init zsh)"
 fi
+
+# kilo
+export PATH=/Users/wzh/.kilo/bin:$PATH
