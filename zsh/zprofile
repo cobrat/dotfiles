@@ -12,14 +12,12 @@ if [[ -d /opt/homebrew/bin ]]; then
   )
 fi
 [[ -d $HOME/.local/bin ]] && path=($HOME/.local/bin $path)
-[[ -d $HOME/.local/share/mise/shims ]] && path=($HOME/.local/share/mise/shims $path)
 [[ -d $HOME/.cargo/bin ]] && path=($HOME/.cargo/bin $path)
 [[ -d $HOME/.local/share/bob/nvim-bin ]] && path=($HOME/.local/share/bob/nvim-bin $path)
 
 export VOLTA_HOME=${VOLTA_HOME:-$HOME/.volta}
 [[ -d $VOLTA_HOME/bin ]] && path=($VOLTA_HOME/bin $path)
 [[ -d $HOME/.local/bin ]] && path=($HOME/.local/bin $path)
-[[ -d $HOME/.opencode/bin ]] && path=($HOME/.opencode/bin $path)
 
 # Keep the first occurrence of each path entry.
 typeset -U path PATH

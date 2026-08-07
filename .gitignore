@@ -6,3 +6,6 @@ zed/prompts/
 # Cursor hooks (local agent automation; not shared via dotfiles)
 .cursor/hooks.json
 .cursor/hooks/
+
+# Reasonix local runtime data
+.reasonix/

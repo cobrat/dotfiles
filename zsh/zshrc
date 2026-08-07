@@ -13,14 +13,13 @@ if [[ -d /opt/homebrew/bin ]]; then
   )
 fi
 [[ -d $HOME/.local/bin ]] && path=($HOME/.local/bin $path)
-[[ -d $HOME/.local/share/mise/shims ]] && path=($HOME/.local/share/mise/shims $path)
 [[ -d $HOME/.cargo/bin ]] && path=($HOME/.cargo/bin $path)
 [[ -d $HOME/.local/share/bob/nvim-bin ]] && path=($HOME/.local/share/bob/nvim-bin $path)
 
 export VOLTA_HOME=${VOLTA_HOME:-$HOME/.volta}
 [[ -d $VOLTA_HOME/bin ]] && path=($VOLTA_HOME/bin $path)
 [[ -d $HOME/.local/bin ]] && path=($HOME/.local/bin $path)
-[[ -d $HOME/.opencode/bin ]] && path=($HOME/.opencode/bin $path)
+export PATH="/Users/wzh/.bun/bin:$PATH"
 
 # Keep the first occurrence of each path entry.
 typeset -U path PATH
@@ -74,11 +73,6 @@ autoload -Uz compinit
 compinit
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
-
-# Tooling
-if command -v mise >/dev/null 2>&1; then
-  eval "$(mise activate zsh)"
-fi
 
 if command -v zoxide >/dev/null 2>&1; then
   eval "$(zoxide init zsh)"
@@ -151,3 +145,11 @@ fi
 
 # kilo
 export PATH=/Users/wzh/.kilo/bin:$PATH
+
+# >>> otty shell integration >>>
+# Added by Otty — toggle in Settings > Shell > Shell Integration.
+# Inert unless launched by Otty (it sets $OTTY_SHELL_INTEGRATION).
+if [ -n "$OTTY_SHELL_INTEGRATION" ] && [ -r "$OTTY_SHELL_INTEGRATION/otty-integration.zsh" ]; then
+  . "$OTTY_SHELL_INTEGRATION/otty-integration.zsh"
+fi
+# <<< otty shell integration <<<
