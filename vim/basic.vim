@@ -67,11 +67,6 @@ set noerrorbells
 set novisualbell
 set t_vb=
 set tm=500
-" Also on MacVim
-if has("gui_macvim")
-    autocmd GUIEnter * set vb t_vb=
-endif
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Search
@@ -94,25 +89,12 @@ set mat=2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syntax enable
 
-" Enable true color in modern terminals (iTerm2/kitty/alacritty/wezterm/tmux)
-if $TERM_PROGRAM == 'iTerm.app' || $TERM =~# '\v(kitty|alacritty|wezterm|tmux-256color)'
-    set termguicolors
-endif
-
 " Colorscheme (silently skip if unavailable)
 try
     colorscheme habamax
 catch
 endtry
 set background=dark
-
-" GUI options (MacVim)
-if has("gui_running")
-    set guioptions-=T
-    set guioptions-=e
-    set t_Co=256
-    set guitablabel=%M\ %t
-endif
 
 set encoding=utf8
 set ffs=unix,dos,mac
@@ -190,7 +172,10 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 " Status Line
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set laststatus=2
-set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l\ \ Column:\ %c
+" Left: mode, paste-mode indicator, file path (relative to cwd), flags.
+" Right: line/column with labels.
+set statusline=%{Mode()}%{HasPaste()}%f\ %m%r%h%w
+set statusline+=%=Line:\ %l\ \ Column:\ %c
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -204,19 +189,6 @@ nmap <M-j> mz:m+<cr>`z
 nmap <M-k> mz:m-2<cr>`z
 vmap <M-j> :m'>+<cr>`<my`>mzgv`yo`z
 vmap <M-k> :m'<-2<cr>`>my`<mzgv`yo`z
-
-if has("mac") || has("macunix")
-  nmap <D-j> <M-j>
-  nmap <D-k> <M-k>
-  vmap <D-j> <M-j>
-  vmap <D-k> <M-k>
-
-  " Option key as Meta (needed for <M-j>/<M-k> in terminal)
-  try
-      set macmeta
-  catch
-  endtry
-endif
 
 " Strip trailing whitespace on save
 fun! CleanExtraSpaces()
@@ -245,12 +217,38 @@ map <leader>pp :setlocal paste!<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Helper Functions
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Current mode indicator (used by the statusline)
+function! Mode()
+    let l:mode = mode()
+    if l:mode ==# 'n'
+        return '--NORMAL--'
+    elseif l:mode ==# 'no'
+        return '--N-OP--'
+    elseif l:mode ==# 'v'
+        return '--VISUAL--'
+    elseif l:mode ==# 'V'
+        return '--V-LINE--'
+    elseif l:mode ==# "\<C-v>"
+        return '--V-BLOCK--'
+    elseif l:mode ==# 'i'
+        return '--INSERT--'
+    elseif l:mode ==# 'R'
+        return '--REPLACE--'
+    elseif l:mode ==# 'c'
+        return '--COMMAND--'
+    elseif l:mode ==# 't'
+        return '--TERMINAL--'
+    else
+        return '--' . toupper(l:mode) . '--'
+    endif
+endfunction
+
 " Paste mode indicator (used by the statusline)
 function! HasPaste()
     if &paste
-        return 'PASTE MODE  '
+        return 'PASTE MODE '
     endif
-    return ''
+    return ' '
 endfunction
 
 " Close a buffer without closing the window (used by <leader>bd)
