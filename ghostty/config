@@ -1,6 +1,5 @@
 # Fonts
 font-size = 14
-font-family = Monaspace Argon
 font-style-bold = SemiBold
 font-style-bold-italic = SemiBold Italic
 font-synthetic-style = no-bold,no-italic,no-bold-italic
@@ -21,6 +20,7 @@ macos-option-as-alt = true
 
 # Cursor
 shell-integration-features = no-cursor,ssh-env,ssh-terminfo
+cursor-style = block
 
 # Mouse and clipboard
 copy-on-select = false
