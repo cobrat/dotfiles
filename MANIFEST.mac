@@ -1,7 +1,0 @@
-zsh/zshrc|symlink|-|.zshrc
-zsh/zprofile|symlink|-|.zprofile
-.tmux.conf|symlink|
-starship/starship.toml|symlink|.config|starship.toml
-ghostty|symlink|.config
-helix|symlink|.config
-yazi|symlink|.config
