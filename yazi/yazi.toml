@@ -7,5 +7,5 @@ show_hidden = true
 
 [opener]
 edit = [
-  { run = "hx %s", desc = "Helix", block = true },
+  { run = "nvim %s", desc = "Neovim", block = true },
 ]

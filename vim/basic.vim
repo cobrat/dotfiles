@@ -25,8 +25,10 @@ nmap <leader>w :w!<cr>
 " :W saves with sudo (for permission-denied files)
 command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
 
-" Use the system clipboard
-set clipboard=unnamedplus
+" Use the system clipboard (only if compiled with clipboard support)
+if has('clipboard')
+    set clipboard=unnamedplus
+endif
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

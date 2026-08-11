@@ -9,3 +9,6 @@ zed/prompts/
 
 # Reasonix local runtime data
 .reasonix/
+
+# Backups created by install_mac.sh
+backup/

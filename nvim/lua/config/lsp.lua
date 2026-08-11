@@ -95,10 +95,7 @@ vim.lsp.config['luals'] = {
             diagnostics = { globals = { 'vim' } },
             workspace = {
                 checkThirdParty = false,
-                library = vim.list_extend(
-                    vim.api.nvim_get_runtime_file('', true),
-                    { '/home/tony/repos/oxwm/templates' }
-                ),
+                library = vim.api.nvim_get_runtime_file('', true),
             },
             telemetry = { enable = false },
         },
@@ -278,8 +275,10 @@ vim.filetype.add({
 })
 
 ---@diagnostic disable-next-line: invisible
-for name, _ in pairs(vim.lsp.config._configs) do
-    if name ~= '*' then
+for name, cfg in pairs(vim.lsp.config._configs) do
+    if name ~= '*' and type(cfg) == 'table' and type(cfg.cmd) == 'table'
+        and cfg.cmd[1] and vim.fn.executable(cfg.cmd[1]) == 1
+    then
         vim.lsp.enable(name)
     end
 end
