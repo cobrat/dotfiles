@@ -1,0 +1,172 @@
+local function github(repo)
+    return "https://github.com/" .. repo
+end
+
+vim.pack.add({
+    github("nvim-lua/plenary.nvim"),
+    github("nvim-tree/nvim-web-devicons"),
+    github("stevearc/oil.nvim"),
+    github("hrsh7th/nvim-cmp"),
+    github("hrsh7th/cmp-nvim-lsp"),
+    github("hrsh7th/cmp-path"),
+    github("hrsh7th/cmp-buffer"),
+    github("nvim-treesitter/nvim-treesitter"),
+    {
+        src = github("nvim-treesitter/nvim-treesitter-textobjects"),
+        version = "main",
+    },
+    github("nvim-telescope/telescope.nvim"),
+    {
+        src = github("ThePrimeagen/harpoon"),
+        version = "harpoon2",
+    },
+    github("rebelot/kanagawa.nvim"),
+    github("nvim-lualine/lualine.nvim"),
+    github("brenoprata10/nvim-highlight-colors"),
+    github("tpope/vim-fugitive"),
+    github("mbbill/undotree"),
+    github("ojroques/vim-oscyank"),
+}, {
+    confirm = false,
+})
+
+-- COLORSCHEME
+
+require("kanagawa").setup({
+    theme = "dragon",
+    transparent = true,
+    background = {
+        dark = "dragon",
+        light = "lotus",
+    },
+})
+
+vim.cmd.colorscheme("kanagawa-dragon")
+vim.cmd("hi Directory guibg=NONE")
+vim.cmd("hi SignColumn guibg=NONE")
+vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
+vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+vim.api.nvim_set_hl(0, "LineNr", { bg = "none" })
+
+-- FILE EXPLORER
+
+require("oil").setup({
+    default_file_explorer = true,
+    columns = {
+        "icon",
+        "permissions",
+        { "size", align = "right" },
+        { "mtime", format = "%Y-%m-%d %H:%M" },
+    },
+    view_options = {
+        show_hidden = true,
+        natural_order = "fast",
+        sort = {
+            { "type", "asc" },
+            { "name", "asc" },
+        },
+    },
+    skip_confirm_for_simple_edits = false,
+})
+
+-- COMPLETION
+
+local cmp = require("cmp")
+require("cmp_nvim_lsp").setup()
+cmp.register_source("path", require("cmp_path").new())
+cmp.register_source("buffer", require("cmp_buffer"))
+
+cmp.setup({
+    preselect = cmp.PreselectMode.Item,
+    completion = {
+        completeopt = "menu,menuone,noinsert",
+        autocomplete = { cmp.TriggerEvent.TextChanged },
+    },
+    window = { documentation = cmp.config.window.bordered() },
+    mapping = cmp.mapping.preset.insert({
+        ["<CR>"] = cmp.mapping.confirm({ select = false }),
+        ["<C-e>"] = cmp.mapping.abort(),
+        ["<C-Space>"] = cmp.mapping.complete(),
+        ["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
+        ["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
+        ["<C-f>"] = cmp.mapping.scroll_docs(4),
+        ["<C-u>"] = cmp.mapping.scroll_docs(-4),
+        ["<Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then cmp.select_next_item() else fallback() end
+        end, { "i", "s" }),
+        ["<S-Tab>"] = cmp.mapping(function()
+            if cmp.visible() then cmp.select_prev_item() end
+        end, { "i", "s" }),
+    }),
+    sources = {
+        { name = "nvim_lsp" },
+        { name = "path" },
+        { name = "buffer", keyword_length = 3 },
+    },
+})
+
+-- TELESCOPE
+
+local actions = require("telescope.actions")
+require("telescope").setup({
+    defaults = {
+        mappings = {
+            i = {
+                ["<C-k>"] = actions.move_selection_previous,
+                ["<C-j>"] = actions.move_selection_next,
+                ["<C-q>"] = actions.smart_send_to_qflist + actions.open_qflist,
+            },
+        },
+    },
+})
+
+local builtin = require("telescope.builtin")
+vim.keymap.set("n", "<leader>ff", builtin.find_files)
+vim.keymap.set("n", "<leader>fo", builtin.oldfiles)
+vim.keymap.set("n", "<leader>fq", builtin.quickfix)
+vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Telescope help tags" })
+vim.keymap.set("n", "<leader>fm", function()
+    builtin.man_pages({ sections = { "ALL" } })
+end, { desc = "Telescope man pages" })
+vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Telescope buffers" })
+vim.keymap.set("n", "<leader>fg", function()
+    builtin.grep_string({ search = vim.fn.input("Grep > ") })
+end)
+vim.keymap.set("n", "<leader>fc", function()
+    builtin.grep_string({ search = vim.fn.expand("%:t:r") })
+end, { desc = "Find current file" })
+vim.keymap.set("n", "<leader>fs", function()
+    builtin.grep_string({})
+end, { desc = "Find current string" })
+vim.keymap.set("n", "<leader>fi", function()
+    builtin.find_files({ cwd = "~/.config/nvim/" })
+end)
+
+-- HARPOON
+
+local harpoon = require("harpoon")
+harpoon:setup()
+
+vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end)
+vim.keymap.set("n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
+vim.keymap.set("n", "<C-p>", function() harpoon:list():prev() end)
+vim.keymap.set("n", "<C-n>", function() harpoon:list():next() end)
+
+vim.keymap.set("n", "<leader>fl", function()
+    local conf = require("telescope.config").values
+    local themes = require("telescope.themes")
+    local file_paths = {}
+    for _, item in ipairs(harpoon:list().items) do
+        table.insert(file_paths, item.value)
+    end
+    require("telescope.pickers").new(themes.get_ivy({ prompt_title = "Working List" }), {
+        finder = require("telescope.finders").new_table({ results = file_paths }),
+        previewer = conf.file_previewer({}),
+        sorter = conf.generic_sorter({}),
+    }):find()
+end, { desc = "Open harpoon window" })
+
+-- STATUSLINE AND COLOR HIGHLIGHTS
+
+require("lualine").setup({ options = { theme = "auto" } })
+require("nvim-highlight-colors").setup({})
