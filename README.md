@@ -46,9 +46,9 @@ repo — commit and push from `~/dotfiles`.
 - **Vim**: `basic.vim` is a complete base config, linked directly to `~/.vimrc`
   by `install_mac.sh` (no manual activation needed).
 - **Zsh**: `zsh/zshrc` is linked to `~/.zshrc` by `install_mac.sh` and enables
-  Starship (replaces Powerlevel10k). Restart your shell after installing.
+  Starship. Restart your shell after installing.
 - **Starship**: `zsh/zshrc` already enables it via
-  `eval "$(starship init zsh)"` (replaces Powerlevel10k). The config file is
+  `eval "$(starship init zsh)"`. The config file is
   linked to `~/.config/starship.toml`.
 - **Backups**: replaced files are moved into `backup/<timestamp>/` inside this
   repo (git-ignored); delete them once you're happy with the symlinked setup.
