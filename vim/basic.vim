@@ -172,10 +172,10 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 " Status Line
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set laststatus=2
-" Left: mode, paste-mode indicator, file path (relative to cwd), flags.
-" Right: line/column with labels.
-set statusline=%{Mode()}%{HasPaste()}%f\ %m%r%h%w
-set statusline+=%=Line:\ %l\ \ Column:\ %c
+" Left: one space, mode, then paste-mode indicator (2-space gap).
+" Right: file path (relative to cwd) + flags, then line/column; two trailing spaces.
+set statusline=\ %{Mode()}\ \ %{HasPaste()}
+set statusline+=%=%f\ %m%r%h%w\ \ Line:\ %l\ \ Column:\ %c\ \ 
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -248,7 +248,7 @@ function! HasPaste()
     if &paste
         return 'PASTE MODE '
     endif
-    return ' '
+    return ''
 endfunction
 
 " Close a buffer without closing the window (used by <leader>bd)

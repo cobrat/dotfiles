@@ -3,7 +3,7 @@
 [mgr]
 ratio       = [ 0, 1, 1 ]
 linemode    = "mtime"
-show_hidden = true
+show_hidden = false
 
 [opener]
 edit = [

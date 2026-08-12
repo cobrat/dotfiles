@@ -49,6 +49,24 @@ link() {
   local dst="$2"
   local label="$(show "$dst") <- $1"
 
+  # Refuse to create a link through an ancestor symlink that points into this
+  # repo: ln -s would create the new link *inside* the repo, pointing at
+  # itself (e.g. ghostty/config -> ghostty/config).
+  local ancestor
+  ancestor="$(dirname "$dst")"
+  while [ "$ancestor" != "$HOME" ] && [ "$ancestor" != "/" ]; do
+    if [ -L "$ancestor" ]; then
+      local link_target
+      link_target="$(readlink "$ancestor")"
+      if [ "$link_target" = "$DOTFILES_DIR" ] || [ "${link_target#"$DOTFILES_DIR"/}" != "$link_target" ]; then
+        warn "skip     $label (parent $ancestor is a symlink into this repo: $link_target)"
+        n_skipped=$((n_skipped + 1))
+        return 1
+      fi
+    fi
+    ancestor="$(dirname "$ancestor")"
+  done
+
   if [ ! -e "$src" ] && [ ! -L "$src" ]; then
     err "missing source: $src"
     n_skipped=$((n_skipped + 1))
@@ -94,7 +112,7 @@ say ""
 links=(
   "tmux/tmux.conf|$HOME/.tmux.conf"
   "vim/basic.vim|$HOME/.vimrc"
-  "ghostty/config|$HOME/.config/ghostty/config"
+  "ghostty|$HOME/.config/ghostty"
   "nvim|$HOME/.config/nvim"
   "starship/starship.toml|$HOME/.config/starship.toml"
   "yazi|$HOME/.config/yazi"
