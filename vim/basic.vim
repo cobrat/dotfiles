@@ -27,15 +27,15 @@ command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
 
 " Use the system clipboard (only if compiled with clipboard support)
 if has('clipboard')
-    set clipboard=unnamedplus
+    set clipboard=unnamed,unnamedplus
 endif
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Keep 7 lines visible above/below the cursor
-set so=7
+" Keep 8 lines visible above/below the cursor
+set so=8
 
 " Command-line completion menu
 set wildmenu
@@ -182,7 +182,7 @@ set statusline+=%=%f\ %m%r%h%w\ \ Line:\ %l\ \ Column:\ %c\ \
 " Editing
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " 0 jumps to the first non-blank character
-map 0 ^
+nnoremap 0 ^
 
 " Alt+J/K (Cmd+J/K on mac) move the current line
 nmap <M-j> mz:m+<cr>`z

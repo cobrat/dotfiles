@@ -71,8 +71,8 @@ else
   alias ls='ls -G'
   _LS_PREVIEW='ls -G'
 fi
+alias lg='lazygit'
 # alias vim='nvim'
-# alias c='clear'
 
 # Yazi: open yazi, then cd into the last visited directory on quit
 function yy() {
