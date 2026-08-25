@@ -24,6 +24,7 @@ zinit light Aloxaf/fzf-tab
 # Add in snippets
 zinit snippet OMZL::git.zsh
 zinit snippet OMZP::nvm
+zinit snippet OMZP::uv
 # zinit snippet OMZP::git
 # zinit snippet OMZP::sudo
 # zinit snippet OMZP::archlinux
@@ -64,6 +65,7 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview '${_LS_PREVIEW} $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview '${_LS_PREVIEW} $realpath'
 
 # Aliases
+
 # GNU ls supports --color; BSD ls (older macOS) uses -G.
 if ls --color=auto >/dev/null 2>&1; then
   alias ls='ls --color=auto'
@@ -73,7 +75,6 @@ else
   _LS_PREVIEW='ls -G'
 fi
 alias lg='lazygit'
-# alias vim='nvim'
 
 # Yazi: open yazi, then cd into the last visited directory on quit
 function yy() {
@@ -84,6 +85,9 @@ function yy() {
   fi
   rm -f -- "$tmp"
 }
+
+# binaries
+export PATH="/Users/wzh/.local/bin:$PATH"
 
 # Shell integrations
 eval "$(fzf --zsh)"
