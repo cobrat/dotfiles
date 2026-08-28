@@ -9,6 +9,7 @@ Personal dotfiles, managed as a git repo and applied via symlinks.
 | `tmux/` | `~/.tmux.conf` — tmux |
 | `vim/` | `~/.vimrc` — Vim (links `vim/basic.vim`) |
 | `ghostty/` | `~/.config/ghostty/` — Ghostty terminal |
+| `kitty/` | `~/.config/kitty/` — Kitty terminal |
 | `nvim/` | `~/.config/nvim/` — Neovim (see `nvim/README.md`) |
 | `starship/` | `~/.config/starship.toml` — Starship prompt |
 | `yazi/` | `~/.config/yazi/` — Yazi file manager |

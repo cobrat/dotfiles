@@ -113,6 +113,7 @@ links=(
   "tmux/tmux.conf|$HOME/.tmux.conf"
   "vim/basic.vim|$HOME/.vimrc"
   "ghostty|$HOME/.config/ghostty"
+  "kitty|$HOME/.config/kitty"
   "nvim|$HOME/.config/nvim"
   "starship/starship.toml|$HOME/.config/starship.toml"
   "yazi|$HOME/.config/yazi"
