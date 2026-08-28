@@ -1,5 +1,5 @@
-if [[ -f "/opt/homebrew/bin/brew" ]] then
-  # If you're using macOS, you'll want this enabled
+if [[ -f "/opt/homebrew/bin/brew" ]] && (( ! ${+commands[brew]} )); then
+  # Fallback for non-login shells; login shells already get this from ~/.zprofile
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
@@ -19,25 +19,57 @@ fi
 source "${ZINIT_HOME}/zinit.zsh"
 
 # Add in zsh plugins
-zinit light zsh-users/zsh-syntax-highlighting
+# Order matters (per upstream docs):
+#   - completions first, fzf-tab after compinit but BEFORE widget-wrapping plugins
+#   - zsh-autosuggestions before zsh-syntax-highlighting
+#   - zsh-syntax-highlighting must be sourced LAST
 zinit light zsh-users/zsh-completions
-zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
+zinit light zsh-users/zsh-autosuggestions
+zinit light zsh-users/zsh-syntax-highlighting
 
 # Add in snippets
 zinit snippet OMZL::git.zsh
-zinit snippet OMZP::nvm
 zinit snippet OMZP::uv
-# zinit snippet OMZP::git
-# zinit snippet OMZP::sudo
-# zinit snippet OMZP::archlinux
-# zinit snippet OMZP::aws
-# zinit snippet OMZP::kubectl
-# zinit snippet OMZP::kubectx
-# zinit snippet OMZP::command-not-found
 
-# Load completions
-autoload -Uz compinit && compinit
+# nvm lazy loading: source nvm.sh only on first use (~250ms saved at startup).
+# The default version's bin dir is resolved into PATH eagerly so node is
+# immediately available (LSP servers, scripts, etc.) before nvm.sh ever loads.
+export NVM_DIR="$HOME/.nvm"
+
+# Resolve the default version by chasing nvm alias chains (e.g. lts/* -> lts/krypton -> v24.x.x)
+() {
+  local _p="$NVM_DIR/alias/default" _v _i
+  for (( _i = 0; _i < 5; _i++ )); do
+    [[ -f "$_p" ]] || break
+    _v="$(<"$_p")"
+    _p="$NVM_DIR/versions/node/$_v"
+    [[ -d "$_p/bin" ]] && break
+    _p="$NVM_DIR/alias/$_v"
+  done
+  [[ -d "$_p/bin" ]] && path=("$_p/bin" $path)
+}
+
+function _lazy_nvm_load() {
+  unfunction nvm node npm npx pnpm yarn corepack 2>/dev/null
+  zinit snippet OMZP::nvm   # full nvm.sh + OMZ .nvmrc auto-use hooks
+  zinit cdreplay -q
+}
+function nvm()      { _lazy_nvm_load; nvm "$@"; }
+function node()     { _lazy_nvm_load; node "$@"; }
+function npm()      { _lazy_nvm_load; npm "$@"; }
+function npx()      { _lazy_nvm_load; npx "$@"; }
+function pnpm()     { _lazy_nvm_load; pnpm "$@"; }
+function yarn()     { _lazy_nvm_load; yarn "$@"; }
+function corepack() { _lazy_nvm_load; corepack "$@"; }
+
+# Load completions (cached: full rescan only when .zcompdump is older than 24h)
+autoload -Uz compinit
+if [[ -n "${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+24)" ]]; then
+  compinit
+else
+  compinit -C
+fi
 
 zinit cdreplay -q
 
@@ -48,33 +80,30 @@ bindkey '^n' history-search-forward
 bindkey '^[w' kill-region
 
 # History
-HISTSIZE=5000
+HISTSIZE=50000
 HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE
-HISTDUP=erase
 setopt appendhistory
 setopt sharehistory
 setopt hist_ignore_space
 setopt hist_ignore_all_dups
 setopt hist_save_no_dups
-setopt hist_ignore_dups
 setopt hist_find_no_dups
 
 # Completion styling
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview '${_LS_PREVIEW} $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview '${_LS_PREVIEW} $realpath'
+zstyle ':fzf-tab:complete:(cd|__zoxide_z):*' fzf-preview '${_LS_PREVIEW} $realpath'
 
 # Aliases
 
 # GNU ls supports --color; BSD ls (older macOS) uses -G.
 if ls --color=auto >/dev/null 2>&1; then
-  alias ls='ls --color=auto'
+  alias ls='ls -la --color=auto'
   _LS_PREVIEW='ls --color=auto'
 else
-  alias ls='ls -G'
+  alias ls='ls -la -G'
   _LS_PREVIEW='ls -G'
 fi
 alias lg='lazygit'
@@ -84,7 +113,8 @@ command -v kitten >/dev/null 2>&1 && alias ssh="kitten ssh"
 
 # Yazi: open yazi, then cd into the last visited directory on quit
 function yy() {
-  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+  local tmp cwd
+  tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
   yazi "$@" --cwd-file="$tmp"
   if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
     builtin cd -- "$cwd"
@@ -92,8 +122,10 @@ function yy() {
   rm -f -- "$tmp"
 }
 
-# binaries
-export PATH="/Users/wzh/.local/bin:$PATH"
+# binaries (idempotent: skip if already inherited from parent environment)
+if [[ -d "$HOME/.local/bin" ]] && (( ! ${path[(Ie)$HOME/.local/bin]} )); then
+  path=("$HOME/.local/bin" $path)
+fi
 
 # Shell integrations
 eval "$(fzf --zsh)"
