@@ -5,13 +5,11 @@ This document provides a simple and organized overview of all the custom keybind
 ## Configuration Structure
 
 | File | Responsibility |
-|------|----------------|
+| ------ | ---------------- |
 | `lua/config/core.lua` | Editor options and general keymaps |
 | `lua/config/plugins.lua` | Plugin installation and configuration |
 | `lua/config/lsp.lua` | Diagnostics, LSP behavior, and language servers |
 | `lua/config/treesitter.lua` | Parsers, highlighting, and text objects |
-| `lua/config/editing.lua` | Documentation generation and quick formatting |
-| `lua/config/ui.lua` | Sticky code context |
 | `after/ftplugin/*.lua` | Filetype-local overrides |
 
 ## General Keybinds
@@ -107,12 +105,14 @@ This document provides a simple and organized overview of all the custom keybind
 
 | Mode | Key             | Action                                                                                      |
 |------|-----------------|---------------------------------------------------------------------------------------------|
-| `n`  | `<leader>dg`    | Generate a documentation comment for the current function                                   |
+| `n`  | `<leader>th`    | Toggle sticky context header (treesitter-context)                                           |
+| `n`  | `<leader>dg`    | Generate a doc comment for the current function (Neogen)                                    |
+| `n`  | `<leader>qq`    | Split/join block at cursor (treesj)                                                          |
 | `n`  | `<leader>s`     | Replace all instances of the word under the cursor on the current line                      |
 
 ---
 
-# LSP Servers
+## LSP Servers
 
 LSP configuration lives in `lua/config/lsp.lua` and uses Neovim's native
 `vim.lsp.config()` interface. Server executables are installed and managed
@@ -120,3 +120,13 @@ outside Neovim; Mason is not used.
 
 Configured servers: Lua, CSS, PHP, TypeScript, Zig, Nix, Rust, C/C++, C3, D,
 JSON, Haskell, Go, and Templ.
+
+Server binaries are looked up on `PATH`; a server is enabled only if its
+binary exists (explicit list at the bottom of `lsp.lua`, keep it in sync
+with the `vim.lsp.config` blocks above).
+
+## Tree-sitter
+
+Parsers are auto-installed on startup (`treesitter.lua`) and cover every
+LSP language above plus editing basics (bash/sh, markdown, json, vim, query).
+Filetype fallbacks: `less` uses the `css` parser, `sh` uses `bash`.

@@ -26,6 +26,9 @@ vim.pack.add({
     github("tpope/vim-fugitive"),
     github("mbbill/undotree"),
     github("ojroques/vim-oscyank"),
+    github("nvim-treesitter/nvim-treesitter-context"),
+    github("danymat/neogen"),
+    github("Wansmer/treesj"),
 }, {
     confirm = false,
 })
@@ -72,10 +75,6 @@ require("oil").setup({
 -- COMPLETION
 
 local cmp = require("cmp")
-require("cmp_nvim_lsp").setup()
-cmp.register_source("path", require("cmp_path").new())
-cmp.register_source("buffer", require("cmp_buffer"))
-
 cmp.setup({
     preselect = cmp.PreselectMode.Item,
     completion = {
@@ -165,6 +164,30 @@ vim.keymap.set("n", "<leader>fl", function()
         sorter = conf.generic_sorter({}),
     }):find()
 end, { desc = "Open harpoon window" })
+
+-- STICKY CONTEXT
+
+require("treesitter-context").setup({})
+
+vim.keymap.set("n", "<leader>th", function()
+    require("treesitter-context").toggle()
+end, { desc = "Toggle sticky context header" })
+
+-- DOC COMMENT GENERATION
+
+require("neogen").setup({ snippet_engine = "nvim" })
+
+vim.keymap.set("n", "<leader>dg", function()
+    require("neogen").generate()
+end, { desc = "Generate doc comment" })
+
+-- SPLIT / JOIN
+
+require("treesj").setup({ use_default_keymaps = false })
+
+vim.keymap.set("n", "<leader>qq", function()
+    require("treesj").toggle()
+end, { desc = "Split/join block" })
 
 -- STATUSLINE AND COLOR HIGHLIGHTS
 

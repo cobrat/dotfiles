@@ -1,16 +1,48 @@
 -- TREE-SITTER
 
+-- Parsers for every language with an LSP server (see lsp.lua), plus basics
+-- for editing dotfiles and docs. nvim-treesitter does NOT auto-install
+-- dependencies, so they are listed explicitly:
+--   cpp/objc -> c, scss -> css, markdown -> markdown_inline, php -> php_only,
+--   html -> html_tags, tsx -> ecma+jsx+typescript, typescript -> ecma
+-- plus the comment-injection parsers (luadoc/jsdoc/phpdoc).
 local parsers = {
-    "c",
-    "lua",
+    -- editing basics
+    "bash", "json", "markdown", "markdown_inline", "query", "vim", "vimdoc",
+    -- C family (clangd)
+    "c", "cpp", "objc",
+    -- Lua (luals)
+    "lua", "luadoc",
     "python",
+    -- Go (gopls, templ)
+    "go", "gomod", "gowork", "gotmpl", "templ",
+    -- rust_analyzer, zls, nil_ls, serve_d, c3lsp, hls
+    "rust", "zig", "nix", "d", "c3", "haskell",
+    -- PHP (intelephense)
+    "php", "php_only", "phpdoc",
+    -- Web (cssls, ts_ls)
+    "css", "scss", "html", "html_tags",
+    "ecma", "jsx", "javascript", "jsdoc", "typescript", "tsx",
 }
 
+-- Vim filetypes that should start highlighting (mapped via
+-- vim.treesitter.language.get_lang; typescriptreact->tsx,
+-- javascriptreact->javascript, jsonc->json are built in).
 local filetypes = {
-    "c",
-    "lua",
-    "python",
+    "bash", "json", "jsonc", "markdown", "query", "vim", "vimdoc",
+    "c", "cpp", "objc",
+    "lua", "python",
+    "go", "gomod", "gowork", "gotmpl", "templ",
+    "rust", "zig", "nix", "d", "c3", "haskell",
+    "php",
+    "css", "scss", "less", "html",
+    "javascript", "javascriptreact", "typescript", "typescriptreact",
+    "sh",
 }
+
+-- No dedicated less/sh parsers; css and bash are close/same enough.
+vim.treesitter.language.register('css', 'less')
+vim.treesitter.language.register('bash', 'sh')
 
 local treesitter = require("nvim-treesitter")
 
@@ -19,7 +51,11 @@ treesitter.setup({
 })
 
 -- Missing parsers are installed asynchronously. Existing parsers are a no-op.
-treesitter.install(parsers)
+-- A parser that fails to install (e.g. no compiler) must not abort startup.
+local ok, task = pcall(treesitter.install, parsers)
+if not ok then
+    vim.notify(tostring(task), vim.log.levels.WARN, { title = "Tree-sitter install" })
+end
 
 local group = vim.api.nvim_create_augroup("TreesitterConfig", { clear = true })
 vim.api.nvim_create_autocmd("FileType", {

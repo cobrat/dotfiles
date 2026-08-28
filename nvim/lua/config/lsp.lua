@@ -1,7 +1,9 @@
 -- LANGUAGE SERVER PROTOCOL
 
+-- Defaults merged into every server config below.
 vim.lsp.config('*', {
     root_markers = { '.git' },
+    capabilities = require("cmp_nvim_lsp").default_capabilities(),
 })
 
 vim.diagnostic.config({
@@ -35,8 +37,12 @@ function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
     return orig(contents, syntax, opts, ...)
 end
 
+-- clear = true: re-sourcing the config (<leader>rl) replaces old autocmds
+-- instead of stacking duplicate LspAttach callbacks.
+local lsp_augroup = vim.api.nvim_create_augroup('my.lsp', { clear = true })
+
 vim.api.nvim_create_autocmd('LspAttach', {
-    group = vim.api.nvim_create_augroup('my.lsp', {}),
+    group = lsp_augroup,
     callback = function(args)
         local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
         local buf    = args.buf
@@ -83,12 +89,11 @@ vim.api.nvim_create_autocmd('LspAttach', {
         end
     end,
 })
-local caps = require("cmp_nvim_lsp").default_capabilities()
+
 vim.lsp.config['luals'] = {
     cmd = { 'lua-language-server' },
     filetypes = { 'lua' },
     root_markers = { { '.luarc.json', '.luarc.jsonc' }, '.git' },
-    capabilities = caps,
     settings = {
         Lua = {
             runtime = { version = 'LuaJIT' },
@@ -106,7 +111,6 @@ vim.lsp.config['cssls'] = {
     cmd = { 'vscode-css-language-server', '--stdio' },
     filetypes = { 'css', 'scss', 'less' },
     root_markers = { 'package.json', '.git' },
-    capabilities = caps,
     settings = {
         css = { validate = true },
         scss = { validate = true },
@@ -118,7 +122,6 @@ vim.lsp.config['phpls'] = {
     cmd = { 'intelephense', '--stdio' },
     filetypes = { 'php' },
     root_markers = { 'composer.json', '.git' },
-    capabilities = caps,
     settings = {
         intelephense = {
             files = {
@@ -135,7 +138,6 @@ vim.lsp.config['ts_ls'] = {
         'typescript', 'typescriptreact', 'typescript.tsx',
     },
     root_markers = { 'package.json', 'tsconfig.json', 'jsconfig.json', '.git' },
-    capabilities = caps,
     settings = {
         completions = {
             completeFunctionCalls = true,
@@ -147,7 +149,6 @@ vim.lsp.config['zls'] = {
     cmd = { 'zls' },
     filetypes = { 'zig', 'zir' },
     root_markers = { 'zls.json', 'build.zig', '.git' },
-    capabilities = caps,
     settings = {
         zls = {
             enable_build_on_save = true,
@@ -162,7 +163,6 @@ vim.lsp.config['nil_ls'] = {
     cmd = { 'nil' },
     filetypes = { 'nix' },
     root_markers = { 'flake.nix', 'default.nix', '.git' },
-    capabilities = caps,
     settings = {
         ['nil'] = {
             formatting = {
@@ -176,7 +176,6 @@ vim.lsp.config['rust_analyzer'] = {
     cmd = { 'rust-analyzer' },
     filetypes = { 'rust' },
     root_markers = { 'Cargo.toml', 'rust-project.json', '.git' },
-    capabilities = caps,
     settings = {
         ['rust-analyzer'] = {
             cargo = { allFeatures = true },
@@ -199,7 +198,6 @@ vim.lsp.config['clangd'] = {
     },
     filetypes = { 'c', 'cpp', 'objc', 'objcpp' },
     root_markers = { 'compile_commands.json', '.clangd', 'configure.ac', 'Makefile', '.git' },
-    capabilities = caps,
     -- init_options = {
     --     fallbackFlags = { '-std=c23' }, -- Default to C23
     -- },
@@ -209,28 +207,24 @@ vim.lsp.config['c3lsp'] = {
     cmd = { 'c3-lsp' },
     filetypes = { 'c3' },
     root_markers = { 'project.json', '.git' },
-    capabilities = caps,
 }
 
 vim.lsp.config['serve_d'] = {
     cmd = { 'serve-d' },
     filetypes = { 'd' },
     root_markers = { 'dub.sdl', 'dub.json', '.git' },
-    capabilities = caps,
 }
 
 vim.lsp.config['jsonls'] = {
     cmd = { 'vscode-json-languageserver', '--stdio' },
     filetypes = { 'json', 'jsonc' },
     root_markers = { 'package.json', '.git', 'config.jsonc' },
-    capabilities = caps,
 }
 
 vim.lsp.config['hls'] = {
     cmd = { 'haskell-language-server-wrapper', '--lsp' },
     filetypes = { 'haskell', 'lhaskell' },
     root_markers = { 'stack.yaml', 'cabal.project', 'package.yaml', '*.cabal', 'hie.yaml', '.git' },
-    capabilities = caps,
     settings = {
         haskell = {
             formattingProvider = 'fourmolu',
@@ -245,7 +239,6 @@ vim.lsp.config['gopls'] = {
     cmd = { 'gopls' },
     filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
     root_markers = { 'go.mod', 'go.work', '.git' },
-    capabilities = caps,
     settings = {
         gopls = {
             analyses = {
@@ -262,7 +255,6 @@ vim.lsp.config['templ'] = {
     cmd = { 'templ', 'lsp' },
     filetypes = { 'templ' },
     root_markers = { 'go.mod', '.git' },
-    capabilities = caps,
 }
 
 vim.filetype.add({
@@ -274,11 +266,28 @@ vim.filetype.add({
     },
 })
 
----@diagnostic disable-next-line: invisible
-for name, cfg in pairs(vim.lsp.config._configs) do
-    if name ~= '*' and type(cfg) == 'table' and type(cfg.cmd) == 'table'
-        and cfg.cmd[1] and vim.fn.executable(cfg.cmd[1]) == 1
-    then
+-- Enable every server whose binary is on PATH. Kept as an explicit list so
+-- we don't depend on the private `vim.lsp.config._configs` table, which can
+-- change between Neovim versions. Keep in sync with the configs above.
+local servers = {
+    luals         = 'lua-language-server',
+    cssls         = 'vscode-css-language-server',
+    phpls         = 'intelephense',
+    ts_ls         = 'typescript-language-server',
+    zls           = 'zls',
+    nil_ls        = 'nil',
+    rust_analyzer = 'rust-analyzer',
+    clangd        = 'clangd',
+    c3lsp         = 'c3-lsp',
+    serve_d       = 'serve-d',
+    jsonls        = 'vscode-json-languageserver',
+    hls           = 'haskell-language-server-wrapper',
+    gopls         = 'gopls',
+    templ         = 'templ',
+}
+
+for name, bin in pairs(servers) do
+    if vim.fn.executable(bin) == 1 then
         vim.lsp.enable(name)
     end
 end

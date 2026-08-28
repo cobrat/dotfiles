@@ -107,17 +107,13 @@ vim.keymap.set("n", "<leader>rl", "<cmd>source ~/.config/nvim/init.lua<cr>")
 
 vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
 
--- Quickfix list stuff
+-- Quickfix list stuff (next/prev via <C-j>/<C-k> above)
 vim.keymap.set("n", "<leader>cl", ":cclose<CR>", { silent = true })
 vim.keymap.set("n", "<leader>co", ":copen<CR>", { silent = true })
-vim.keymap.set("n", "<leader>cn", ":cnext<CR>zz")
-vim.keymap.set("n", "<leader>cp", ":cprev<CR>zz")
 vim.keymap.set("n", "<leader>li", ":checkhealth vim.lsp<CR>", { desc = "LSP Info" })
 
 -- run make in current working directory
 vim.keymap.set("n", "<leader>mm", "<cmd>make<CR>")
 
 -- source file
-vim.keymap.set("n", "<leader><leader>", function()
-    vim.cmd("so")
-end)
+vim.keymap.set("n", "<leader><leader>", "<cmd>so<cr>", { desc = "Source current file" })
