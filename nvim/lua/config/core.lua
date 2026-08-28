@@ -52,6 +52,36 @@ set.undofile = true
 -- incremental search
 set.incsearch = true
 
+-- STATUSLINE: plain text, no icons/colors. mode + git branch via fugitive.
+-- left: mode, file, modified/readonly/help/preview flags
+-- right: git branch, filetype, line:col, percent
+local MODE_NAMES = {
+    n = 'NORMAL', v = 'VISUAL', V = 'V-LINE', ['\22'] = 'V-BLOCK',
+    i = 'INSERT', R = 'REPLACE', c = 'COMMAND', t = 'TERM',
+}
+
+function _G.stl_mode()
+    return MODE_NAMES[vim.fn.mode():sub(1, 1)] or 'OTHER'
+end
+
+-- last two path components of the full path, cwd-independent; paths under
+-- $HOME keep the `~` prefix (e.g. nvim/init.lua, ~/.zshrc, dotfiles/README.md)
+function _G.stl_file()
+    local name = vim.api.nvim_buf_get_name(0)
+    if name == '' then return 'No Name' end
+    local parts = vim.split(vim.fn.fnamemodify(name, ':~'), '/')
+    local n = #parts
+    if n >= 2 then return parts[n - 1] .. '/' .. parts[n] end
+    return parts[n]
+end
+
+vim.o.statusline = table.concat({
+    '%<',
+    ' %{v:lua.stl_mode()} [%{v:lua.stl_file()}]%m%r%h%w',
+    '%=',
+    '%{FugitiveStatusline()}%y %l:%c %p%% ',
+})
+
 -- faster cursor hold
 set.updatetime = 50
 

@@ -4,7 +4,6 @@ end
 
 vim.pack.add({
     github("nvim-lua/plenary.nvim"),
-    github("nvim-tree/nvim-web-devicons"),
     github("stevearc/oil.nvim"),
     github("hrsh7th/nvim-cmp"),
     github("hrsh7th/cmp-nvim-lsp"),
@@ -21,7 +20,6 @@ vim.pack.add({
         version = "harpoon2",
     },
     github("rebelot/kanagawa.nvim"),
-    github("nvim-lualine/lualine.nvim"),
     github("brenoprata10/nvim-highlight-colors"),
     github("tpope/vim-fugitive"),
     github("mbbill/undotree"),
@@ -56,7 +54,6 @@ vim.api.nvim_set_hl(0, "LineNr", { bg = "none" })
 require("oil").setup({
     default_file_explorer = true,
     columns = {
-        "icon",
         "permissions",
         { "size", align = "right" },
         { "mtime", format = "%Y-%m-%d %H:%M" },
@@ -191,5 +188,4 @@ end, { desc = "Split/join block" })
 
 -- STATUSLINE AND COLOR HIGHLIGHTS
 
-require("lualine").setup({ options = { theme = "auto" } })
 require("nvim-highlight-colors").setup({})
