@@ -5,7 +5,7 @@ Personal dotfiles, managed as a git repo and applied via symlinks.
 ## What's inside
 
 | Path | Applies to |
-|---|---|
+| --- | --- |
 | `tmux/` | `~/.tmux.conf` — tmux |
 | `vim/` | `~/.vimrc` — Vim (links `vim/basic.vim`) |
 | `ghostty/` | `~/.config/ghostty/` — Ghostty terminal |

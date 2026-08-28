@@ -23,10 +23,10 @@ else
   C_RESET= C_BOLD= C_DIM= C_GREEN= C_YELLOW= C_RED= C_CYAN=
 fi
 
-say()  { printf '%s\n' "$*"; }
-ok()   { printf '%s\n' "${C_GREEN}✔ ${C_RESET}$*"; }
+say() { printf '%s\n' "$*"; }
+ok() { printf '%s\n' "${C_GREEN}✔ ${C_RESET}$*"; }
 warn() { printf '%s\n' "${C_YELLOW}! ${C_RESET}$*" >&2; }
-err()  { printf '%s\n' "${C_RED}✘ ${C_RESET}$*" >&2; }
+err() { printf '%s\n' "${C_RED}✘ ${C_RESET}$*" >&2; }
 info() { printf '%s\n' "${C_BOLD}${C_CYAN}$*${C_RESET}"; }
 
 # show <path> -> short ~/... form for paths under $HOME
