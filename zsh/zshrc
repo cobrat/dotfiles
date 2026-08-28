@@ -3,6 +3,9 @@ if [[ -f "/opt/homebrew/bin/brew" ]] then
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
+# Locale: English messages/collation, UTF-8 content
+export LANG=en_US.UTF-8
+
 # Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
@@ -75,6 +78,9 @@ else
   _LS_PREVIEW='ls -G'
 fi
 alias lg='lazygit'
+
+# kitty ssh kitten: shell integration + terminfo on remote hosts (kitty only)
+command -v kitten >/dev/null 2>&1 && alias ssh="kitten ssh"
 
 # Yazi: open yazi, then cd into the last visited directory on quit
 function yy() {
