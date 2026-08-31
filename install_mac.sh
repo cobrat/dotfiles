@@ -51,7 +51,7 @@ link() {
 
   # Refuse to create a link through an ancestor symlink that points into this
   # repo: ln -s would create the new link *inside* the repo, pointing at
-  # itself (e.g. ghostty/config -> ghostty/config).
+  # itself.
   local ancestor
   ancestor="$(dirname "$dst")"
   while [ "$ancestor" != "$HOME" ] && [ "$ancestor" != "/" ]; do
@@ -112,7 +112,6 @@ say ""
 links=(
   "tmux/tmux.conf|$HOME/.tmux.conf"
   "vim/basic.vim|$HOME/.vimrc"
-  "ghostty|$HOME/.config/ghostty"
   "kitty|$HOME/.config/kitty"
   "nvim|$HOME/.config/nvim"
   "yazi|$HOME/.config/yazi"
