@@ -41,6 +41,45 @@ require("kanagawa").setup({
         dark = "dragon",
         light = "lotus",
     },
+    -- soft, layered statusline (segments built in core.lua stl()); applied on
+    -- every theme load so both dragon and lotus stay in-theme
+    overrides = function(colors)
+        local p = colors.palette
+        if vim.o.background == "light" then
+            return {
+                StatusLine = { fg = p.lotusInk1, bg = p.lotusWhite0 },
+                StatusLineNC = { fg = p.lotusGray3, bg = "none" },
+                StlFile = { fg = p.lotusInk1, bg = p.lotusWhite0 },
+                StlInfo = { fg = p.lotusGray2, bg = p.lotusWhite0 },
+                StlNC = { fg = p.lotusGray3, bg = "none" },
+                StlModeNormal = { fg = p.lotusGreen, bg = p.lotusWhite4 },
+                StlModeInsert = { fg = p.lotusBlue4, bg = p.lotusWhite4 },
+                StlModeReplace = { fg = p.lotusRed, bg = p.lotusWhite4 },
+                StlModeVisual = { fg = p.lotusViolet4, bg = p.lotusWhite4 },
+                StlModeCommand = { fg = p.lotusYellow, bg = p.lotusWhite4 },
+                StlModeTerm = { fg = p.lotusTeal1, bg = p.lotusWhite4 },
+                StlModeOther = { fg = p.lotusGray2, bg = p.lotusWhite4 },
+            }
+        end
+        return {
+            -- active bar: barely-there dark lift over the transparent bg
+            StatusLine = { fg = p.dragonWhite, bg = p.dragonBlack2 },
+            -- inactive windows: flat (no bg) and clearly dimmer
+            StatusLineNC = { fg = p.dragonBlack6, bg = "none" },
+            -- text tiers: file (bright) > info (mid gray) > inactive (dim)
+            StlFile = { fg = p.dragonWhite, bg = p.dragonBlack2 },
+            StlInfo = { fg = p.dragonGray, bg = p.dragonBlack2 },
+            StlNC = { fg = p.dragonBlack6, bg = "none" },
+            -- per-mode chips: muted theme accents on a slightly lighter pad
+            StlModeNormal = { fg = p.dragonGreen, bg = p.dragonBlack4 },
+            StlModeInsert = { fg = p.dragonBlue2, bg = p.dragonBlack4 },
+            StlModeReplace = { fg = p.dragonRed, bg = p.dragonBlack4 },
+            StlModeVisual = { fg = p.dragonViolet, bg = p.dragonBlack4 },
+            StlModeCommand = { fg = p.dragonYellow, bg = p.dragonBlack4 },
+            StlModeTerm = { fg = p.dragonTeal, bg = p.dragonBlack4 },
+            StlModeOther = { fg = p.dragonGray2, bg = p.dragonBlack4 },
+        }
+    end,
 })
 
 vim.cmd.colorscheme("kanagawa-dragon")

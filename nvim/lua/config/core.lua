@@ -52,12 +52,19 @@ set.undofile = true
 -- incremental search
 set.incsearch = true
 
--- STATUSLINE: plain text, no icons/colors. mode + git branch via fugitive.
+-- STATUSLINE: soft and layered. active window: per-mode tinted chip + bright
+-- file + mid-gray info on a faint dark bar; inactive windows: one flat dim
+-- line. highlight groups are defined in the kanagawa overrides (plugins.lua).
 -- left: mode, file, modified/readonly/help/preview flags
 -- right: git branch, filetype, line:col, percent
 local MODE_NAMES = {
     n = 'NORMAL', v = 'VISUAL', V = 'V-LINE', ['\22'] = 'V-BLOCK',
     i = 'INSERT', R = 'REPLACE', c = 'COMMAND', t = 'TERM',
+}
+local MODE_HL = {
+    n = 'StlModeNormal', i = 'StlModeInsert', R = 'StlModeReplace',
+    v = 'StlModeVisual', V = 'StlModeVisual', ['\22'] = 'StlModeVisual',
+    c = 'StlModeCommand', t = 'StlModeTerm',
 }
 
 function _G.stl_mode()
@@ -82,12 +89,24 @@ function _G.stl_git()
     return ('[(%s) +%d -%d ~%d]  '):format(d.head, d.added or 0, d.removed or 0, d.changed or 0)
 end
 
-vim.o.statusline = table.concat({
-    '%<',
-    ' %{v:lua.stl_mode()}  %{v:lua.stl_file()}%m%r%h%w',
-    '%=',
-    '%{v:lua.stl_git()}%{&filetype}  %l:%c  %p%% ',
-})
+-- %! renderer: called per window while drawing; g:statusline_winid tells us
+-- which window the statusline belongs to, so inactive windows get their own
+-- flat dim variant and the mode chip only shows in the focused window
+function _G.stl()
+    if vim.g.statusline_winid ~= vim.api.nvim_get_current_win() then
+        return '%<%#StlNC# %{v:lua.stl_file()}%m%r%h%w %=%{v:lua.stl_git()}%{&filetype}  %l:%c  %p%% %*'
+    end
+    local m = vim.fn.mode():sub(1, 1)
+    return table.concat({
+        '%<',
+        '%#', MODE_HL[m] or 'StlModeOther', '# ', stl_mode(), ' %*',
+        '%#StlFile#  %{v:lua.stl_file()}%m%r%h%w %*',
+        '%=',
+        '%#StlInfo#%{v:lua.stl_git()}%{&filetype}  %l:%c  %p%% %*',
+    })
+end
+
+vim.o.statusline = '%!v:lua.stl()'
 
 -- faster cursor hold
 set.updatetime = 50
