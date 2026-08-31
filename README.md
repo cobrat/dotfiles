@@ -11,9 +11,8 @@ Personal dotfiles, managed as a git repo and applied via symlinks.
 | `ghostty/` | `~/.config/ghostty/` — Ghostty terminal |
 | `kitty/` | `~/.config/kitty/` — Kitty terminal |
 | `nvim/` | `~/.config/nvim/` — Neovim (see `nvim/README.md`) |
-| `starship/` | `~/.config/starship.toml` — Starship prompt |
 | `yazi/` | `~/.config/yazi/` — Yazi file manager |
-| `zsh/` | `~/.zshrc` — Zsh (Starship prompt) |
+| `zsh/` | `~/.zshrc` — Zsh (Pure prompt) |
 
 ## Install
 
@@ -46,10 +45,7 @@ repo — commit and push from `~/dotfiles`.
   Conventional Commits `commit-msg` hook is enforced.
 - **Vim**: `basic.vim` is a complete base config, linked directly to `~/.vimrc`
   by `install_mac.sh` (no manual activation needed).
-- **Zsh**: `zsh/zshrc` is linked to `~/.zshrc` by `install_mac.sh` and enables
-  Starship. Restart your shell after installing.
-- **Starship**: `zsh/zshrc` already enables it via
-  `eval "$(starship init zsh)"`. The config file is
-  linked to `~/.config/starship.toml`.
+- **Zsh**: `zsh/zshrc` is linked to `~/.zshrc` by `install_mac.sh` and loads the
+  Pure prompt via zinit. Restart your shell after installing.
 - **Backups**: replaced files are moved into `backup/<timestamp>/` inside this
   repo (git-ignored); delete them once you're happy with the symlinked setup.

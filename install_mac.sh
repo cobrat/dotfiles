@@ -115,7 +115,6 @@ links=(
   "ghostty|$HOME/.config/ghostty"
   "kitty|$HOME/.config/kitty"
   "nvim|$HOME/.config/nvim"
-  "starship/starship.toml|$HOME/.config/starship.toml"
   "yazi|$HOME/.config/yazi"
   "zsh/zshrc|$HOME/.zshrc"
 )

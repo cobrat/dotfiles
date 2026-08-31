@@ -25,6 +25,14 @@ source "${ZINIT_HOME}/zinit.zsh"
 #   - zsh-syntax-highlighting must be sourced LAST
 zinit light zsh-users/zsh-completions
 zinit light Aloxaf/fzf-tab
+
+# Prompt: Pure — pure zsh, async git status, no external binary per prompt.
+# async.zsh must be sourced before pure.zsh (hence pick + src).
+# ASCII prompt symbol (pure's default is ❯); read by pure at load time.
+export PURE_PROMPT_SYMBOL=">"
+zinit ice pick"async.zsh" src"pure.zsh"
+zinit light sindresorhus/pure
+
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-syntax-highlighting
 
@@ -130,4 +138,3 @@ fi
 # Shell integrations
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
-eval "$(starship init zsh)"
