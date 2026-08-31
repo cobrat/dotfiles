@@ -12,3 +12,8 @@ zed/prompts/
 
 # Backups created by install_mac.sh
 backup/
+
+# Python tooling caches
+.ruff_cache/
+__pycache__/
+*.pyc
