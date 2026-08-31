@@ -11,7 +11,7 @@ Personal dotfiles, managed as a git repo and applied via symlinks.
 | `kitty/` | `~/.config/kitty/` — Kitty terminal |
 | `nvim/` | `~/.config/nvim/` — Neovim (see `nvim/README.md`) |
 | `yazi/` | `~/.config/yazi/` — Yazi file manager |
-| `zsh/` | `~/.zshrc` — Zsh (Pure prompt) |
+| `zsh/` | `~/.zshrc` — Zsh (built-in vcs_info prompt) |
 
 ## Install
 
@@ -44,7 +44,8 @@ repo — commit and push from `~/dotfiles`.
   Conventional Commits `commit-msg` hook is enforced.
 - **Vim**: `basic.vim` is a complete base config, linked directly to `~/.vimrc`
   by `install_mac.sh` (no manual activation needed).
-- **Zsh**: `zsh/zshrc` is linked to `~/.zshrc` by `install_mac.sh` and loads the
-  Pure prompt via zinit. Restart your shell after installing.
+- **Zsh**: `zsh/zshrc` is linked to `~/.zshrc` by `install_mac.sh` and sets up
+  a minimal ASCII prompt using zsh's built-in `vcs_info`. Restart your shell
+  after installing.
 - **Backups**: replaced files are moved into `backup/<timestamp>/` inside this
   repo (git-ignored); delete them once you're happy with the symlinked setup.

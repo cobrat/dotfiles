@@ -1,6 +1,10 @@
-if [[ -f "/opt/homebrew/bin/brew" ]] && (( ! ${+commands[brew]} )); then
-  # Fallback for non-login shells; login shells already get this from ~/.zprofile
-  eval "$(/opt/homebrew/bin/brew shellenv)"
+# Homebrew fallback for non-login shells (login shells already get the full
+# `eval "$(brew shellenv)"` from ~/.zprofile). Hardcoded instead of eval-ing
+# the brew script to save a ~10ms subprocess; skip if brew already in PATH.
+if [[ -f /opt/homebrew/bin/brew ]] && (( ! ${+commands[brew]} )); then
+  export HOMEBREW_PREFIX="/opt/homebrew" HOMEBREW_CELLAR="/opt/homebrew/Cellar" HOMEBREW_REPOSITORY="/opt/homebrew"
+  path=(/opt/homebrew/bin /opt/homebrew/sbin $path)
+  export MANPATH="/opt/homebrew/share/man${MANPATH+:$MANPATH}" INFOPATH="/opt/homebrew/share/info${INFOPATH+:$INFOPATH}"
 fi
 
 # Locale: English messages/collation, UTF-8 content
@@ -26,18 +30,26 @@ source "${ZINIT_HOME}/zinit.zsh"
 zinit light zsh-users/zsh-completions
 zinit light Aloxaf/fzf-tab
 
-# Prompt: Pure — pure zsh, async git status, no external binary per prompt.
-# async.zsh must be sourced before pure.zsh (hence pick + src).
-# ASCII prompt symbol (pure's default is ❯); read by pure at load time.
-export PURE_PROMPT_SYMBOL=">"
-zinit ice pick"async.zsh" src"pure.zsh"
-zinit light sindresorhus/pure
+# Prompt: zsh built-ins only (vcs_info) — no prompt plugin, ASCII by
+# construction, branch-only (instant even in huge repos):
+#   ~/path  branch
+#   >                  (green, turns red after a failed command)
+autoload -Uz vcs_info
+zstyle ':vcs_info:*' enable git
+zstyle ':vcs_info:git:*' formats ' %F{magenta}%b%f'
+zstyle ':vcs_info:git:*' actionformats ' %F{magenta}%b%f %F{yellow}(%a)%f'
+# PROMPT contains ${vcs_info_msg_0_}; without this it renders literally.
+setopt PROMPT_SUBST
+precmd() { vcs_info }
+# Leading newline = one blank line between command output and the next prompt.
+PROMPT='
+%F{cyan}%~%f${vcs_info_msg_0_}
+%(?.%F{green}.%F{red})>%f '
 
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-syntax-highlighting
 
 # Add in snippets
-zinit snippet OMZL::git.zsh
 zinit snippet OMZP::uv
 
 # nvm lazy loading: source nvm.sh only on first use (~250ms saved at startup).
@@ -71,9 +83,10 @@ function pnpm()     { _lazy_nvm_load; pnpm "$@"; }
 function yarn()     { _lazy_nvm_load; yarn "$@"; }
 function corepack() { _lazy_nvm_load; corepack "$@"; }
 
-# Load completions (cached: full rescan only when .zcompdump is older than 24h)
+# Load completions (cached: full rescan only when .zcompdump is older than 7d;
+# the dump only needs rebuilding when completion tools are added/removed)
 autoload -Uz compinit
-if [[ -n "${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+24)" ]]; then
+if [[ -n "${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+168)" ]]; then
   compinit
 else
   compinit -C
@@ -95,7 +108,6 @@ setopt appendhistory
 setopt sharehistory
 setopt hist_ignore_space
 setopt hist_ignore_all_dups
-setopt hist_save_no_dups
 setopt hist_find_no_dups
 
 # Completion styling
