@@ -109,8 +109,6 @@ This document provides a simple and organized overview of all the custom keybind
 | Mode | Key             | Action                                                                                      |
 |------|-----------------|---------------------------------------------------------------------------------------------|
 | `n`  | `<leader>th`    | Toggle sticky context header (treesitter-context)                                           |
-| `n`  | `<leader>dg`    | Generate a doc comment for the current function (Neogen)                                    |
-| `n`  | `<leader>qq`    | Split/join block at cursor (treesj)                                                          |
 | `n`  | `<leader>s`     | Replace all instances of the word under the cursor on the current line                      |
 
 ---

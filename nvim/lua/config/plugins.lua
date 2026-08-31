@@ -19,75 +19,41 @@ vim.pack.add({
         src = github("ThePrimeagen/harpoon"),
         version = "harpoon2",
     },
-    github("rebelot/kanagawa.nvim"),
     github("brenoprata10/nvim-highlight-colors"),
-    github("tpope/vim-fugitive"),
     github("lewis6991/gitsigns.nvim"),
     github("mbbill/undotree"),
     github("ojroques/vim-oscyank"),
     github("nvim-treesitter/nvim-treesitter-context"),
-    github("danymat/neogen"),
-    github("Wansmer/treesj"),
 }, {
     confirm = false,
 })
 
--- COLORSCHEME
+-- COLORSCHEME: habamax (ships with nvim). apply_theme_extras restyles the
+-- layered statusline groups (see stl() in core.lua) and keeps editor
+-- surfaces transparent; reapplied on every ColorScheme event.
+local function apply_theme_extras()
+    -- keep editor surfaces transparent so the terminal bg shows through
+    vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
+    vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+    vim.api.nvim_set_hl(0, "LineNr", { bg = "none" })
+    vim.api.nvim_set_hl(0, "SignColumn", { bg = "none" })
+    vim.api.nvim_set_hl(0, "Directory", { bg = "none" })
 
-require("kanagawa").setup({
-    theme = "dragon",
-    transparent = true,
-    background = {
-        dark = "dragon",
-        light = "lotus",
-    },
-    -- soft, layered statusline (segments built in core.lua stl()); applied on
-    -- every theme load so both dragon and lotus stay in-theme
-    overrides = function(colors)
-        local p = colors.palette
-        if vim.o.background == "light" then
-            return {
-                StatusLine = { fg = p.lotusInk1, bg = p.lotusWhite0 },
-                StatusLineNC = { fg = p.lotusGray3, bg = "none" },
-                StlFile = { fg = p.lotusInk1, bg = p.lotusWhite0 },
-                StlInfo = { fg = p.lotusGray2, bg = p.lotusWhite0 },
-                StlNC = { fg = p.lotusGray3, bg = "none" },
-                StlModeNormal = { fg = p.lotusGreen, bg = p.lotusWhite4 },
-                StlModeInsert = { fg = p.lotusBlue4, bg = p.lotusWhite4 },
-                StlModeReplace = { fg = p.lotusRed, bg = p.lotusWhite4 },
-                StlModeVisual = { fg = p.lotusViolet4, bg = p.lotusWhite4 },
-                StlModeCommand = { fg = p.lotusYellow, bg = p.lotusWhite4 },
-                StlModeTerm = { fg = p.lotusTeal1, bg = p.lotusWhite4 },
-                StlModeOther = { fg = p.lotusGray2, bg = p.lotusWhite4 },
-            }
-        end
-        return {
-            -- active bar: barely-there dark lift over the transparent bg
-            StatusLine = { fg = p.dragonWhite, bg = p.dragonBlack2 },
-            -- inactive windows: flat (no bg) and clearly dimmer
-            StatusLineNC = { fg = p.dragonBlack6, bg = "none" },
-            -- text tiers: file (bright) > info (mid gray) > inactive (dim)
-            StlFile = { fg = p.dragonWhite, bg = p.dragonBlack2 },
-            StlInfo = { fg = p.dragonGray, bg = p.dragonBlack2 },
-            StlNC = { fg = p.dragonBlack6, bg = "none" },
-            -- per-mode chips: muted theme accents on a slightly lighter pad
-            StlModeNormal = { fg = p.dragonGreen, bg = p.dragonBlack4 },
-            StlModeInsert = { fg = p.dragonBlue2, bg = p.dragonBlack4 },
-            StlModeReplace = { fg = p.dragonRed, bg = p.dragonBlack4 },
-            StlModeVisual = { fg = p.dragonViolet, bg = p.dragonBlack4 },
-            StlModeCommand = { fg = p.dragonYellow, bg = p.dragonBlack4 },
-            StlModeTerm = { fg = p.dragonTeal, bg = p.dragonBlack4 },
-            StlModeOther = { fg = p.dragonGray2, bg = p.dragonBlack4 },
-        }
-    end,
+    -- active bar: subtle lift; inactive windows: flat and clearly dimmer
+    vim.api.nvim_set_hl(0, "StatusLine", { fg = "#c7c7c7", bg = "#262626" })
+    vim.api.nvim_set_hl(0, "StatusLineNC", { fg = "#585858", bg = "none" })
+    -- text tiers: file (bright) > info (mid gray) > inactive (dim)
+    vim.api.nvim_set_hl(0, "StlFile", { fg = "#c7c7c7", bg = "#262626" })
+    vim.api.nvim_set_hl(0, "StlInfo", { fg = "#9e9e9e", bg = "#262626" })
+    vim.api.nvim_set_hl(0, "StlNC", { fg = "#585858", bg = "none" })
+end
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+    group = vim.api.nvim_create_augroup("ThemeExtras", { clear = true }),
+    callback = apply_theme_extras,
 })
 
-vim.cmd.colorscheme("kanagawa-dragon")
-vim.cmd("hi Directory guibg=NONE")
-vim.cmd("hi SignColumn guibg=NONE")
-vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
-vim.api.nvim_set_hl(0, "LineNr", { bg = "none" })
+vim.cmd.colorscheme("habamax")
 
 -- FILE EXPLORER
 
@@ -209,22 +175,6 @@ require("treesitter-context").setup({})
 vim.keymap.set("n", "<leader>th", function()
     require("treesitter-context").toggle()
 end, { desc = "Toggle sticky context header" })
-
--- DOC COMMENT GENERATION
-
-require("neogen").setup({ snippet_engine = "nvim" })
-
-vim.keymap.set("n", "<leader>dg", function()
-    require("neogen").generate()
-end, { desc = "Generate doc comment" })
-
--- SPLIT / JOIN
-
-require("treesj").setup({ use_default_keymaps = false })
-
-vim.keymap.set("n", "<leader>qq", function()
-    require("treesj").toggle()
-end, { desc = "Split/join block" })
 
 -- GIT SIGNS
 

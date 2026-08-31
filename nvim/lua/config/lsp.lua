@@ -37,8 +37,7 @@ function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
     return orig(contents, syntax, opts, ...)
 end
 
--- clear = true: re-sourcing the config (<leader>rl) replaces old autocmds
--- instead of stacking duplicate LspAttach callbacks.
+-- clear = true so re-sourcing (<leader>rl) replaces old autocmds
 local lsp_augroup = vim.api.nvim_create_augroup('my.lsp', { clear = true })
 
 vim.api.nvim_create_autocmd('LspAttach', {
@@ -266,9 +265,8 @@ vim.filetype.add({
     },
 })
 
--- Enable every server whose binary is on PATH. Kept as an explicit list so
--- we don't depend on the private `vim.lsp.config._configs` table, which can
--- change between Neovim versions. Keep in sync with the configs above.
+-- Enable servers whose binary is on PATH; explicit list avoids the private
+-- _configs table. Keep in sync with the configs above.
 local servers = {
     luals         = 'lua-language-server',
     cssls         = 'vscode-css-language-server',

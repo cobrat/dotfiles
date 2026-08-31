@@ -1,11 +1,9 @@
 -- TREE-SITTER
 
 -- Parsers for every language with an LSP server (see lsp.lua), plus basics
--- for editing dotfiles and docs. nvim-treesitter does NOT auto-install
--- dependencies, so they are listed explicitly:
---   cpp/objc -> c, scss -> css, markdown -> markdown_inline, php -> php_only,
---   html -> html_tags, tsx -> ecma+jsx+typescript, typescript -> ecma
--- plus the comment-injection parsers (luadoc/jsdoc/phpdoc).
+-- for dotfiles/docs. Dependencies are NOT auto-installed, so listed
+-- explicitly: cpp/objc->c, scss->css, markdown->markdown_inline,
+-- php->php_only, html->html_tags, tsx->ecma+jsx+typescript, + *doc injectors.
 local parsers = {
     -- editing basics
     "bash", "json", "markdown", "markdown_inline", "query", "vim", "vimdoc",
@@ -25,9 +23,7 @@ local parsers = {
     "ecma", "jsx", "javascript", "jsdoc", "typescript", "tsx",
 }
 
--- Vim filetypes that should start highlighting (mapped via
--- vim.treesitter.language.get_lang; typescriptreact->tsx,
--- javascriptreact->javascript, jsonc->json are built in).
+-- Filetypes to start highlighting on (react/jsonc mappings are built in)
 local filetypes = {
     "bash", "json", "jsonc", "markdown", "query", "vim", "vimdoc",
     "c", "cpp", "objc",
@@ -40,7 +36,7 @@ local filetypes = {
     "sh",
 }
 
--- No dedicated less/sh parsers; css and bash are close/same enough.
+-- no dedicated less/sh parsers; css/bash are close enough
 vim.treesitter.language.register('css', 'less')
 vim.treesitter.language.register('bash', 'sh')
 
@@ -50,8 +46,7 @@ treesitter.setup({
     install_dir = vim.fn.stdpath("data") .. "/site",
 })
 
--- Missing parsers are installed asynchronously. Existing parsers are a no-op.
--- A parser that fails to install (e.g. no compiler) must not abort startup.
+-- install missing parsers async; failures must not abort startup
 local ok, task = pcall(treesitter.install, parsers)
 if not ok then
     vim.notify(tostring(task), vim.log.levels.WARN, { title = "Tree-sitter install" })
