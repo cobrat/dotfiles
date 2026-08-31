@@ -45,7 +45,8 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
 
 -- STATUSLINE: active window shows bright file + gray info on a dark bar,
 -- inactive windows one dim line. mode display is left to 'showmode';
--- highlight groups live in apply_theme_extras (plugins.lua).
+-- highlight groups live in theme.lua. search match count shows in the
+-- cmdline by default ('shortmess' without S), so it is not duplicated here.
 
 -- last two path components, cwd-independent; ~ prefix for $HOME paths
 function _G.stl_file()
@@ -57,11 +58,38 @@ function _G.stl_file()
     return parts[n]
 end
 
--- git segment, e.g. "[(main) +1 -0 ~1]"; empty outside git repos
+-- git parts for the active statusline. split into tiny functions because
+-- %{} results are NOT scanned for highlight items, so the %# groups must
+-- live in the template itself
+function _G.stl_git_head()
+    local d = vim.b.gitsigns_status_dict
+    return d and d.head or ''
+end
+
+function _G.stl_git_count(sign, key)
+    local d = vim.b.gitsigns_status_dict
+    if not d or not d.head then return '' end
+    return sign .. tostring(d[key] or 0)
+end
+
+-- plain git segment for the inactive line, "(main) +4 -1 ~0"
 function _G.stl_git()
     local d = vim.b.gitsigns_status_dict
     if not d or not d.head then return '' end
-    return ('[(%s) +%d -%d ~%d]  '):format(d.head, d.added or 0, d.removed or 0, d.changed or 0)
+    return ('(%s) +%s -%s ~%s  '):format(d.head,
+        tostring(d.added or 0), tostring(d.removed or 0), tostring(d.changed or 0))
+end
+
+-- diagnostic counts after the modified flags, colored via StlDiagE/StlDiagW
+-- in the template (E red / W yellow)
+function _G.stl_diag_e()
+    local c = vim.diagnostic.count(0)
+    return (c[1] or 0) > 0 and ('E' .. c[1]) or ''
+end
+
+function _G.stl_diag_w()
+    local c = vim.diagnostic.count(0)
+    return (c[2] or 0) > 0 and ('W' .. c[2]) or ''
 end
 
 -- %! renderer, called per window; g:statusline_winid picks active vs dim variant
@@ -69,11 +97,21 @@ function _G.stl()
     if vim.g.statusline_winid ~= vim.api.nvim_get_current_win() then
         return '%<%#StlNC# %{v:lua.stl_file()}%m%r%h%w %=%{v:lua.stl_git()}%{&filetype}  %l:%c  %p%% %*'
     end
+    -- special buffers (help/quickfix/terminal/...) skip git/diagnostic/search
+    if vim.bo.buftype ~= '' then
+        return '%<%#StlFile# %{v:lua.stl_file()}%m%r%h%w %=%{&filetype}  %l:%c  %p%% %*'
+    end
     return table.concat({
         '%<',
-        '%#StlFile# %{v:lua.stl_file()}%m%r%h%w %*',
+        '%#StlFile# %{v:lua.stl_file()}%m%r%h%w%*  ',
+        '%#StlDiagE#%{v:lua.stl_diag_e()}%*  ',
+        '%#StlDiagW#%{v:lua.stl_diag_w()}%*',
         '%=',
-        '%#StlInfo#%{v:lua.stl_git()}%{&filetype}  %l:%c  %p%% %*',
+        '%#StlInfo#%{v:lua.stl_git_head() != "" ? "(" . v:lua.stl_git_head() . ")" : ""} ',
+        '%#StlGitAdd#%{v:lua.stl_git_count("+", "added")}%* ',
+        '%#StlGitDel#%{v:lua.stl_git_count("-", "removed")}%* ',
+        '%#StlGitMod#%{v:lua.stl_git_count("~", "changed")}%*  ',
+        '%#StlInfo#%{&filetype}  %l:%c  %p%% %*',
     })
 end
 
@@ -101,14 +139,11 @@ vim.keymap.set("n", "N", "Nzzzv")
 vim.keymap.set("x", "<leader>p", [["_dP]])
 vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
 
--- <C-c> doesn't fully act like Esc in insert mode
-vim.keymap.set("i", "<C-c>", "<Esc>")
-
--- quickfix / location list navigation
+-- quickfix / location list navigation (j = next, k = prev, matching j/k)
 vim.keymap.set("n", "<C-j>", "<cmd>cnext<CR>zz")
 vim.keymap.set("n", "<C-k>", "<cmd>cprev<CR>zz")
-vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz")
-vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
+vim.keymap.set("n", "<leader>j", "<cmd>lnext<CR>zz")
+vim.keymap.set("n", "<leader>k", "<cmd>lprev<CR>zz")
 vim.keymap.set("n", "<leader>cl", ":cclose<CR>", { silent = true })
 vim.keymap.set("n", "<leader>co", ":copen<CR>", { silent = true })
 
@@ -119,14 +154,11 @@ vim.keymap.set("n", "<leader>cc", "<cmd>!php-cs-fixer fix % --using-cache=no<cr>
 -- replace every occurrence of the word under cursor on the current line
 vim.keymap.set("n", "<leader>s", [[:s/\<<C-r><C-w>\>//gI<Left><Left><Left>]])
 
-vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true }) -- make executable
-
 -- yank into the clipboard even over ssh
 vim.keymap.set('n', '<leader>y', '<Plug>OSCYankOperator')
 vim.keymap.set('v', '<leader>y', '<Plug>OSCYankVisual')
 
-vim.keymap.set("n", "<leader>rl", "<cmd>source ~/.config/nvim/init.lua<cr>") -- reload config
 vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
+
 vim.keymap.set("n", "<leader>li", ":checkhealth vim.lsp<CR>", { desc = "LSP Info" })
 vim.keymap.set("n", "<leader>mm", "<cmd>make<CR>") -- run make in cwd
-vim.keymap.set("n", "<leader><leader>", "<cmd>so<cr>", { desc = "Source current file" })

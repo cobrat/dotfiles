@@ -4,13 +4,14 @@ This document provides a simple and organized overview of all the custom keybind
 
 ## Configuration Structure
 
-| File | Responsibility |
-| ------ | ---------------- |
-| `lua/config/core.lua` | Editor options and general keymaps |
-| `lua/config/plugins.lua` | Plugin installation and configuration |
-| `lua/config/lsp.lua` | Diagnostics, LSP behavior, and language servers |
-| `lua/config/treesitter.lua` | Parsers, highlighting, and text objects |
-| `after/ftplugin/*.lua` | Filetype-local overrides |
+| File                         | Responsibility                                   |
+| ---------------------------- | ------------------------------------------------ |
+| `lua/config/core.lua`        | Editor options and general keymaps               |
+| `lua/config/theme.lua`       | Colorscheme and statusline highlight tints       |
+| `lua/config/plugins.lua`     | Plugin installation and configuration            |
+| `lua/config/lsp.lua`         | Diagnostics, LSP behavior, and language servers  |
+| `lua/config/treesitter.lua`  | Parsers, highlighting, and text objects          |
+| `after/ftplugin/*.lua`       | Filetype-local overrides                         |
 
 ## General Keybinds
 
@@ -25,16 +26,13 @@ This document provides a simple and organized overview of all the custom keybind
 | `n`  | `Q`             | Disable Ex mode                                                                             |
 | `n`  | `<C-j>`         | Jump to next quickfix entry and keep it centered                                            |
 | `n`  | `<C-k>`         | Jump to previous quickfix entry and keep it centered                                        |
-| `n`  | `<leader>k`     | Jump to next location entry and keep it centered                                            |
-| `n`  | `<leader>j`     | Jump to previous location entry and keep it centered                                        |
-| `i`  | `<C-c>`         | Exit insert mode (acts like `Esc`)                                                          |
+| `n`  | `<leader>j`     | Jump to next location entry and keep it centered                                            |
+| `n`  | `<leader>k`     | Jump to previous location entry and keep it centered                                        |
 | `n`  | `<leader>x`     | Make current file executable (`chmod +x`)                                                   |
 | `n`  | `<leader>u`     | Toggle Undotree                                                                             |
-| `n`  | `<leader>rl`    | Reload the Neovim config (`~/.config/nvim/init.lua`)                                        |
-| `n`  | `<leader><leader>` | Source the current file (`:so`)                                                          |
-| `n`  | `]h` / `[h`     | Jump to next / previous git hunk (gitsigns buffers)                                        |
-| `n`  | `<leader>hp`    | Preview the git hunk under the cursor                                                      |
-| `n`  | `<leader>hb`    | Blame the current line (git author and date)                                               |
+| `n`  | `]h` / `[h`     | Jump to next / previous git hunk (gitsigns buffers)                                         |
+| `n`  | `<leader>hp`    | Preview the git hunk under the cursor                                                       |
+| `n`  | `<leader>hb`    | Blame the current line (git author and date)                                                |
 
 ---
 
@@ -99,7 +97,7 @@ This document provides a simple and organized overview of all the custom keybind
 | `n`       | `gs`       | Show signature help                                                                         |
 | `n`       | `gl`       | Show diagnostics in a floating window                                                       |
 | `n`       | `<F2>`     | Rename symbol                                                                               |
-| `n`, `x`  | `<F3>`     | Format code asynchronously                                                                 |
+| `n`, `x`  | `<F3>`     | Format code asynchronously                                                                  |
 | `n`       | `<F4>`     | Show code actions                                                                           |
 
 ---

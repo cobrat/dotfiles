@@ -28,33 +28,6 @@ vim.pack.add({
     confirm = false,
 })
 
--- COLORSCHEME: habamax (ships with nvim). apply_theme_extras restyles the
--- layered statusline groups (see stl() in core.lua) and keeps editor
--- surfaces transparent; reapplied on every ColorScheme event.
-local function apply_theme_extras()
-    -- keep editor surfaces transparent so the terminal bg shows through
-    vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-    vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
-    vim.api.nvim_set_hl(0, "LineNr", { bg = "none" })
-    vim.api.nvim_set_hl(0, "SignColumn", { bg = "none" })
-    vim.api.nvim_set_hl(0, "Directory", { bg = "none" })
-
-    -- active bar: subtle lift; inactive windows: flat and clearly dimmer
-    vim.api.nvim_set_hl(0, "StatusLine", { fg = "#c7c7c7", bg = "#262626" })
-    vim.api.nvim_set_hl(0, "StatusLineNC", { fg = "#585858", bg = "none" })
-    -- text tiers: file (bright) > info (mid gray) > inactive (dim)
-    vim.api.nvim_set_hl(0, "StlFile", { fg = "#c7c7c7", bg = "#262626" })
-    vim.api.nvim_set_hl(0, "StlInfo", { fg = "#9e9e9e", bg = "#262626" })
-    vim.api.nvim_set_hl(0, "StlNC", { fg = "#585858", bg = "none" })
-end
-
-vim.api.nvim_create_autocmd("ColorScheme", {
-    group = vim.api.nvim_create_augroup("ThemeExtras", { clear = true }),
-    callback = apply_theme_extras,
-})
-
-vim.cmd.colorscheme("habamax")
-
 -- FILE EXPLORER
 
 require("oil").setup({
@@ -179,13 +152,13 @@ end, { desc = "Toggle sticky context header" })
 -- GIT SIGNS
 
 require("gitsigns").setup({
-    signs = { -- plain text, no nerd font needed
+    signs = { -- ascii-only, no nerd font needed
         add          = { text = '+' },
         change       = { text = '~' },
         delete       = { text = '_' },
-        topdelete    = { text = '‾' },
+        topdelete    = { text = '-' },
         changedelete = { text = '~' },
-        untracked    = { text = '·' },
+        untracked    = { text = '?' },
     },
     current_line_blame = true,
     on_attach = function(bufnr)
