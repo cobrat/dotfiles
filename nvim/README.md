@@ -32,6 +32,9 @@ This document provides a simple and organized overview of all the custom keybind
 | `n`  | `<leader>u`     | Toggle Undotree                                                                             |
 | `n`  | `<leader>rl`    | Reload the Neovim config (`~/.config/nvim/init.lua`)                                        |
 | `n`  | `<leader><leader>` | Source the current file (`:so`)                                                          |
+| `n`  | `]h` / `[h`     | Jump to next / previous git hunk (gitsigns buffers)                                        |
+| `n`  | `<leader>hp`    | Preview the git hunk under the cursor                                                      |
+| `n`  | `<leader>hb`    | Blame the current line (git author and date)                                               |
 
 ---
 

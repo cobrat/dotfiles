@@ -22,6 +22,7 @@ vim.pack.add({
     github("rebelot/kanagawa.nvim"),
     github("brenoprata10/nvim-highlight-colors"),
     github("tpope/vim-fugitive"),
+    github("lewis6991/gitsigns.nvim"),
     github("mbbill/undotree"),
     github("ojroques/vim-oscyank"),
     github("nvim-treesitter/nvim-treesitter-context"),
@@ -185,6 +186,30 @@ require("treesj").setup({ use_default_keymaps = false })
 vim.keymap.set("n", "<leader>qq", function()
     require("treesj").toggle()
 end, { desc = "Split/join block" })
+
+-- GIT SIGNS
+
+require("gitsigns").setup({
+    signs = { -- plain text, no nerd font needed
+        add          = { text = '+' },
+        change       = { text = '~' },
+        delete       = { text = '_' },
+        topdelete    = { text = '‾' },
+        changedelete = { text = '~' },
+        untracked    = { text = '·' },
+    },
+    current_line_blame = true,
+    on_attach = function(bufnr)
+        local gs = package.loaded.gitsigns
+        local function map(mode, lhs, rhs, desc)
+            vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
+        end
+        map('n', ']h', gs.next_hunk, 'Next git hunk')
+        map('n', '[h', gs.prev_hunk, 'Previous git hunk')
+        map('n', '<leader>hp', gs.preview_hunk, 'Preview git hunk')
+        map('n', '<leader>hb', gs.blame_line, 'Blame current line')
+    end,
+})
 
 -- STATUSLINE AND COLOR HIGHLIGHTS
 

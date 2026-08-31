@@ -75,11 +75,18 @@ function _G.stl_file()
     return parts[n]
 end
 
+-- git segment for the statusline, e.g. "[(main) +1 -0 ~1]  " (empty outside git repos)
+function _G.stl_git()
+    local d = vim.b.gitsigns_status_dict
+    if not d or not d.head then return '' end
+    return ('[(%s) +%d -%d ~%d]  '):format(d.head, d.added or 0, d.removed or 0, d.changed or 0)
+end
+
 vim.o.statusline = table.concat({
     '%<',
-    ' %{v:lua.stl_mode()} [%{v:lua.stl_file()}]%m%r%h%w',
+    ' %{v:lua.stl_mode()}  %{v:lua.stl_file()}%m%r%h%w',
     '%=',
-    '%{FugitiveStatusline()}%y %l:%c %p%% ',
+    '%{v:lua.stl_git()}%{&filetype}  %l:%c  %p%% ',
 })
 
 -- faster cursor hold
