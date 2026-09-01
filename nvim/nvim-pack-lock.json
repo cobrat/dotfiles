@@ -54,10 +54,6 @@
       "rev": "427b576c16792edad01a92b89721d923c19ad60f",
       "src": "https://github.com/nvim-telescope/telescope.nvim"
     },
-    "undotree": {
-      "rev": "6fa6b57cda8459e1e4b2ca34df702f55242f4e4d",
-      "src": "https://github.com/mbbill/undotree"
-    },
     "vim-oscyank": {
       "rev": "d67d76b2f19b868b70a1cf33a779d71dc092cb30",
       "src": "https://github.com/ojroques/vim-oscyank"

@@ -11,6 +11,7 @@ local parsers = {
     "c", "cpp", "objc",
     -- Lua (luals)
     "lua", "luadoc",
+    -- no LSP server; kept on purpose for scripts and docs
     "python",
     -- Go (gopls, templ)
     "go", "gomod", "gowork", "gotmpl", "templ",
@@ -42,15 +43,15 @@ vim.treesitter.language.register('bash', 'sh')
 
 local treesitter = require("nvim-treesitter")
 
-treesitter.setup({
-    install_dir = vim.fn.stdpath("data") .. "/site",
-})
-
--- install missing parsers async; failures must not abort startup
-local ok, task = pcall(treesitter.install, parsers)
-if not ok then
-    vim.notify(tostring(task), vim.log.levels.WARN, { title = "Tree-sitter install" })
-end
+-- install missing parsers in the background; observe the returned task so
+-- install failures (no compiler, no network) notify instead of surfacing
+-- later as a missing-parser warning on buffer open
+local task = treesitter.install(parsers)
+task:await(function(err)
+    if err then
+        vim.notify(tostring(err), vim.log.levels.WARN, { title = "Tree-sitter install" })
+    end
+end)
 
 local group = vim.api.nvim_create_augroup("TreesitterConfig", { clear = true })
 vim.api.nvim_create_autocmd("FileType", {

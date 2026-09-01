@@ -21,7 +21,6 @@ vim.pack.add({
     },
     github("brenoprata10/nvim-highlight-colors"),
     github("lewis6991/gitsigns.nvim"),
-    github("mbbill/undotree"),
     github("ojroques/vim-oscyank"),
     github("nvim-treesitter/nvim-treesitter-context"),
 }, {
@@ -31,7 +30,6 @@ vim.pack.add({
 -- FILE EXPLORER
 
 require("oil").setup({
-    default_file_explorer = true,
     columns = {
         "permissions",
         { "size", align = "right" },
@@ -39,28 +37,24 @@ require("oil").setup({
     },
     view_options = {
         show_hidden = true,
-        natural_order = "fast",
-        sort = {
-            { "type", "asc" },
-            { "name", "asc" },
-        },
     },
-    skip_confirm_for_simple_edits = false,
+    keymaps = {
+        -- close oil; quit nvim entirely when oil is the last buffer
+        -- (default would leave an empty [No Name] buffer behind)
+        ["<C-c>"] = { "actions.close", opts = { exit_if_last_buf = true }, mode = "n" },
+    },
 })
 
 -- COMPLETION
 
 local cmp = require("cmp")
 cmp.setup({
-    preselect = cmp.PreselectMode.Item,
     completion = {
         completeopt = "menu,menuone,noinsert",
-        autocomplete = { cmp.TriggerEvent.TextChanged },
     },
     window = { documentation = cmp.config.window.bordered() },
     mapping = cmp.mapping.preset.insert({
         ["<CR>"] = cmp.mapping.confirm({ select = false }),
-        ["<C-e>"] = cmp.mapping.abort(),
         ["<C-Space>"] = cmp.mapping.complete(),
         ["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
         ["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
@@ -131,7 +125,6 @@ vim.keymap.set("n", "<C-n>", function() harpoon:list():next() end)
 
 vim.keymap.set("n", "<leader>fl", function()
     local conf = require("telescope.config").values
-    local themes = require("telescope.themes")
     local file_paths = {}
     for _, item in ipairs(harpoon:list().items) do
         table.insert(file_paths, item.value)
@@ -163,7 +156,6 @@ require("gitsigns").setup({
         changedelete = { text = '~' },
         untracked    = { text = '?' },
     },
-    current_line_blame = true,
     on_attach = function(bufnr)
         local gs = package.loaded.gitsigns
         local function map(mode, lhs, rhs, desc)

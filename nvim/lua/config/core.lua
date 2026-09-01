@@ -6,7 +6,6 @@ set.number = true
 
 set.tabstop = 4
 set.shiftwidth = 4
-set.autoindent = true
 set.expandtab = true
 
 set.ignorecase = true
@@ -19,11 +18,9 @@ set.signcolumn = "yes"
 set.cursorline = true
 set.colorcolumn = "80"
 set.clipboard:append("unnamedplus")
-set.backspace = "indent,eol,start"
 set.splitbelow = true
 set.splitright = true
 set.scrolloff = 8
-set.incsearch = true
 set.updatetime = 50
 
 -- '-' counts as part of a word so dw/diw/ciw handle hyphenated words
@@ -31,13 +28,11 @@ set.iskeyword:append("-")
 
 -- undo persistence
 set.swapfile = false
-set.backup = false
 vim.fn.mkdir(os.getenv("HOME") .. "/.vim/undodir", "p")
 set.undodir = os.getenv("HOME") .. "/.vim/undodir"
 set.undofile = true
 
--- reload buffers when the file changes on disk
-set.autoread = true
+-- pick up file changes on disk ('autoread' is on by default)
 vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
     group = vim.api.nvim_create_augroup("auto_refresh", { clear = true }),
     command = "checktime",
@@ -61,9 +56,10 @@ end
 -- git parts for the active statusline. split into tiny functions because
 -- %{} results are NOT scanned for highlight items, so the %# groups must
 -- live in the template itself
-function _G.stl_git_head()
+-- git branch segment for the active statusline, "(main)"; empty without git
+function _G.stl_git_branch()
     local d = vim.b.gitsigns_status_dict
-    return d and d.head or ''
+    return d and d.head and ('(' .. d.head .. ')') or ''
 end
 
 function _G.stl_git_count(sign, key)
@@ -81,15 +77,10 @@ function _G.stl_git()
 end
 
 -- diagnostic counts after the modified flags, colored via StlDiagE/StlDiagW
--- in the template (E red / W yellow)
-function _G.stl_diag_e()
+-- in the template (E red / W yellow); sev 1=ERROR 2=WARN
+function _G.stl_diag(sev, letter)
     local c = vim.diagnostic.count(0)
-    return (c[1] or 0) > 0 and ('E' .. c[1]) or ''
-end
-
-function _G.stl_diag_w()
-    local c = vim.diagnostic.count(0)
-    return (c[2] or 0) > 0 and ('W' .. c[2]) or ''
+    return (c[sev] or 0) > 0 and (letter .. c[sev]) or ''
 end
 
 -- %! renderer, called per window; g:statusline_winid picks active vs dim variant
@@ -104,10 +95,10 @@ function _G.stl()
     return table.concat({
         '%<',
         '%#StlFile# %{v:lua.stl_file()}%m%r%h%w%*  ',
-        '%#StlDiagE#%{v:lua.stl_diag_e()}%*  ',
-        '%#StlDiagW#%{v:lua.stl_diag_w()}%*',
+        '%#StlDiagE#%{v:lua.stl_diag(1,\"E\")}%*  ',
+        '%#StlDiagW#%{v:lua.stl_diag(2,\"W\")}%*',
         '%=',
-        '%#StlInfo#%{v:lua.stl_git_head() != "" ? "(" . v:lua.stl_git_head() . ")" : ""} ',
+        '%#StlInfo#%{v:lua.stl_git_branch()} ',
         '%#StlGitAdd#%{v:lua.stl_git_count("+", "added")}%* ',
         '%#StlGitDel#%{v:lua.stl_git_count("-", "removed")}%* ',
         '%#StlGitMod#%{v:lua.stl_git_count("~", "changed")}%*  ',
@@ -144,8 +135,8 @@ vim.keymap.set("n", "<C-j>", "<cmd>cnext<CR>zz")
 vim.keymap.set("n", "<C-k>", "<cmd>cprev<CR>zz")
 vim.keymap.set("n", "<leader>j", "<cmd>lnext<CR>zz")
 vim.keymap.set("n", "<leader>k", "<cmd>lprev<CR>zz")
-vim.keymap.set("n", "<leader>cl", ":cclose<CR>", { silent = true })
-vim.keymap.set("n", "<leader>co", ":copen<CR>", { silent = true })
+vim.keymap.set("n", "<leader>cl", "<cmd>cclose<CR>")
+vim.keymap.set("n", "<leader>co", "<cmd>copen<CR>")
 
 vim.keymap.set("n", "Q", "<nop>") -- disable Ex mode
 
@@ -156,7 +147,12 @@ vim.keymap.set("n", "<leader>s", [[:s/\<<C-r><C-w>\>//gI<Left><Left><Left>]])
 vim.keymap.set('n', '<leader>y', '<Plug>OSCYankOperator')
 vim.keymap.set('v', '<leader>y', '<Plug>OSCYankVisual')
 
-vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
+-- built-in undotree (bundled since 0.12 as an opt package); packadd is
+-- guarded by a loaded flag inside the plugin, so repeating it is harmless
+vim.keymap.set("n", "<leader>u", function()
+    vim.cmd.packadd("nvim.undotree")
+    vim.cmd.Undotree()
+end)
 
 vim.keymap.set("n", "<leader>li", ":checkhealth vim.lsp<CR>", { desc = "LSP Info" })
 vim.keymap.set("n", "<leader>mm", "<cmd>make<CR>") -- run make in cwd

@@ -4,34 +4,40 @@ This document provides a simple and organized overview of all the custom keybind
 
 ## Configuration Structure
 
-| File                         | Responsibility                                   |
-| ---------------------------- | ------------------------------------------------ |
-| `lua/config/core.lua`        | Editor options and general keymaps               |
-| `lua/config/theme.lua`       | Colorscheme and statusline highlight tints       |
-| `lua/config/plugins.lua`     | Plugin installation and configuration            |
-| `lua/config/lsp.lua`         | Diagnostics, LSP behavior, and language servers  |
-| `lua/config/treesitter.lua`  | Parsers, highlighting, and text objects          |
-| `after/ftplugin/*.lua`       | Filetype-local overrides                         |
+| File                        | Responsibility                                   |
+|-----------------------------|--------------------------------------------------|
+| `lua/config/core.lua`       | Editor options and general keymaps               |
+| `lua/config/theme.lua`      | Colorscheme and statusline highlight tints       |
+| `lua/config/plugins.lua`    | Plugin installation and configuration            |
+| `lua/config/lsp.lua`        | Diagnostics, LSP behavior, and language servers  |
+| `lua/config/treesitter.lua` | Parsers, highlighting, and text objects          |
+| `after/ftplugin/*.lua`      | Filetype-local overrides                         |
 
 ## General Keybinds
 
-| Mode | Key             | Action                                                                                      |
-|------|-----------------|---------------------------------------------------------------------------------------------|
-| `n`  | `<leader>e`     | Open an Oil file explorer buffer                                                            |
-| `n`  | `J`             | Join lines while keeping the cursor in place                                                |
-| `n`  | `<C-d>`         | Scroll half-page down and keep the cursor centered                                          |
-| `n`  | `<C-u>`         | Scroll half-page up and keep the cursor centered                                            |
-| `n`  | `n`             | Move to next search result and keep it centered                                             |
-| `n`  | `N`             | Move to previous search result and keep it centered                                         |
-| `n`  | `Q`             | Disable Ex mode                                                                             |
-| `n`  | `<C-j>`         | Jump to next quickfix entry and keep it centered                                            |
-| `n`  | `<C-k>`         | Jump to previous quickfix entry and keep it centered                                        |
-| `n`  | `<leader>j`     | Jump to next location entry and keep it centered                                            |
-| `n`  | `<leader>k`     | Jump to previous location entry and keep it centered                                        |
-| `n`  | `<leader>u`     | Toggle Undotree                                                                             |
-| `n`  | `]h` / `[h`     | Jump to next / previous git hunk (gitsigns buffers)                                         |
-| `n`  | `<leader>hp`    | Preview the git hunk under the cursor                                                       |
-| `n`  | `<leader>hb`    | Blame the current line (git author and date)                                                |
+| Mode    | Key             | Action                                                                                   |
+|---------|-----------------|------------------------------------------------------------------------------------------|
+| `n`     | `<leader>e`     | Open an Oil file explorer buffer                                                         |
+| `n`     | `J`             | Join lines while keeping the cursor in place                                             |
+| `n`     | `<C-d>`         | Scroll half-page down and keep the cursor centered                                       |
+| `n`     | `<C-u>`         | Scroll half-page up and keep the cursor centered                                         |
+| `n`     | `n`             | Move to next search result and keep it centered                                          |
+| `n`     | `N`             | Move to previous search result and keep it centered                                      |
+| `n`     | `Q`             | Disable Ex mode                                                                          |
+| `n`     | `<C-j>`         | Jump to next quickfix entry and keep it centered                                         |
+| `n`     | `<C-k>`         | Jump to previous quickfix entry and keep it centered                                     |
+| `n`     | `<leader>j`     | Jump to next location entry and keep it centered                                         |
+| `n`     | `<leader>k`     | Jump to previous location entry and keep it centered                                     |
+| `n`     | `<leader>cl`    | Close the quickfix window                                                                |
+| `n`     | `<leader>co`    | Open the quickfix window                                                                 |
+| `n`/`v` | `<leader>d`     | Delete into the black-hole register (no yank)                                            |
+| `n`     | `<leader>y`     | Yank motion target into the system clipboard (even on SSH)                               |
+| `n`     | `<leader>li`    | Open the LSP health report (checkhealth vim.lsp)                                         |
+| `n`     | `<leader>mm`    | Run make in the current directory                                                        |
+| `n`     | `<leader>u`     | Toggle Undotree                                                                          |
+| `n`     | `]h` / `[h`     | Jump to next / previous git hunk (gitsigns buffers)                                      |
+| `n`     | `<leader>hp`    | Preview the git hunk under the cursor                                                    |
+| `n`     | `<leader>hb`    | Blame the current line (git author and date)                                             |
 
 ---
 
@@ -63,6 +69,7 @@ This document provides a simple and organized overview of all the custom keybind
 | `n`  | `<leader>fo`    | Open recent files                                                                           |
 | `n`  | `<leader>fq`    | Open quickfix list                                                                          |
 | `n`  | `<leader>fh`    | Open help tags                                                                              |
+| `n`  | `<leader>fm`    | Browse man pages                                                                            |
 | `n`  | `<leader>fb`    | Open buffer list                                                                            |
 | `n`  | `<leader>fs`    | Grep current string                                                                         |
 | `n`  | `<leader>fc`    | Grep instances of the current file name without the extension                               |
@@ -84,18 +91,18 @@ This document provides a simple and organized overview of all the custom keybind
 
 ## LSP Keybinds
 
-| Mode      | Key        | Action                                                                                      |
-|-----------|------------|---------------------------------------------------------------------------------------------|
-| `n`       | `K`        | Show hover information                                                                      |
-| `n`       | `gd`       | Go to definition                                                                            |
-| `n`       | `gD`       | Go to declaration                                                                           |
-| `n`       | `gi`       | Go to implementation                                                                        |
-| `n`       | `go`       | Go to type definition                                                                       |
-| `n`       | `gr`       | Show references                                                                             |
-| `n`       | `gs`       | Show signature help                                                                         |
-| `n`       | `gl`       | Show diagnostics in a floating window                                                       |
-| `n`       | `<F2>`     | Rename symbol                                                                               |
-| `n`       | `<F4>`     | Show code actions                                                                           |
+| Mode      | Key        | Action                                                                                   |
+|-----------|------------|------------------------------------------------------------------------------------------|
+| `n`       | `K`        | Show hover information                                                                   |
+| `n`       | `gd`       | Go to definition                                                                         |
+| `n`       | `gD`       | Go to declaration                                                                        |
+| `n`       | `gi`       | Go to implementation                                                                     |
+| `n`       | `go`       | Go to type definition                                                                    |
+| `n`       | `gr`       | Show references                                                                          |
+| `n`       | `gs`       | Show signature help                                                                      |
+| `n`       | `gl`       | Show diagnostics in a floating window                                                    |
+| `n`       | `<F2>`     | Rename symbol                                                                            |
+| `n`       | `<F4>`     | Show code actions                                                                        |
 
 ---
 
@@ -105,6 +112,15 @@ This document provides a simple and organized overview of all the custom keybind
 |------|-----------------|---------------------------------------------------------------------------------------------|
 | `n`  | `<leader>th`    | Toggle sticky context header (treesitter-context)                                           |
 | `n`  | `<leader>s`     | Replace all instances of the word under the cursor on the current line                      |
+
+---
+
+## Text Objects
+
+| Mode    | Key           | Action                                                                                     |
+|---------|---------------|--------------------------------------------------------------------------------------------|
+| `x`/`o` | `af`          | Select around function                                                                     |
+| `x`/`o` | `if`          | Select inside function                                                                     |
 
 ---
 

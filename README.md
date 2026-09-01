@@ -39,7 +39,7 @@ repo — commit and push from `~/dotfiles`.
 
 ## Notes
 
-- **Neovim**: requires Neovim >= 0.11.2 (`vim.pack` / `vim.lsp.config`).
+- **Neovim**: requires Neovim >= 0.12 (`vim.pack` / `vim.lsp.config`).
 - **Git**: `install_mac.sh` sets `core.hooksPath = .githooks` so the
   Conventional Commits `commit-msg` hook is enforced.
 - **Vim**: `basic.vim` is a complete base config, linked directly to `~/.vimrc`

@@ -16,14 +16,6 @@ vim.diagnostic.config({
         header = '',
         prefix = '',
     },
-    signs         = {
-        text = {
-            [vim.diagnostic.severity.ERROR] = 'E',
-            [vim.diagnostic.severity.WARN]  = 'W',
-            [vim.diagnostic.severity.HINT]  = 'H',
-            [vim.diagnostic.severity.INFO]  = 'I',
-        },
-    },
 })
 
 local orig = vim.lsp.util.open_floating_preview
@@ -75,22 +67,27 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end,
 })
 
-vim.lsp.config['luals'] = {
-    cmd = { 'lua-language-server' },
-    filetypes = { 'lua' },
-    root_markers = { { '.luarc.json', '.luarc.jsonc' }, '.git' },
-    settings = {
-        Lua = {
-            runtime = { version = 'LuaJIT' },
-            diagnostics = { globals = { 'vim' } },
-            workspace = {
-                checkThirdParty = false,
-                library = vim.api.nvim_get_runtime_file('', true),
+-- luals needs the big settings table; build it (and scan the runtime tree)
+-- only when the binary exists, so startup skips the work otherwise
+if vim.fn.executable('lua-language-server') == 1 then
+    vim.lsp.config['luals'] = {
+        cmd = { 'lua-language-server' },
+        filetypes = { 'lua' },
+        root_markers = { { '.luarc.json', '.luarc.jsonc' }, '.git' },
+        settings = {
+            Lua = {
+                runtime = { version = 'LuaJIT' },
+                diagnostics = { globals = { 'vim' } },
+                workspace = {
+                    checkThirdParty = false,
+                    library = { vim.env.VIMRUNTIME, vim.fn.stdpath('config') },
+                },
+                telemetry = { enable = false },
             },
-            telemetry = { enable = false },
         },
-    },
-}
+    }
+    vim.lsp.enable('luals')
+end
 
 vim.lsp.config['cssls'] = {
     cmd = { 'vscode-css-language-server', '--stdio' },
@@ -119,8 +116,8 @@ vim.lsp.config['phpls'] = {
 vim.lsp.config['ts_ls'] = {
     cmd = { 'typescript-language-server', '--stdio' },
     filetypes = {
-        'javascript', 'javascriptreact', 'javascript.jsx',
-        'typescript', 'typescriptreact', 'typescript.tsx',
+        'javascript', 'javascriptreact',
+        'typescript', 'typescriptreact',
     },
     root_markers = { 'package.json', 'tsconfig.json', 'jsconfig.json', '.git' },
     settings = {
@@ -201,7 +198,7 @@ vim.lsp.config['serve_d'] = {
 }
 
 vim.lsp.config['jsonls'] = {
-    cmd = { 'vscode-json-languageserver', '--stdio' },
+    cmd = { 'vscode-json-language-server', '--stdio' },
     filetypes = { 'json', 'jsonc' },
     root_markers = { 'package.json', '.git', 'config.jsonc' },
 }
@@ -209,7 +206,7 @@ vim.lsp.config['jsonls'] = {
 vim.lsp.config['hls'] = {
     cmd = { 'haskell-language-server-wrapper', '--lsp' },
     filetypes = { 'haskell', 'lhaskell' },
-    root_markers = { 'stack.yaml', 'cabal.project', 'package.yaml', '*.cabal', 'hie.yaml', '.git' },
+    root_markers = { 'stack.yaml', 'cabal.project', 'package.yaml', 'hie.yaml', '.git' },
     settings = {
         haskell = {
             formattingProvider = 'fourmolu',
@@ -254,7 +251,6 @@ vim.filetype.add({
 -- Enable servers whose binary is on PATH; explicit list avoids the private
 -- _configs table. Keep in sync with the configs above.
 local servers = {
-    luals         = 'lua-language-server',
     cssls         = 'vscode-css-language-server',
     phpls         = 'intelephense',
     ts_ls         = 'typescript-language-server',
@@ -264,7 +260,7 @@ local servers = {
     clangd        = 'clangd',
     c3lsp         = 'c3-lsp',
     serve_d       = 'serve-d',
-    jsonls        = 'vscode-json-languageserver',
+    jsonls        = 'vscode-json-language-server',
     hls           = 'haskell-language-server-wrapper',
     gopls         = 'gopls',
     templ         = 'templ',
