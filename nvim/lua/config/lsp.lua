@@ -69,91 +69,23 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end,
 })
 
--- luals needs the big settings table; build it (and scan the runtime tree)
--- only when the binary exists, so startup skips the work otherwise
-if vim.fn.executable('lua-language-server') == 1 then
-    vim.lsp.config['luals'] = {
-        cmd = { 'lua-language-server' },
-        filetypes = { 'lua' },
-        root_markers = { { '.luarc.json', '.luarc.jsonc' }, '.git' },
-        settings = {
-            Lua = {
-                runtime = { version = 'LuaJIT' },
-                diagnostics = { globals = { 'vim' } },
-                workspace = {
-                    checkThirdParty = false,
-                    library = { vim.env.VIMRUNTIME, vim.fn.stdpath('config') },
-                },
-                telemetry = { enable = false },
+-- luals settings for editing this config itself; the library is kept narrow
+-- (VIMRUNTIME + config dir) so cold-start indexing stays fast
+vim.lsp.config['luals'] = {
+    cmd = { 'lua-language-server' },
+    filetypes = { 'lua' },
+    root_markers = { { '.luarc.json', '.luarc.jsonc' }, '.git' },
+    settings = {
+        Lua = {
+            runtime = { version = 'LuaJIT' },
+            diagnostics = { globals = { 'vim' } },
+            workspace = {
+                checkThirdParty = false,
+                library = { vim.env.VIMRUNTIME, vim.fn.stdpath('config') },
             },
-        },
-    }
-    vim.lsp.enable('luals')
-end
-
-vim.lsp.config['cssls'] = {
-    cmd = { 'vscode-css-language-server', '--stdio' },
-    filetypes = { 'css', 'scss', 'less' },
-    root_markers = { 'package.json', '.git' },
-    settings = {
-        css = { validate = true },
-        scss = { validate = true },
-        less = { validate = true },
-    },
-}
-
-vim.lsp.config['phpls'] = {
-    cmd = { 'intelephense', '--stdio' },
-    filetypes = { 'php' },
-    root_markers = { 'composer.json', '.git' },
-    settings = {
-        intelephense = {
-            files = {
-                maxSize = 5000000, -- default 5MB
-            },
+            telemetry = { enable = false },
         },
     },
-}
-
-vim.lsp.config['ts_ls'] = {
-    cmd = { 'typescript-language-server', '--stdio' },
-    filetypes = {
-        'javascript', 'javascriptreact',
-        'typescript', 'typescriptreact',
-    },
-    root_markers = { 'package.json', 'tsconfig.json', 'jsconfig.json', '.git' },
-    settings = {
-        completions = {
-            completeFunctionCalls = true,
-        },
-    },
-}
-
-vim.lsp.config['zls'] = {
-    cmd = { 'zls' },
-    filetypes = { 'zig', 'zir' },
-    root_markers = { 'zls.json', 'build.zig', '.git' },
-    settings = {
-        zls = {
-            enable_build_on_save = true,
-            build_on_save_step = "install",
-            warn_style = false,
-            enable_snippets = true,
-        }
-    }
-}
-
-vim.lsp.config['nil_ls'] = {
-    cmd = { 'nil' },
-    filetypes = { 'nix' },
-    root_markers = { 'flake.nix', 'default.nix', '.git' },
-    settings = {
-        ['nil'] = {
-            formatting = {
-                command = { "alejandra" }
-            }
-        }
-    }
 }
 
 vim.lsp.config['rust_analyzer'] = {
@@ -180,43 +112,17 @@ vim.lsp.config['clangd'] = {
         -- '--completion-style=detailed',
         -- '--query-driver=/nix/store/*-gcc-*/bin/gcc*,/nix/store/*-clang-*/bin/clang*,/run/current-system/sw/bin/cc*',
     },
-    filetypes = { 'c', 'cpp', 'objc', 'objcpp' },
+    filetypes = { 'c', 'cpp' },
     root_markers = { 'compile_commands.json', '.clangd', 'configure.ac', 'Makefile', '.git' },
     -- init_options = {
     --     fallbackFlags = { '-std=c23' }, -- Default to C23
     -- },
 }
 
-vim.lsp.config['c3lsp'] = {
-    cmd = { 'c3-lsp' },
-    filetypes = { 'c3' },
-    root_markers = { 'project.json', '.git' },
-}
-
-vim.lsp.config['serve_d'] = {
-    cmd = { 'serve-d' },
-    filetypes = { 'd' },
-    root_markers = { 'dub.sdl', 'dub.json', '.git' },
-}
-
 vim.lsp.config['jsonls'] = {
     cmd = { 'vscode-json-language-server', '--stdio' },
     filetypes = { 'json', 'jsonc' },
     root_markers = { 'package.json', '.git', 'config.jsonc' },
-}
-
-vim.lsp.config['hls'] = {
-    cmd = { 'haskell-language-server-wrapper', '--lsp' },
-    filetypes = { 'haskell', 'lhaskell' },
-    root_markers = { 'stack.yaml', 'cabal.project', 'package.yaml', 'hie.yaml', '.git' },
-    settings = {
-        haskell = {
-            formattingProvider = 'fourmolu',
-            plugin = {
-                semanticTokens = { globalOn = false }
-            },
-        },
-    },
 }
 
 vim.lsp.config['gopls'] = {
@@ -235,41 +141,41 @@ vim.lsp.config['gopls'] = {
     },
 }
 
-vim.lsp.config['templ'] = {
-    cmd = { 'templ', 'lsp' },
-    filetypes = { 'templ' },
-    root_markers = { 'go.mod', '.git' },
+vim.lsp.config['pyright'] = {
+    cmd = { 'pyright-langserver', '--stdio' },
+    filetypes = { 'python' },
+    root_markers = { 'pyproject.toml', 'setup.py', 'setup.cfg', 'requirements.txt', '.git' },
+}
+
+vim.lsp.config['bashls'] = {
+    cmd = { 'bash-language-server', 'start' },
+    filetypes = { 'sh', 'bash' },
+    root_markers = { '.git' },
+}
+
+vim.lsp.config['yamlls'] = {
+    cmd = { 'yaml-language-server', '--stdio' },
+    filetypes = { 'yaml', 'yaml.docker-compose', 'yaml.github' },
+    root_markers = { '.git' },
 }
 
 vim.filetype.add({
     extension = {
         h = 'c',
-        c3 = 'c3',
-        d = 'd',
-        templ = 'templ',
     },
 })
 
--- Enable servers whose binary is on PATH; explicit list avoids the private
--- _configs table. Keep in sync with the configs above.
+-- Enable servers whose binary is on PATH. The binary is read from each
+-- config's cmd, so the name list is the only thing to maintain here (single
+-- source of truth, no cmd/binary pairs to keep in sync).
 local servers = {
-    cssls         = 'vscode-css-language-server',
-    phpls         = 'intelephense',
-    ts_ls         = 'typescript-language-server',
-    zls           = 'zls',
-    nil_ls        = 'nil',
-    rust_analyzer = 'rust-analyzer',
-    clangd        = 'clangd',
-    c3lsp         = 'c3-lsp',
-    serve_d       = 'serve-d',
-    jsonls        = 'vscode-json-language-server',
-    hls           = 'haskell-language-server-wrapper',
-    gopls         = 'gopls',
-    templ         = 'templ',
+    'luals', 'clangd', 'jsonls', 'yamlls', 'gopls', 'rust_analyzer',
+    'pyright', 'bashls',
 }
 
-for name, bin in pairs(servers) do
-    if vim.fn.executable(bin) == 1 then
+for _, name in ipairs(servers) do
+    local cmd = vim.lsp.config[name].cmd
+    if type(cmd) == 'table' and vim.fn.executable(cmd[1]) == 1 then
         vim.lsp.enable(name)
     end
 end

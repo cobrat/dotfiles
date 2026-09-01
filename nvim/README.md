@@ -130,15 +130,14 @@ LSP configuration lives in `lua/config/lsp.lua` and uses Neovim's native
 `vim.lsp.config()` interface. Server executables are installed and managed
 outside Neovim; Mason is not used.
 
-Configured servers: Lua, CSS, PHP, TypeScript, Zig, Nix, Rust, C/C++, C3, D,
-JSON, Haskell, Go, and Templ.
+Configured servers: Lua, C/C++, JSON, YAML, Rust, Go, Python, and Bash (shell).
 
 Server binaries are looked up on `PATH`; a server is enabled only if its
-binary exists (explicit list at the bottom of `lsp.lua`, keep it in sync
-with the `vim.lsp.config` blocks above).
+binary exists. The name list at the bottom of `lsp.lua` drives this, and
+binaries are derived from each config's `cmd` (single source of truth).
 
 ## Tree-sitter
 
 Parsers are auto-installed on startup (`treesitter.lua`) and cover every
-LSP language above plus editing basics (bash/sh, markdown, json, vim, query).
-Filetype fallbacks: `less` uses the `css` parser, `sh` uses `bash`.
+LSP language above plus editing basics (bash/sh, yaml, markdown, json, vim,
+query). Filetype fallback: `sh` uses the `bash` parser.

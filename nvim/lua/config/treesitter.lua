@@ -2,43 +2,33 @@
 
 -- Parsers for every language with an LSP server (see lsp.lua), plus basics
 -- for dotfiles/docs. Dependencies are NOT auto-installed, so listed
--- explicitly: cpp/objc->c, scss->css, markdown->markdown_inline,
--- php->php_only, html->html_tags, tsx->ecma+jsx+typescript, + *doc injectors.
+-- explicitly: markdown->markdown_inline, lua->luadoc.
 local parsers = {
     -- editing basics
-    "bash", "json", "markdown", "markdown_inline", "query", "vim", "vimdoc",
+    "bash", "json", "yaml", "markdown", "markdown_inline", "query", "vim", "vimdoc",
     -- C family (clangd)
-    "c", "cpp", "objc",
+    "c", "cpp",
     -- Lua (luals)
     "lua", "luadoc",
-    -- no LSP server; kept on purpose for scripts and docs
+    -- Python (pyright)
     "python",
-    -- Go (gopls, templ)
-    "go", "gomod", "gowork", "gotmpl", "templ",
-    -- rust_analyzer, zls, nil_ls, serve_d, c3lsp, hls
-    "rust", "zig", "nix", "d", "c3", "haskell",
-    -- PHP (intelephense)
-    "php", "php_only", "phpdoc",
-    -- Web (cssls, ts_ls)
-    "css", "scss", "html", "html_tags",
-    "ecma", "jsx", "javascript", "jsdoc", "typescript", "tsx",
+    -- Go (gopls)
+    "go", "gomod",
+    -- Rust (rust_analyzer)
+    "rust",
 }
 
 -- Filetypes to start highlighting on (react/jsonc mappings are built in)
 local filetypes = {
-    "bash", "json", "jsonc", "markdown", "query", "vim", "vimdoc",
-    "c", "cpp", "objc",
+    "bash", "json", "jsonc", "yaml", "markdown", "query", "vim", "vimdoc",
+    "c", "cpp",
     "lua", "python",
-    "go", "gomod", "gowork", "gotmpl", "templ",
-    "rust", "zig", "nix", "d", "c3", "haskell",
-    "php",
-    "css", "scss", "less", "html",
-    "javascript", "javascriptreact", "typescript", "typescriptreact",
+    "go", "gomod",
+    "rust",
     "sh",
 }
 
--- no dedicated less/sh parsers; css/bash are close enough
-vim.treesitter.language.register('css', 'less')
+-- no dedicated sh parser; bash is close enough
 vim.treesitter.language.register('bash', 'sh')
 
 local treesitter = require("nvim-treesitter")
