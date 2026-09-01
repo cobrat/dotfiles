@@ -30,6 +30,12 @@ local function apply_theme_extras()
     -- keep editor surfaces transparent so the terminal bg shows through
     vim.api.nvim_set_hl(0, "Normal", { fg = fg_normal, bg = "none" })
     vim.api.nvim_set_hl(0, "NormalFloat", { fg = fg_float, bg = "none" })
+    vim.api.nvim_set_hl(0, "FloatBorder", { fg = fg_normal, bg = "none" })
+
+    -- window borders: thin line in Normal fg, transparent bg. breaks the
+    -- default FloatBorder -> WinSeparator -> VertSplit chain, whose fg=bg
+    -- gray paints solid gray strips around native-bordered floats (harpoon
+    -- menu) and makes them look like blocks instead of telescope-style lines
 
     -- active bar: subtle lift (theme's CursorLine bg); text tiers
     -- file (Normal fg) > info (Comment fg) > inactive (LineNr fg)

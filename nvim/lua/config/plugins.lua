@@ -83,8 +83,10 @@ cmp.setup({
 -- TELESCOPE
 
 local actions = require("telescope.actions")
+local themes = require("telescope.themes")
 require("telescope").setup({
-    defaults = {
+    -- ivy everywhere: bottom pane, prompt top line, borderless results
+    defaults = vim.tbl_deep_extend("force", themes.get_ivy(), {
         mappings = {
             i = {
                 ["<C-k>"] = actions.move_selection_previous,
@@ -92,7 +94,7 @@ require("telescope").setup({
                 ["<C-q>"] = actions.smart_send_to_qflist + actions.open_qflist,
             },
         },
-    },
+    }),
 })
 
 local builtin = require("telescope.builtin")
@@ -152,6 +154,7 @@ end, { desc = "Toggle sticky context header" })
 -- GIT SIGNS
 
 require("gitsigns").setup({
+    preview_config = { border = 'single' }, -- thin FloatBorder-styled frame (see theme.lua)
     signs = { -- ascii-only, no nerd font needed
         add          = { text = '+' },
         change       = { text = '~' },

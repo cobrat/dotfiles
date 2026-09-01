@@ -28,7 +28,6 @@ This document provides a simple and organized overview of all the custom keybind
 | `n`  | `<C-k>`         | Jump to previous quickfix entry and keep it centered                                        |
 | `n`  | `<leader>j`     | Jump to next location entry and keep it centered                                            |
 | `n`  | `<leader>k`     | Jump to previous location entry and keep it centered                                        |
-| `n`  | `<leader>x`     | Make current file executable (`chmod +x`)                                                   |
 | `n`  | `<leader>u`     | Toggle Undotree                                                                             |
 | `n`  | `]h` / `[h`     | Jump to next / previous git hunk (gitsigns buffers)                                         |
 | `n`  | `<leader>hp`    | Preview the git hunk under the cursor                                                       |
@@ -49,10 +48,9 @@ This document provides a simple and organized overview of all the custom keybind
 
 ## Linting and Formatting
 
-| Mode | Key             | Action                                                                                      |
-|------|-----------------|---------------------------------------------------------------------------------------------|
-| `n`  | `<leader>cc`    | Run `php-cs-fixer` to lint and format PHP files                                             |
-| `n`  | `<F3>`          | Format code (`LSP`)                                                                         |
+| Mode    | Key          | Action              |
+|---------|--------------|---------------------|
+| `n`/`x` | `<leader>cf` | Format code (`LSP`) |
 
 ---
 
@@ -97,7 +95,6 @@ This document provides a simple and organized overview of all the custom keybind
 | `n`       | `gs`       | Show signature help                                                                         |
 | `n`       | `gl`       | Show diagnostics in a floating window                                                       |
 | `n`       | `<F2>`     | Rename symbol                                                                               |
-| `n`, `x`  | `<F3>`     | Format code asynchronously                                                                  |
 | `n`       | `<F4>`     | Show code actions                                                                           |
 
 ---

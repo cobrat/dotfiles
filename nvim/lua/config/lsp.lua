@@ -56,7 +56,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
         map('n', 'gs', vim.lsp.buf.signature_help)
         map('n', 'gl', vim.diagnostic.open_float)
         map('n', '<F2>', vim.lsp.buf.rename)
-        map({ 'n', 'x' }, '<F3>', function() vim.lsp.buf.format({ async = true }) end)
+        map({ 'n', 'x' }, '<leader>cf', function() vim.lsp.buf.format({ async = true }) end)
         map('n', '<F4>', vim.lsp.buf.code_action)
 
         if client:supports_method('textDocument/documentHighlight') then
@@ -70,20 +70,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
                 buffer = buf,
                 group = highlight_augroup,
                 callback = vim.lsp.buf.clear_references,
-            })
-        end
-
-        local excluded_filetypes = { php = true, c = true, cpp = true }
-        if not client:supports_method('textDocument/willSaveWaitUntil')
-            and client:supports_method('textDocument/formatting')
-            and not excluded_filetypes[vim.bo[buf].filetype]
-        then
-            vim.api.nvim_create_autocmd('BufWritePre', {
-                group = vim.api.nvim_create_augroup('my.lsp.format', { clear = false }),
-                buffer = buf,
-                callback = function()
-                    vim.lsp.buf.format({ bufnr = buf, id = client.id, timeout_ms = 1000 })
-                end,
             })
         end
     end,

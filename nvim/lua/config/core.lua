@@ -149,8 +149,6 @@ vim.keymap.set("n", "<leader>co", ":copen<CR>", { silent = true })
 
 vim.keymap.set("n", "Q", "<nop>") -- disable Ex mode
 
-vim.keymap.set("n", "<leader>cc", "<cmd>!php-cs-fixer fix % --using-cache=no<cr>") -- lint/format php
-
 -- replace every occurrence of the word under cursor on the current line
 vim.keymap.set("n", "<leader>s", [[:s/\<<C-r><C-w>\>//gI<Left><Left><Left>]])
 
