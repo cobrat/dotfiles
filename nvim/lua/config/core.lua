@@ -116,43 +116,44 @@ vim.keymap.set("n", "<leader>e", function()
 end, { desc = "Open Oil file explorer" })
 
 -- move visual selection up/down (vscode Alt+Up/Down)
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
 
 -- join lines / page and search navigation with the screen kept centered
-vim.keymap.set("n", "J", "mzJ`z")
-vim.keymap.set("n", "<C-d>", "<C-d>zz")
-vim.keymap.set("n", "<C-u>", "<C-u>zz")
-vim.keymap.set("n", "n", "nzzzv")
-vim.keymap.set("n", "N", "Nzzzv")
+vim.keymap.set("n", "J", "mzJ`z", { desc = "Join with line below, cursor kept" })
+vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Half page down, centered" })
+vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Half page up, centered" })
+vim.keymap.set("n", "n", "nzzzv", { desc = "Next match, centered" })
+vim.keymap.set("n", "N", "Nzzzv", { desc = "Previous match, centered" })
 
 -- paste over selection without clobbering the register; delete without yanking
-vim.keymap.set("x", "<leader>p", [["_dP]])
-vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
+vim.keymap.set("x", "<leader>p", [["_dP]], { desc = "Paste over, register kept" })
+vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]], { desc = "Delete into black-hole register" })
 
 -- quickfix / location list navigation (j = next, k = prev, matching j/k)
-vim.keymap.set("n", "<C-j>", "<cmd>cnext<CR>zz")
-vim.keymap.set("n", "<C-k>", "<cmd>cprev<CR>zz")
-vim.keymap.set("n", "<leader>j", "<cmd>lnext<CR>zz")
-vim.keymap.set("n", "<leader>k", "<cmd>lprev<CR>zz")
-vim.keymap.set("n", "<leader>cl", "<cmd>cclose<CR>")
-vim.keymap.set("n", "<leader>co", "<cmd>copen<CR>")
+vim.keymap.set("n", "<C-j>", "<cmd>cnext<CR>zz", { desc = "Quickfix next, centered" })
+vim.keymap.set("n", "<C-k>", "<cmd>cprev<CR>zz", { desc = "Quickfix previous, centered" })
+vim.keymap.set("n", "<leader>j", "<cmd>lnext<CR>zz", { desc = "Loclist next, centered" })
+vim.keymap.set("n", "<leader>k", "<cmd>lprev<CR>zz", { desc = "Loclist previous, centered" })
+vim.keymap.set("n", "<leader>cl", "<cmd>cclose<CR>", { desc = "Close quickfix window" })
+vim.keymap.set("n", "<leader>co", "<cmd>copen<CR>", { desc = "Open quickfix window" })
 
-vim.keymap.set("n", "Q", "<nop>") -- disable Ex mode
+vim.keymap.set("n", "Q", "<nop>", { desc = "Disabled (Ex mode)" })
 
 -- replace every occurrence of the word under cursor on the current line
-vim.keymap.set("n", "<leader>s", [[:s/\<<C-r><C-w>\>//gI<Left><Left><Left>]])
+vim.keymap.set("n", "<leader>s", [[:s/\<<C-r><C-w>\>//gI<Left><Left><Left>]],
+    { desc = "Substitute word under cursor on line" })
 
 -- yank into the clipboard even over ssh
-vim.keymap.set('n', '<leader>y', '<Plug>OSCYankOperator')
-vim.keymap.set('v', '<leader>y', '<Plug>OSCYankVisual')
+vim.keymap.set('n', '<leader>y', '<Plug>OSCYankOperator', { desc = "Yank to system clipboard (operator)" })
+vim.keymap.set('v', '<leader>y', '<Plug>OSCYankVisual', { desc = "Yank to system clipboard" })
 
 -- built-in undotree (bundled since 0.12 as an opt package); packadd is
 -- guarded by a loaded flag inside the plugin, so repeating it is harmless
 vim.keymap.set("n", "<leader>u", function()
     vim.cmd.packadd("nvim.undotree")
-    vim.cmd.Undotree()
-end)
+    require("undotree").open({ command = "topleft 30vnew" })
+end, { desc = "Toggle undotree" })
 
-vim.keymap.set("n", "<leader>li", ":checkhealth vim.lsp<CR>", { desc = "LSP Info" })
-vim.keymap.set("n", "<leader>mm", "<cmd>make<CR>") -- run make in cwd
+vim.keymap.set("n", "<leader>li", "<cmd>checkhealth vim.lsp<CR>", { desc = "LSP health report" })
+vim.keymap.set("n", "<leader>mm", "<cmd>make<CR>", { desc = "Run make" }) -- in cwd

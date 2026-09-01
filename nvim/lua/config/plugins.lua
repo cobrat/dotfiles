@@ -92,36 +92,49 @@ require("telescope").setup({
 })
 
 local builtin = require("telescope.builtin")
-vim.keymap.set("n", "<leader>ff", builtin.find_files)
-vim.keymap.set("n", "<leader>fo", builtin.oldfiles)
-vim.keymap.set("n", "<leader>fq", builtin.quickfix)
-vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Telescope help tags" })
+vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Find files" })
+vim.keymap.set("n", "<leader>fo", builtin.oldfiles, { desc = "Recent files" })
+vim.keymap.set("n", "<leader>fq", builtin.quickfix, { desc = "Quickfix list" })
+vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Help tags" })
 vim.keymap.set("n", "<leader>fm", function()
     builtin.man_pages({ sections = { "ALL" } })
-end, { desc = "Telescope man pages" })
-vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Telescope buffers" })
+end, { desc = "Man pages" })
+vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Buffers" })
 vim.keymap.set("n", "<leader>fg", function()
     builtin.grep_string({ search = vim.fn.input("Grep > ") })
-end)
+end, { desc = "Grep working directory" })
 vim.keymap.set("n", "<leader>fc", function()
     builtin.grep_string({ search = vim.fn.expand("%:t:r") })
-end, { desc = "Find current file" })
+end, { desc = "Grep current file name" })
 vim.keymap.set("n", "<leader>fs", function()
     builtin.grep_string({})
-end, { desc = "Find current string" })
+end, { desc = "Grep word under cursor" })
 vim.keymap.set("n", "<leader>fi", function()
-    builtin.find_files({ cwd = "~/.config/nvim/" })
-end)
+    builtin.find_files({ cwd = vim.fn.stdpath("config") })
+end, { desc = "Find files in nvim config" })
 
 -- HARPOON
 
 local harpoon = require("harpoon")
 harpoon:setup()
 
-vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end)
-vim.keymap.set("n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
-vim.keymap.set("n", "<C-p>", function() harpoon:list():prev() end)
-vim.keymap.set("n", "<C-n>", function() harpoon:list():next() end)
+-- toggle: add the current file, or remove it if already marked (plain
+-- add() is a no-op for marked files, so this strictly adds capability)
+vim.keymap.set("n", "<leader>a", function()
+    local list = harpoon:list()
+    local buf = vim.api.nvim_buf_get_name(0)
+    for i, item in ipairs(list.items) do
+        if item.value == buf then
+            list:remove_at(i)
+            return
+        end
+    end
+    list:add()
+end, { desc = "Toggle current file in harpoon list" })
+vim.keymap.set("n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end,
+    { desc = "Toggle harpoon menu" })
+vim.keymap.set("n", "<C-p>", function() harpoon:list():prev() end, { desc = "Harpoon previous" })
+vim.keymap.set("n", "<C-n>", function() harpoon:list():next() end, { desc = "Harpoon next" })
 
 vim.keymap.set("n", "<leader>fl", function()
     local conf = require("telescope.config").values

@@ -37,19 +37,21 @@ vim.api.nvim_create_autocmd('LspAttach', {
     callback = function(args)
         local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
         local buf    = args.buf
-        local map    = function(mode, lhs, rhs) vim.keymap.set(mode, lhs, rhs, { buffer = buf }) end
+        local map = function(mode, lhs, rhs, desc)
+            vim.keymap.set(mode, lhs, rhs, { buffer = buf, desc = desc })
+        end
 
-        map('n', 'K', vim.lsp.buf.hover)
-        map('n', 'gd', vim.lsp.buf.definition)
-        map('n', 'gD', vim.lsp.buf.declaration)
-        map('n', 'gi', vim.lsp.buf.implementation)
-        map('n', 'go', vim.lsp.buf.type_definition)
-        map('n', 'gr', vim.lsp.buf.references)
-        map('n', 'gs', vim.lsp.buf.signature_help)
-        map('n', 'gl', vim.diagnostic.open_float)
-        map('n', '<F2>', vim.lsp.buf.rename)
-        map({ 'n', 'x' }, '<leader>cf', function() vim.lsp.buf.format({ async = true }) end)
-        map('n', '<F4>', vim.lsp.buf.code_action)
+        map('n', 'K', vim.lsp.buf.hover, 'Hover')
+        map('n', 'gd', vim.lsp.buf.definition, 'Go to definition')
+        map('n', 'gD', vim.lsp.buf.declaration, 'Go to declaration')
+        map('n', 'gi', vim.lsp.buf.implementation, 'Go to implementation')
+        map('n', 'go', vim.lsp.buf.type_definition, 'Go to type definition')
+        map('n', 'gr', vim.lsp.buf.references, 'References')
+        map('n', 'gs', vim.lsp.buf.signature_help, 'Signature help')
+        map('n', 'gl', vim.diagnostic.open_float, 'Diagnostics float')
+        map('n', '<F2>', vim.lsp.buf.rename, 'Rename symbol')
+        map({ 'n', 'x' }, '<leader>cf', function() vim.lsp.buf.format({ async = true }) end, 'Format (LSP)')
+        map('n', '<F4>', vim.lsp.buf.code_action, 'Code action')
 
         if client:supports_method('textDocument/documentHighlight') then
             local highlight_augroup = vim.api.nvim_create_augroup('my.lsp.highlight', { clear = false })

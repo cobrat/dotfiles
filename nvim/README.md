@@ -73,7 +73,7 @@ This document provides a simple and organized overview of all the custom keybind
 | `n`  | `<leader>fb`    | Open buffer list                                                                            |
 | `n`  | `<leader>fs`    | Grep current string                                                                         |
 | `n`  | `<leader>fc`    | Grep instances of the current file name without the extension                               |
-| `n`  | `<leader>fi`    | Find files in Neovim configuration directory (`~/.config/nvim/`)                            |
+| `n`  | `<leader>fi`    | Find files in the Neovim configuration directory                                            |
 
 ---
 
@@ -81,7 +81,7 @@ This document provides a simple and organized overview of all the custom keybind
 
 | Mode | Key             | Action                                                                                      |
 |------|-----------------|---------------------------------------------------------------------------------------------|
-| `n`  | `<leader>a`     | Add current file to Harpoon list                                                            |
+| `n`  | `<leader>a`     | Toggle current file in Harpoon list (add or remove)                                         |
 | `n`  | `<C-e>`         | Toggle Harpoon quick menu                                                                   |
 | `n`  | `<leader>fl`    | Open Harpoon window with Telescope                                                          |
 | `n`  | `<C-p>`         | Go to previous Harpoon mark                                                                 |
