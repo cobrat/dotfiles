@@ -147,6 +147,21 @@ if [[ -d "$HOME/.local/bin" ]] && (( ! ${path[(Ie)$HOME/.local/bin]} )); then
   path=("$HOME/.local/bin" $path)
 fi
 
+# pi config
+# Only compact genuinely large tool outputs.
+export QUIET_TOOLS_MAX_CHARS=20000
+export QUIET_TOOLS_MAX_LINES=400
+# Keep normal read/bash compaction enabled.
+export QUIET_TOOLS_COMPACT_READ=true
+export QUIET_TOOLS_COMPACT_BASH=true
+# Important: preserve complete subagent final results.
+export QUIET_TOOLS_COMPACT_SUBAGENT=false
+# Prevent accidental unbounded reads, while being less aggressive
+# than quiet-tools' default 120-line limit.
+export QUIET_TOOLS_READ_DEFAULT_LIMIT=200
+# Safety plugin configs
+export CC_SAFETY_NET_LEVEL=standard
+
 # Shell integrations
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
