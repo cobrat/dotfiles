@@ -33,10 +33,63 @@ set.undodir = os.getenv("HOME") .. "/.vim/undodir"
 set.undofile = true
 
 -- pick up file changes on disk ('autoread' is on by default)
-vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHoldI" }, {
     group = vim.api.nvim_create_augroup("auto_refresh", { clear = true }),
     command = "checktime",
 })
+
+-- libuv dir watchers: :checktime within ~100ms of any on-disk write;
+-- watch dirs, not files, to catch tmp-file+rename writes
+do
+    local group = vim.api.nvim_create_augroup("file_watchers", { clear = true })
+    local watchers = {}
+    local debounce = assert(vim.uv.new_timer())
+
+    local function checktime_soon()
+        debounce:start(100, 0, vim.schedule_wrap(function()
+            vim.cmd("silent! checktime")
+        end))
+    end
+
+    local function watch(buf)
+        local path = vim.api.nvim_buf_get_name(buf)
+        if path == "" or vim.bo[buf].buftype ~= "" then return end
+        local dir = vim.fs.dirname(path)
+        if watchers[dir] then return end
+        local w = assert(vim.uv.new_fs_event())
+        watchers[dir] = w
+        w:start(dir, {}, function(err)
+            if err then return end
+            vim.schedule(checktime_soon)
+        end)
+    end
+
+    vim.api.nvim_create_autocmd({ "BufReadPost", "BufFilePost" }, {
+        group = group,
+        callback = function(a) watch(a.buf) end,
+    })
+
+    -- stop the watcher when its dir has no buffers left
+    vim.api.nvim_create_autocmd("BufUnload", {
+        group = group,
+        callback = function(a)
+            local path = vim.api.nvim_buf_get_name(a.buf)
+            if path == "" then return end
+            local dir = vim.fs.dirname(path)
+            local w = watchers[dir]
+            if not w then return end
+            for _, info in ipairs(vim.fn.getbufinfo({ bufloaded = 1 })) do
+                local p = vim.api.nvim_buf_get_name(info.bufnr)
+                if info.bufnr ~= a.buf and p ~= "" and vim.fs.dirname(p) == dir then
+                    return
+                end
+            end
+            w:stop()
+            w:close()
+            watchers[dir] = nil
+        end,
+    })
+end
 
 -- STATUSLINE: active window shows bright file + gray info on a dark bar,
 -- inactive windows one dim line. mode display is left to 'showmode';
