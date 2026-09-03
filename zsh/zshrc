@@ -147,9 +147,6 @@ if [[ -d "$HOME/.local/bin" ]] && (( ! ${path[(Ie)$HOME/.local/bin]} )); then
   path=("$HOME/.local/bin" $path)
 fi
 
-# pi env config
-[ -f "$HOME/.pi/agent/env.sh" ] && source "$HOME/.pi/agent/env.sh"
-
 # Shell integrations
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
