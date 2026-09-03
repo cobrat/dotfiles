@@ -116,6 +116,9 @@ links=(
   "nvim|$HOME/.config/nvim"
   "yazi|$HOME/.config/yazi"
   "zsh/zshrc|$HOME/.zshrc"
+  "pi/AGENTS.md|$HOME/.pi/agent/AGENTS.md"
+  "pi/settings.json|$HOME/.pi/agent/settings.json"
+  "pi/extensions|$HOME/.pi/agent/extensions"
 )
 
 fails=0

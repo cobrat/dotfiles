@@ -1,0 +1,42 @@
+{
+  "packages": [
+    "npm:pi-web-access",
+    "npm:@ff-labs/pi-fff",
+    "npm:pi-lens",
+    "npm:cc-safety-net",
+    "npm:pi-quiet-tools",
+    "npm:pi-cc-extensions",
+    "npm:pi-footer",
+    "npm:@pi-plugins/checkpoint"
+  ],
+  "lastChangelogVersion": "0.84.4",
+  "theme": "dark",
+  "defaultProvider": "zai-coding-cn",
+  "defaultModel": "glm-5.3-flash",
+  "defaultThinkingLevel": "high",
+  "hideThinkingBlock": true,
+  "collapseChangelog": true,
+  "quietStartup": true,
+  "enableInstallTelemetry": false,
+  "enabledModels": [
+    "opencode-go/deepseek-v4-flash",
+    "opencode-go/deepseek-v4-pro",
+    "zai-coding-cn/glm-5.3",
+    "opencode-go/glm-5.3-flash",
+    "zai-coding-cn/glm-5.3-flash"
+  ],
+  "showCacheMissNotices": false,
+
+  "enableSkillCommands": true,
+
+  "compaction": {
+    "enabled": true,
+    "reserveTokens": 16384,
+    "keepRecentTokens": 20000
+  },
+
+  "retry": {
+    "enabled": true,
+    "maxRetries": 3
+  }
+}

@@ -12,6 +12,7 @@ Personal dotfiles, managed as a git repo and applied via symlinks.
 | `nvim/` | `~/.config/nvim/` — Neovim (see `nvim/README.md`) |
 | `yazi/` | `~/.config/yazi/` — Yazi file manager |
 | `zsh/` | `~/.zshrc` — Zsh (built-in vcs_info prompt) |
+| `pi/` | `~/.pi/agent/` — Pi coding agent: `AGENTS.md`, `settings.json`, `extensions/` (only these are synced; the rest of `~/.pi` stays local) |
 
 ## Install
 
