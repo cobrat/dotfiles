@@ -172,10 +172,12 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 " Status Line
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set laststatus=2
-" Left: one space, mode, then paste-mode indicator (2-space gap).
-" Right: file path (relative to cwd) + flags, then line/column; two trailing spaces.
-set statusline=\ %{Mode()}\ \ %{HasPaste()}
-set statusline+=%=%f\ %m%r%h%w\ \ Line:\ %l\ \ Column:\ %c\ \ 
+" Left: one space, file path + flags in Normal fg, then paste-mode indicator
+" (2-space gap) and the right side in Comment fg (StlInfo).
+" Right: position segment (see StlPos) padded to the file's totals so the
+" bar width never shifts while the cursor moves (no jitter).
+set statusline=\ %f\ %m%r%h%w%#StlInfo#\ \ %{HasPaste()}
+set statusline+=%=%{StlPos()}%*
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -217,32 +219,6 @@ map <leader>pp :setlocal paste!<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Helper Functions
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Current mode indicator (used by the statusline)
-function! Mode()
-    let l:mode = mode()
-    if l:mode ==# 'n'
-        return '--NORMAL--'
-    elseif l:mode ==# 'no'
-        return '--N-OP--'
-    elseif l:mode ==# 'v'
-        return '--VISUAL--'
-    elseif l:mode ==# 'V'
-        return '--V-LINE--'
-    elseif l:mode ==# "\<C-v>"
-        return '--V-BLOCK--'
-    elseif l:mode ==# 'i'
-        return '--INSERT--'
-    elseif l:mode ==# 'R'
-        return '--REPLACE--'
-    elseif l:mode ==# 'c'
-        return '--COMMAND--'
-    elseif l:mode ==# 't'
-        return '--TERMINAL--'
-    else
-        return '--' . toupper(l:mode) . '--'
-    endif
-endfunction
-
 " Paste mode indicator (used by the statusline)
 function! HasPaste()
     if &paste
@@ -250,6 +226,62 @@ function! HasPaste()
     endif
     return ''
 endfunction
+
+" Statusline position segment: "Column: c  Line: l/L". fields are left-
+" aligned at fixed width (column 2 chars, line = digits of line('$')) so
+" there is exactly one space after each colon and the bar never shifts
+" while the cursor moves (no jitter)
+function! StlPos() abort
+    let l:lw = len(string(line('$')))
+    return printf('Column: %-2d  Line: %-*d/%d  ',
+        \ col('.'), l:lw, line('.'), line('$'))
+endfunction
+
+" Statusline colors matched to the nvim config (nvim/lua/config/theme.lua):
+" active bar lifted with the theme's CursorLine bg, text tiers
+" file (Normal fg) > info (Comment fg) > inactive (LineNr fg)
+function! s:HlAttr(name, what) abort
+    let l:sid = synIDtrans(hlID(a:name))
+    return [synIDattr(l:sid, a:what, 'gui'), synIDattr(l:sid, a:what, 'cterm')]
+endfunction
+
+function! s:HiCmd(name, fg, bg) abort
+    let l:cmd = 'highlight ' . a:name
+    if a:fg[0] != ''
+        let l:cmd .= ' guifg=' . a:fg[0]
+    endif
+    if a:fg[1] != ''
+        let l:cmd .= ' ctermfg=' . a:fg[1]
+    endif
+    if a:bg[0] != ''
+        let l:cmd .= ' guibg=' . a:bg[0]
+    endif
+    if a:bg[1] != ''
+        let l:cmd .= ' ctermbg=' . a:bg[1]
+    endif
+    execute l:cmd
+endfunction
+
+function! s:ApplyStlColors() abort
+    let l:normal_fg = s:HlAttr('Normal', 'fg')
+    let l:comment_fg = s:HlAttr('Comment', 'fg')
+    let l:linenr_fg = s:HlAttr('LineNr', 'fg')
+    let l:bar_bg = s:HlAttr('CursorLine', 'bg')
+    call s:HiCmd('StatusLine', l:normal_fg, l:bar_bg)
+    call s:HiCmd('StlInfo', l:comment_fg, l:bar_bg)
+    call s:HiCmd('StatusLineNC', l:linenr_fg, ['NONE', 'NONE'])
+    " tab bar: selected tab like the active bar, others dim + transparent
+    call s:HiCmd('TabLineSel', l:normal_fg, l:bar_bg)
+    call s:HiCmd('TabLine', l:linenr_fg, ['NONE', 'NONE'])
+    call s:HiCmd('TabLineFill', ['', ''], ['NONE', 'NONE'])
+endfunction
+
+augroup vimrc_stl_colors
+    autocmd!
+    autocmd ColorScheme * call s:ApplyStlColors()
+augroup END
+
+call s:ApplyStlColors()
 
 " Close a buffer without closing the window (used by <leader>bd)
 command! Bclose call <SID>BufcloseCloseIt()
