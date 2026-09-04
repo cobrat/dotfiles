@@ -109,10 +109,11 @@ end
 -- git parts for the active statusline. split into tiny functions because
 -- %{} results are NOT scanned for highlight items, so the %# groups must
 -- live in the template itself
--- git branch segment for the active statusline, "(main)"; empty without git
+-- git branch segment for the active statusline, "main"; empty without git
+-- (the [ ] brackets live in the stl() template)
 function _G.stl_git_branch()
     local d = vim.b.gitsigns_status_dict
-    return d and d.head and ('(' .. d.head .. ')') or ''
+    return d and d.head or ''
 end
 
 function _G.stl_git_count(sign, key)
@@ -121,11 +122,11 @@ function _G.stl_git_count(sign, key)
     return sign .. tostring(d[key] or 0)
 end
 
--- plain git segment for the inactive line, "(main) +4 -1 ~0"
+-- plain git segment for the inactive line, "[main +4 -1 ~0]"
 function _G.stl_git()
     local d = vim.b.gitsigns_status_dict
     if not d or not d.head then return '' end
-    return ('(%s) +%s -%s ~%s  '):format(d.head,
+    return ('[%s +%s -%s ~%s]  '):format(d.head,
         tostring(d.added or 0), tostring(d.removed or 0), tostring(d.changed or 0))
 end
 
@@ -133,17 +134,27 @@ end
 -- in the template (E red / W yellow); sev 1=ERROR 2=WARN
 function _G.stl_diag(sev, letter)
     local c = vim.diagnostic.count(0)
-    return (c[sev] or 0) > 0 and (letter .. c[sev]) or ''
+    return (c[sev] or 0) > 0 and ('(' .. letter .. c[sev] .. ')') or ''
+end
+
+-- cursor position, "Column:  1  Line: 29/100"; virtcol so tabs count as
+-- cells. Column uses a fixed 2-digit width; Line is padded to the total's
+-- digit count so the layout doesn't shift while moving the cursor
+function _G.stl_pos()
+    local c = vim.fn.virtcol('.')
+    local l, ltotal = vim.fn.line('.'), vim.fn.line('$')
+    return ('Column: %2d  Line: %' .. #tostring(ltotal) .. 'd/%d')
+        :format(c, l, ltotal)
 end
 
 -- %! renderer, called per window; g:statusline_winid picks active vs dim variant
 function _G.stl()
     if vim.g.statusline_winid ~= vim.api.nvim_get_current_win() then
-        return '%<%#StlNC# %{v:lua.stl_file()}%m%r%h%w %=%{v:lua.stl_git()}%{&filetype}  %l:%c  %p%% %*'
+        return '%<%#StlNC# %{v:lua.stl_file()}%m%r%h%w %=%{v:lua.stl_git()}%{v:lua.stl_pos()} %*'
     end
     -- special buffers (help/quickfix/terminal/...) skip git/diagnostic/search
     if vim.bo.buftype ~= '' then
-        return '%<%#StlFile# %{v:lua.stl_file()}%m%r%h%w %=%{&filetype}  %l:%c  %p%% %*'
+        return '%<%#StlFile# %{v:lua.stl_file()}%m%r%h%w %=%{v:lua.stl_pos()} %*'
     end
     return table.concat({
         '%<',
@@ -151,11 +162,11 @@ function _G.stl()
         '%#StlDiagE#%{v:lua.stl_diag(1,\"E\")}%*  ',
         '%#StlDiagW#%{v:lua.stl_diag(2,\"W\")}%*',
         '%=',
-        '%#StlInfo#%{v:lua.stl_git_branch()} ',
+        '%#StlInfo#[%{v:lua.stl_git_branch()}%* ',
         '%#StlGitAdd#%{v:lua.stl_git_count("+", "added")}%* ',
         '%#StlGitDel#%{v:lua.stl_git_count("-", "removed")}%* ',
-        '%#StlGitMod#%{v:lua.stl_git_count("~", "changed")}%*  ',
-        '%#StlInfo#%{&filetype}  %l:%c  %p%% %*',
+        '%#StlGitMod#%{v:lua.stl_git_count("~", "changed")}%*',
+        '%#StlInfo#]  %{v:lua.stl_pos()} %*',
     })
 end
 
@@ -208,5 +219,3 @@ vim.keymap.set("n", "<leader>u", function()
     require("undotree").open({ command = "topleft 30vnew" })
 end, { desc = "Toggle undotree" })
 
-vim.keymap.set("n", "<leader>li", "<cmd>checkhealth vim.lsp<CR>", { desc = "LSP health report" })
-vim.keymap.set("n", "<leader>mm", "<cmd>make<CR>", { desc = "Run make" }) -- in cwd

@@ -118,19 +118,8 @@ end, { desc = "Find files in nvim config" })
 local harpoon = require("harpoon")
 harpoon:setup()
 
--- toggle: add the current file, or remove it if already marked (plain
--- add() is a no-op for marked files, so this strictly adds capability)
-vim.keymap.set("n", "<leader>a", function()
-    local list = harpoon:list()
-    local buf = vim.api.nvim_buf_get_name(0)
-    for i, item in ipairs(list.items) do
-        if item.value == buf then
-            list:remove_at(i)
-            return
-        end
-    end
-    list:add()
-end, { desc = "Toggle current file in harpoon list" })
+vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end,
+    { desc = "Add current file to harpoon list" })
 vim.keymap.set("n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end,
     { desc = "Toggle harpoon menu" })
 vim.keymap.set("n", "<C-p>", function() harpoon:list():prev() end, { desc = "Harpoon previous" })

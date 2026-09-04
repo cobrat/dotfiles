@@ -49,9 +49,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
         map('n', 'gr', vim.lsp.buf.references, 'References')
         map('n', 'gs', vim.lsp.buf.signature_help, 'Signature help')
         map('n', 'gl', vim.diagnostic.open_float, 'Diagnostics float')
-        map('n', '<F2>', vim.lsp.buf.rename, 'Rename symbol')
+        map('n', '<leader>cr', vim.lsp.buf.rename, 'Rename symbol')
         map({ 'n', 'x' }, '<leader>cf', function() vim.lsp.buf.format({ async = true }) end, 'Format (LSP)')
-        map('n', '<F4>', vim.lsp.buf.code_action, 'Code action')
+        map('n', '<leader>ca', vim.lsp.buf.code_action, 'Code action')
 
         if client:supports_method('textDocument/documentHighlight') then
             local highlight_augroup = vim.api.nvim_create_augroup('my.lsp.highlight', { clear = false })
