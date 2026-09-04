@@ -36,7 +36,7 @@
         "enabled": true,
         "options": {
           "raw": false,
-          "hideWhenEmpty": false,
+          "hideWhenEmpty": true,
           "icon": "",
           "text": "",
           "fg": "cyan",
@@ -56,7 +56,7 @@
           "bg": "default",
           "bold": false,
           "tokenFormatStyle": "default",
-          "contextConditionalColors": false,
+          "contextConditionalColors": true,
           "contextWarningPercent": 70,
           "contextDangerPercent": 90,
           "warningFg": "yellow",
@@ -71,7 +71,7 @@
         "enabled": true,
         "options": {
           "raw": false,
-          "hideWhenEmpty": false,
+          "hideWhenEmpty": true,
           "icon": "",
           "text": "",
           "fg": "magenta",
@@ -100,7 +100,7 @@
       {
         "id": "cost-mtkz1yik-u9dogk",
         "type": "cost",
-        "enabled": true,
+        "enabled": false,
         "options": {
           "raw": false,
           "icon": "",
