@@ -129,7 +129,7 @@ fi
 alias lg='lazygit'
 
 # kitty ssh kitten: shell integration + terminfo on remote hosts (kitty only)
-command -v kitten >/dev/null 2>&1 && alias ssh="kitten ssh"
+# command -v kitten >/dev/null 2>&1 && alias ssh="kitten ssh"
 
 # Yazi: open yazi, then cd into the last visited directory on quit
 function yy() {
