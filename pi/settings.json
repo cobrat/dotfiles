@@ -1,13 +1,13 @@
 {
   "packages": [
-    "npm:pi-web-access",
     "npm:@ff-labs/pi-fff",
     "npm:pi-lens",
     "npm:cc-safety-net",
     "npm:pi-quiet-tools",
     "npm:pi-cc-extensions",
     "npm:pi-footer",
-    "npm:@pi-plugins/checkpoint"
+    "npm:@pi-plugins/checkpoint",
+    "npm:pi-web-search"
   ],
   "lastChangelogVersion": "0.85.1",
   "theme": "dark",
