@@ -9,7 +9,7 @@
     "npm:pi-footer",
     "npm:@pi-plugins/checkpoint"
   ],
-  "lastChangelogVersion": "0.84.4",
+  "lastChangelogVersion": "0.85.1",
   "theme": "dark",
   "defaultProvider": "zai-coding-cn",
   "defaultModel": "glm-5.3-flash",
@@ -26,15 +26,12 @@
     "zai-coding-cn/glm-5.3-flash"
   ],
   "showCacheMissNotices": false,
-
   "enableSkillCommands": true,
-
   "compaction": {
     "enabled": true,
     "reserveTokens": 16384,
     "keepRecentTokens": 20000
   },
-
   "retry": {
     "enabled": true,
     "maxRetries": 3
