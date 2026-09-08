@@ -110,7 +110,8 @@ end
 -- %{} results are NOT scanned for highlight items, so the %# groups must
 -- live in the template itself
 -- git branch segment for the active statusline, "main"; empty without git
--- (the [ ] brackets live in the stl() template)
+-- (the brackets, including the non-git "[---]" placeholder, live in the
+-- stl() template)
 function _G.stl_git_branch()
     local d = vim.b.gitsigns_status_dict
     return d and d.head or ''
@@ -156,17 +157,30 @@ function _G.stl()
     if vim.bo.buftype ~= '' then
         return '%<%#StlFile# %{v:lua.stl_file()}%m%r%h%w %=%{v:lua.stl_pos()} %*'
     end
+    -- git segment: branch + counts in a repo, fixed "[---]" outside one;
+    -- decided here rather than inside the %{} helpers so it can also carry
+    -- the %# highlight groups (results of %{} are not scanned for them)
+    local d = vim.b.gitsigns_status_dict
+    local git_seg
+    if d and d.head then
+        git_seg = table.concat({
+            '%#StlInfo#[%{v:lua.stl_git_branch()}%* ',
+            '%#StlGitAdd#%{v:lua.stl_git_count("+", "added")}%* ',
+            '%#StlGitDel#%{v:lua.stl_git_count("-", "removed")}%* ',
+            '%#StlGitMod#%{v:lua.stl_git_count("~", "changed")}%*',
+            '%#StlInfo#]  ',
+        })
+    else
+        git_seg = '%#StlInfo#[---]  '
+    end
     return table.concat({
         '%<',
         '%#StlFile# %{v:lua.stl_file()}%m%r%h%w%*  ',
         '%#StlDiagE#%{v:lua.stl_diag(1,\"E\")}%*  ',
         '%#StlDiagW#%{v:lua.stl_diag(2,\"W\")}%*',
         '%=',
-        '%#StlInfo#[%{v:lua.stl_git_branch()}%* ',
-        '%#StlGitAdd#%{v:lua.stl_git_count("+", "added")}%* ',
-        '%#StlGitDel#%{v:lua.stl_git_count("-", "removed")}%* ',
-        '%#StlGitMod#%{v:lua.stl_git_count("~", "changed")}%*',
-        '%#StlInfo#]  %{v:lua.stl_pos()} %*',
+        git_seg,
+        '%#StlInfo#%{v:lua.stl_pos()} %*',
     })
 end
 
