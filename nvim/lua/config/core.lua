@@ -225,11 +225,3 @@ vim.keymap.set("n", "<leader>s", [[:s/\<<C-r><C-w>\>//gI<Left><Left><Left>]],
 -- yank into the clipboard even over ssh
 vim.keymap.set('n', '<leader>y', '<Plug>OSCYankOperator', { desc = "Yank to system clipboard (operator)" })
 vim.keymap.set('v', '<leader>y', '<Plug>OSCYankVisual', { desc = "Yank to system clipboard" })
-
--- built-in undotree (bundled since 0.12 as an opt package); packadd is
--- guarded by a loaded flag inside the plugin, so repeating it is harmless
-vim.keymap.set("n", "<leader>u", function()
-    vim.cmd.packadd("nvim.undotree")
-    require("undotree").open({ command = "topleft 30vnew" })
-end, { desc = "Toggle undotree" })
-

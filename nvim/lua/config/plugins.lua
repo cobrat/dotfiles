@@ -15,6 +15,7 @@ vim.pack.add({
         version = "main",
     },
     github("nvim-telescope/telescope.nvim"),
+    github("debugloop/telescope-undo.nvim"),
     {
         src = github("ThePrimeagen/harpoon"),
         version = "harpoon2",
@@ -90,6 +91,12 @@ require("telescope").setup({
         },
     }),
 })
+
+-- undo history as an ivy picker: fuzzy filter, diff preview, <CR> restores
+require("telescope").load_extension("undo")
+vim.keymap.set("n", "<leader>u", function()
+    require("telescope").extensions.undo.undo()
+end, { desc = "Undo history (telescope)" })
 
 local builtin = require("telescope.builtin")
 vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Find files" })
