@@ -100,7 +100,7 @@
       {
         "id": "cost-mtkz1yik-u9dogk",
         "type": "cost",
-        "enabled": false,
+        "enabled": true,
         "options": {
           "raw": false,
           "icon": "",
