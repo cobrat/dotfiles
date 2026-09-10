@@ -3,6 +3,9 @@
 nvim.log
 zed/prompts/
 
+# Pi local session runtime data (quiet-tools output caches)
+.pi/
+
 # Cursor hooks (local agent automation; not shared via dotfiles)
 .cursor/hooks.json
 .cursor/hooks/
