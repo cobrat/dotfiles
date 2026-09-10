@@ -7,7 +7,7 @@
     "npm:pi-cc-extensions",
     "npm:pi-footer",
     "npm:@pi-plugins/checkpoint",
-    "npm:pi-web-search"
+    "npm:pi-web-access"
   ],
   "lastChangelogVersion": "0.85.1",
   "theme": "dark",
@@ -23,7 +23,11 @@
     "opencode-go/deepseek-v4-pro",
     "zai-coding-cn/glm-5.3",
     "opencode-go/glm-5.3-flash",
-    "zai-coding-cn/glm-5.3-flash"
+    "zai-coding-cn/glm-5.3-flash",
+    "my-qwen/qwen3.8-27b",
+    "opencode-go/deepseek-v4-flash-vision-exp",
+    "ctapi/glm-5.3",
+    "deepseek/deepseek-v4-pro"
   ],
   "showCacheMissNotices": false,
   "enableSkillCommands": true,
