@@ -114,7 +114,7 @@
       {
         "id": "total-time-mtkz1yik-4r03tq",
         "type": "total-time",
-        "enabled": true,
+        "enabled": false,
         "options": {
           "raw": false,
           "icon": "",
