@@ -1,0 +1,29 @@
+{
+  "mode": "on",
+  "excludeRenderers": ["bash"],
+
+  "diffViewMode": "auto",
+  "diffIndicatorMode": "bars",
+  "diffSplitMinWidth": 120,
+  "editDiffCollapsedLines": 12,
+  "writeDiffCollapsedLines": 0,
+  "diffWordWrap": true,
+  "expandedPreviewMaxLines": 40,
+
+  "toolInputNameLength": 100,
+
+  "useSummaryTitlesAsThinkingTitle": true,
+  "previewLines": 2,
+  "animationIntervalMs": 120,
+  "dimThinkingText": true,
+
+  "showStartupHeader": false,
+  "scrollStepLines": 3,
+
+  "enableSessionReference": true,
+  "enableSubagentAutocomplete": true,
+  "enableContextCommand": true,
+  "enableAgentSummary": true,
+  "enableWorkingMessage": true,
+  "enableAliases": true
+}
