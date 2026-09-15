@@ -1,31 +1,33 @@
 -- LANGUAGE SERVER PROTOCOL
 
--- Defaults merged into every server config below.
 vim.lsp.config('*', {
     root_markers = { '.git' },
-    capabilities = require("cmp_nvim_lsp").default_capabilities(),
 })
 
 vim.diagnostic.config({
-    virtual_text  = true,
+    -- inline text on every line, including the cursor line; the float is manual
+    virtual_text  = { prefix = '>' },
     severity_sort = true,
     float         = {
         style  = 'minimal',
-        border = 'rounded',
         source = 'if_many',
         header = '',
         prefix = '',
     },
 })
 
+-- centered jumps; count keeps 3]d working
+vim.keymap.set('n', ']d', '<Cmd>lua vim.diagnostic.jump({ count = vim.v.count1 })<CR>zz',
+    { desc = 'Next diagnostic, centered' })
+vim.keymap.set('n', '[d', '<Cmd>lua vim.diagnostic.jump({ count = -vim.v.count1 })<CR>zz',
+    { desc = 'Previous diagnostic, centered' })
+
 local orig = vim.lsp.util.open_floating_preview
 ---@diagnostic disable-next-line: duplicate-set-field
 function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
     opts            = opts or {}
-    opts.border     = opts.border or 'rounded'
-    opts.max_width  = opts.max_width or 80
+    -- the runtime sets no default max height, so a long hover would fill the screen
     opts.max_height = opts.max_height or 24
-    opts.wrap       = opts.wrap ~= false
     return orig(contents, syntax, opts, ...)
 end
 
@@ -46,12 +48,29 @@ vim.api.nvim_create_autocmd('LspAttach', {
         map('n', 'gD', vim.lsp.buf.declaration, 'Go to declaration')
         map('n', 'gi', vim.lsp.buf.implementation, 'Go to implementation')
         map('n', 'go', vim.lsp.buf.type_definition, 'Go to type definition')
-        map('n', 'gr', vim.lsp.buf.references, 'References')
+        -- references: native grr or <leader>fr; a `gr` map would shadow the
+        -- native gr* prefix and cost a timeoutlen wait on every press
         map('n', 'gs', vim.lsp.buf.signature_help, 'Signature help')
+        -- manual float for the diagnostics of the current line (native <C-w>d
+        -- does the same and works without a client)
         map('n', 'gl', vim.diagnostic.open_float, 'Diagnostics float')
         map('n', '<leader>cr', vim.lsp.buf.rename, 'Rename symbol')
         map({ 'n', 'x' }, '<leader>cf', function() vim.lsp.buf.format({ async = true }) end, 'Format (LSP)')
         map('n', '<leader>ca', vim.lsp.buf.code_action, 'Code action')
+
+        -- the menu itself comes from 'autocomplete' + 'complete' (core.lua); this
+        -- enables LSP item conversion and the <C-y> side effects (snippets, edits)
+        if client:supports_method('textDocument/completion') then
+            vim.lsp.completion.enable(true, client.id, buf, { autotrigger = true })
+        end
+
+        -- inlay hints are off by default in 0.12
+        if client:supports_method('textDocument/inlayHint') then
+            map('n', '<leader>ti', function()
+                vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = buf }),
+                    { bufnr = buf })
+            end, 'Toggle inlay hints')
+        end
 
         if client:supports_method('textDocument/documentHighlight') then
             local highlight_augroup = vim.api.nvim_create_augroup('my.lsp.highlight', { clear = false })
@@ -69,8 +88,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end,
 })
 
--- luals settings for editing this config itself; the library is kept narrow
--- (VIMRUNTIME + config dir) so cold-start indexing stays fast
+-- narrow library keeps cold-start indexing fast
 vim.lsp.config['luals'] = {
     cmd = { 'lua-language-server' },
     filetypes = { 'lua' },
@@ -104,19 +122,9 @@ vim.lsp.config['rust_analyzer'] = {
 
 -- C / C++ via clangd
 vim.lsp.config['clangd'] = {
-    cmd = {
-        'clangd',
-        -- '--background-index',
-        -- '--clang-tidy',
-        -- '--header-insertion=never',
-        -- '--completion-style=detailed',
-        -- '--query-driver=/nix/store/*-gcc-*/bin/gcc*,/nix/store/*-clang-*/bin/clang*,/run/current-system/sw/bin/cc*',
-    },
+    cmd = { 'clangd' },
     filetypes = { 'c', 'cpp' },
     root_markers = { 'compile_commands.json', '.clangd', 'configure.ac', 'Makefile', '.git' },
-    -- init_options = {
-    --     fallbackFlags = { '-std=c23' }, -- Default to C23
-    -- },
 }
 
 vim.lsp.config['jsonls'] = {
@@ -159,15 +167,34 @@ vim.lsp.config['yamlls'] = {
     root_markers = { '.git' },
 }
 
+-- .h is always cpp in Neovim (g:c_syntax_for_h would force c for every
+-- header), so sniff for C++-only constructs and default to c
+local cpp_only = {
+    '%f[%w]class%f[%W]', '%f[%w]template%f[%W]', '%f[%w]namespace%f[%W]',
+    '%f[%w]constexpr%f[%W]', '%f[%w]nullptr%f[%W]', '%f[%w]noexcept%f[%W]',
+    '%f[%w]virtual%f[%W]', '%f[%w]typename%f[%W]', '%f[%w]override%f[%W]',
+    '%f[%w]public%f[%W]%s*:', '%f[%w]private%f[%W]%s*:', '%f[%w]protected%f[%W]%s*:',
+    '::',
+    '#include%s*<[%w_]*vector%f[%W]', '#include%s*<[%w_]*iostream%f[%W]',
+    '#include%s*<[%w_]*string%f[%W]', '#include%s*<[%w_]*map%f[%W]',
+    '#include%s*<[%w_]*memory%f[%W]', '#include%s*<[%w_]*algorithm%f[%W]',
+    '#include%s*<[%w_]*optional%f[%W]', '#include%s*<[%w_]*variant%f[%W]',
+}
+
 vim.filetype.add({
     extension = {
-        h = 'c',
+        h = function(_, bufnr)
+            for _, line in ipairs(vim.api.nvim_buf_get_lines(bufnr, 0, 200, false)) do
+                for _, pat in ipairs(cpp_only) do
+                    if line:find(pat) then return 'cpp' end
+                end
+            end
+            return 'c'
+        end,
     },
 })
 
--- Enable servers whose binary is on PATH. The binary is read from each
--- config's cmd, so the name list is the only thing to maintain here (single
--- source of truth, no cmd/binary pairs to keep in sync).
+-- enable servers whose binary is on PATH; the binary comes from the config's cmd
 local servers = {
     'luals', 'clangd', 'jsonls', 'yamlls', 'gopls', 'rust_analyzer',
     'pyright', 'bashls',

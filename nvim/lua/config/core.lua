@@ -15,6 +15,9 @@ set.termguicolors = true
 set.background = "dark"
 set.signcolumn = "yes"
 
+-- default border for floats that do not set their own (explicit ones win)
+set.winborder = "rounded"
+
 set.cursorline = true
 set.colorcolumn = "80"
 set.clipboard:append("unnamedplus")
@@ -22,6 +25,23 @@ set.splitbelow = true
 set.splitright = true
 set.scrolloff = 8
 set.updatetime = 50
+
+-- completion: 'autocomplete' is the menu-as-you-type switch (off by default in
+-- 0.12); 'o' = omnifunc, which is vim.lsp.omnifunc once a client is attached.
+-- clangd alone answers with 100 items per keystroke, each with a detail
+-- column, so cap the source, the rows and the width; the delay keeps the menu
+-- from flashing while typing a word
+set.autocomplete = true
+set.autocompletedelay = 80
+set.complete = { "o^15" }
+set.pumheight = 10
+set.pummaxwidth = 50
+-- noselect + <C-y> to accept; pumborder matches winborder
+set.completeopt = { "menuone", "noselect", "popup" }
+set.pumborder = "rounded"
+
+-- prefix keys otherwise wait a full second before dropping
+set.timeoutlen = 300
 
 -- '-' counts as part of a word so dw/diw/ciw handle hyphenated words
 set.iskeyword:append("-")
@@ -33,70 +53,22 @@ set.undodir = os.getenv("HOME") .. "/.vim/undodir"
 set.undofile = true
 
 -- pick up file changes on disk ('autoread' is on by default)
-vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHoldI" }, {
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "TermClose", "CursorHold", "CursorHoldI" }, {
     group = vim.api.nvim_create_augroup("auto_refresh", { clear = true }),
     command = "checktime",
 })
 
--- libuv dir watchers: :checktime within ~100ms of any on-disk write;
--- watch dirs, not files, to catch tmp-file+rename writes
-do
-    local group = vim.api.nvim_create_augroup("file_watchers", { clear = true })
-    local watchers = {}
-    local debounce = assert(vim.uv.new_timer())
+-- json/jsonc are 2-space (after/ftplugin would need two identical files)
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "json", "jsonc" },
+    callback = function()
+        vim.opt_local.shiftwidth, vim.opt_local.tabstop, vim.opt_local.softtabstop = 2, 2, 2
+    end,
+})
 
-    local function checktime_soon()
-        debounce:start(100, 0, vim.schedule_wrap(function()
-            vim.cmd("silent! checktime")
-        end))
-    end
+-- STATUSLINE (highlight groups in theme.lua)
 
-    local function watch(buf)
-        local path = vim.api.nvim_buf_get_name(buf)
-        if path == "" or vim.bo[buf].buftype ~= "" then return end
-        local dir = vim.fs.dirname(path)
-        if watchers[dir] then return end
-        local w = assert(vim.uv.new_fs_event())
-        watchers[dir] = w
-        w:start(dir, {}, function(err)
-            if err then return end
-            vim.schedule(checktime_soon)
-        end)
-    end
-
-    vim.api.nvim_create_autocmd({ "BufReadPost", "BufFilePost" }, {
-        group = group,
-        callback = function(a) watch(a.buf) end,
-    })
-
-    -- stop the watcher when its dir has no buffers left
-    vim.api.nvim_create_autocmd("BufUnload", {
-        group = group,
-        callback = function(a)
-            local path = vim.api.nvim_buf_get_name(a.buf)
-            if path == "" then return end
-            local dir = vim.fs.dirname(path)
-            local w = watchers[dir]
-            if not w then return end
-            for _, info in ipairs(vim.fn.getbufinfo({ bufloaded = 1 })) do
-                local p = vim.api.nvim_buf_get_name(info.bufnr)
-                if info.bufnr ~= a.buf and p ~= "" and vim.fs.dirname(p) == dir then
-                    return
-                end
-            end
-            w:stop()
-            w:close()
-            watchers[dir] = nil
-        end,
-    })
-end
-
--- STATUSLINE: active window shows bright file + gray info on a dark bar,
--- inactive windows one dim line. mode display is left to 'showmode';
--- highlight groups live in theme.lua. search match count shows in the
--- cmdline by default ('shortmess' without S), so it is not duplicated here.
-
--- last two path components, cwd-independent; ~ prefix for $HOME paths
+-- last two path components, cwd-independent, ~ for $HOME
 function _G.stl_file()
     local name = vim.api.nvim_buf_get_name(0)
     if name == '' then return 'No Name' end
@@ -106,12 +78,8 @@ function _G.stl_file()
     return parts[n]
 end
 
--- git parts for the active statusline. split into tiny functions because
--- %{} results are NOT scanned for highlight items, so the %# groups must
--- live in the template itself
--- git branch segment for the active statusline, "main"; empty without git
--- (the brackets, including the non-git "[---]" placeholder, live in the
--- stl() template)
+-- git branch for the active line; %{} results are not scanned for %# groups,
+-- so the brackets (and the "[---]" fallback) live in stl() below
 function _G.stl_git_branch()
     local d = vim.b.gitsigns_status_dict
     return d and d.head or ''
@@ -131,16 +99,20 @@ function _G.stl_git()
         tostring(d.added or 0), tostring(d.removed or 0), tostring(d.changed or 0))
 end
 
--- diagnostic counts after the modified flags, colored via StlDiagE/StlDiagW
--- in the template (E red / W yellow); sev 1=ERROR 2=WARN
-function _G.stl_diag(sev, letter)
+-- W before E, e.g. "(W4 E1)"; only the letters take the StlDiag* colors and
+-- the parens fall back to StatusLine via %*. Cells are built here (not in a
+-- %{}) because %# items in a %{} result are not parsed, only in the %! template
+local function diag_seg()
     local c = vim.diagnostic.count(0)
-    return (c[sev] or 0) > 0 and ('(' .. letter .. c[sev] .. ')') or ''
+    local w, e = c[2] or 0, c[1] or 0
+    if w + e == 0 then return '' end
+    local parts = {}
+    if w > 0 then parts[#parts + 1] = '%#StlDiagW#W' .. w .. '%*' end
+    if e > 0 then parts[#parts + 1] = '%#StlDiagE#E' .. e .. '%*' end
+    return '(' .. table.concat(parts, ' ') .. ')'
 end
 
--- cursor position, "Column:  1  Line: 29/100"; virtcol so tabs count as
--- cells. Column uses a fixed 2-digit width; Line is padded to the total's
--- digit count so the layout doesn't shift while moving the cursor
+-- "Column:  1  Line: 29/100"; virtcol so tabs count as cells
 function _G.stl_pos()
     local c = vim.fn.virtcol('.')
     local l, ltotal = vim.fn.line('.'), vim.fn.line('$')
@@ -157,9 +129,7 @@ function _G.stl()
     if vim.bo.buftype ~= '' then
         return '%<%#StlFile# %{v:lua.stl_file()}%m%r%h%w %=%{v:lua.stl_pos()} %*'
     end
-    -- git segment: branch + counts in a repo, fixed "[---]" outside one;
-    -- decided here rather than inside the %{} helpers so it can also carry
-    -- the %# highlight groups (results of %{} are not scanned for them)
+    -- branch + counts in a repo, "[---]" outside one
     local d = vim.b.gitsigns_status_dict
     local git_seg
     if d and d.head then
@@ -176,8 +146,7 @@ function _G.stl()
     return table.concat({
         '%<',
         '%#StlFile# %{v:lua.stl_file()}%m%r%h%w%*  ',
-        '%#StlDiagE#%{v:lua.stl_diag(1,\"E\")}%*  ',
-        '%#StlDiagW#%{v:lua.stl_diag(2,\"W\")}%*',
+        diag_seg(),
         '%=',
         git_seg,
         '%#StlInfo#%{v:lua.stl_pos()} %*',
@@ -205,7 +174,7 @@ vim.keymap.set("n", "n", "nzzzv", { desc = "Next match, centered" })
 vim.keymap.set("n", "N", "Nzzzv", { desc = "Previous match, centered" })
 
 -- paste over selection without clobbering the register; delete without yanking
-vim.keymap.set("x", "<leader>p", [["_dP]], { desc = "Paste over, register kept" })
+vim.keymap.set("v", "<leader>p", [["_dP]], { desc = "Paste over, register kept" })
 vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]], { desc = "Delete into black-hole register" })
 
 -- quickfix / location list navigation (j = next, k = prev, matching j/k)
@@ -221,7 +190,3 @@ vim.keymap.set("n", "Q", "<nop>", { desc = "Disabled (Ex mode)" })
 -- replace every occurrence of the word under cursor on the current line
 vim.keymap.set("n", "<leader>s", [[:s/\<<C-r><C-w>\>//gI<Left><Left><Left>]],
     { desc = "Substitute word under cursor on line" })
-
--- yank into the clipboard even over ssh
-vim.keymap.set('n', '<leader>y', '<Plug>OSCYankOperator', { desc = "Yank to system clipboard (operator)" })
-vim.keymap.set('v', '<leader>y', '<Plug>OSCYankVisual', { desc = "Yank to system clipboard" })

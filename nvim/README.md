@@ -8,11 +8,13 @@ A reference for the custom keybinds in this configuration. `leader` is mapped to
 - [Keybinds](#keybinds)
   - [Files and Editing](#files-and-editing)
   - [Movement and Scrolling](#movement-and-scrolling)
+  - [Flash](#flash)
   - [Quickfix and Location List](#quickfix-and-location-list)
   - [Clipboard and Registers](#clipboard-and-registers)
   - [Git](#git)
   - [Visual Mode](#visual-mode)
   - [LSP](#lsp)
+  - [Diagnostics](#diagnostics)
   - [Formatting](#formatting)
   - [Telescope](#telescope)
   - [Harpoon](#harpoon)
@@ -30,7 +32,6 @@ A reference for the custom keybinds in this configuration. `leader` is mapped to
 | `lua/config/plugins.lua`    | Plugin installation and configuration            |
 | `lua/config/lsp.lua`        | Diagnostics, LSP behavior, and language servers  |
 | `lua/config/treesitter.lua` | Parsers, highlighting, and text objects          |
-| `after/ftplugin/*.lua`      | Filetype-local overrides                         |
 
 ## Keybinds
 
@@ -46,12 +47,28 @@ A reference for the custom keybinds in this configuration. `leader` is mapped to
 
 ### Movement and Scrolling
 
-| Mode | Key     | Action                                            |
-|------|---------|---------------------------------------------------|
-| `n`  | `<C-d>` | Scroll half-page down, keeping the cursor centered |
-| `n`  | `<C-u>` | Scroll half-page up, keeping the cursor centered   |
-| `n`  | `n`     | Next search result, keeping the cursor centered    |
-| `n`  | `N`     | Previous search result, keeping the cursor centered |
+| Mode   | Key       | Action                                              |
+|--------|-----------|-----------------------------------------------------|
+| `n`    | `<C-d>`   | Scroll half-page down, keeping the cursor centered  |
+| `n`    | `<C-u>`   | Scroll half-page up, keeping the cursor centered    |
+| `n`    | `n`       | Next search result, keeping the cursor centered     |
+| `n`    | `N`       | Previous search result, keeping the cursor centered |
+
+### Flash
+
+[flash.nvim](https://github.com/folke/flash.nvim) labels every match, so a
+position is two or three keys away instead of a full search.
+
+| Mode          | Key       | Action                                            |
+|---------------|-----------|---------------------------------------------------|
+| `n`/`x`/`o`   | `s`       | Jump to a labelled match (works across windows)   |
+| `n`/`x`/`o`   | `S`       | Select a tree-sitter node by label                |
+| `c`           | `<C-s>`   | Toggle labels while typing a `/` search           |
+
+flash also owns `;` and `,` (next / previous match of the current jump),
+which only act while a flash jump is active. `f`/`t` stay plain motions:
+label mode is deliberately off (`modes.char.jump_labels`). Inside a
+telescope results window, `s` (normal) and `<C-s>` (insert) jump a label.
 
 ### Quickfix and Location List
 
@@ -66,11 +83,11 @@ A reference for the custom keybinds in this configuration. `leader` is mapped to
 
 ### Clipboard and Registers
 
+Plain `y`/`p` use the system clipboard (`clipboard=unnamedplus`).
+
 | Mode | Key         | Action                                                      |
 |------|-------------|-------------------------------------------------------------|
-| `n`  | `<leader>y` | Yank motion target into the system clipboard (even on SSH)  |
-| `v`  | `<leader>y` | Yank selection into the system clipboard (even on SSH)      |
-| `x`  | `<leader>p` | Paste over selection without overwriting the clipboard      |
+| `v`  | `<leader>p` | Paste over selection without overwriting the clipboard      |
 
 ### Git
 
@@ -79,6 +96,10 @@ A reference for the custom keybinds in this configuration. `leader` is mapped to
 | `n`  | `]h` / `[h` | Jump to next / previous git hunk (gitsigns)  |
 | `n`  | `<leader>hp`| Preview the git hunk under the cursor        |
 | `n`  | `<leader>hb`| Blame the current line (author and date)     |
+| `n`  | `<leader>hs`| Stage the hunk under the cursor              |
+| `n`  | `<leader>hr`| Reset the hunk under the cursor              |
+| `n`  | `<leader>hu`| Undo the last staged hunk                    |
+| `n`  | `<leader>hd`| Diff the current buffer against the index    |
 
 ### Visual Mode
 
@@ -98,11 +119,22 @@ Buffer-local mappings, active when an LSP server is attached.
 | `n`  | `gD`         | Go to declaration                      |
 | `n`  | `gi`         | Go to implementation                   |
 | `n`  | `go`         | Go to type definition                  |
-| `n`  | `gr`         | Show references                        |
 | `n`  | `gs`         | Show signature help                    |
-| `n`  | `gl`         | Show diagnostics in a floating window  |
 | `n`  | `<leader>cr` | Rename symbol                          |
 | `n`  | `<leader>ca` | Show code actions                      |
+| `n`  | `<leader>ti` | Toggle inlay hints (server-supported)  |
+
+References use the native `grr` or `<leader>fr` (see Telescope). `gr` itself
+is left unmapped so the native `grn`/`gra`/`grr`/`gri`/`grt` family answers
+immediately instead of waiting out `timeoutlen`.
+
+### Diagnostics
+
+| Mode   | Key    | Action                                                            |
+|--------|--------|-------------------------------------------------------------------|
+| `n`    | `]d`   | Next diagnostic, keeping the cursor centered                      |
+| `n`    | `[d`   | Previous diagnostic, keeping the cursor centered                  |
+| `n`    | `gl`   | Show the diagnostic under the cursor in a float (needs a client)  |
 
 ### Formatting
 
@@ -124,6 +156,10 @@ Buffer-local mappings, active when an LSP server is attached.
 | `n`  | `<leader>fh`| Open help tags                                     |
 | `n`  | `<leader>fm`| Browse man pages                                   |
 | `n`  | `<leader>fi`| Find files in the Neovim config directory          |
+| `n`  | `<leader>fd`| Browse symbols in the current file (LSP)           |
+| `n`  | `<leader>fw`| Browse symbols in the workspace (LSP)              |
+| `n`  | `<leader>fr`| Browse references to the symbol under the cursor   |
+| `n`  | `<leader>fD`| Browse diagnostics                                 |
 
 ### Harpoon
 
@@ -133,15 +169,17 @@ Buffer-local mappings, active when an LSP server is attached.
 | `n`  | `<C-e>`     | Toggle the Harpoon quick menu           |
 | `n`  | `<C-n>`     | Go to the next Harpoon mark             |
 | `n`  | `<C-p>`     | Go to the previous Harpoon mark         |
-| `n`  | `<leader>fl`| Open the Harpoon window with Telescope  |
 
 ### Miscellaneous
 
 | Mode | Key         | Action                                                        |
 |------|-------------|---------------------------------------------------------------|
 | `n`  | `<leader>s` | Replace all instances of the word under the cursor on the line|
-| `n`  | `<leader>u` | Toggle Undotree                                               |
+| `n`  | `<leader>u` | Browse undo history with a diff preview (telescope-undo)      |
 | `n`  | `<leader>th`| Toggle the sticky context header (treesitter-context)         |
+
+`<leader>s` is a leaf mapping, not a prefix: nothing is mapped under
+`<leader>s*`, so no key below it has to wait out `timeoutlen`.
 
 ### Text Objects
 

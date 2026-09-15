@@ -1,6 +1,4 @@
--- THEME
--- Built-in habamax; tints are re-derived from the active scheme on every
--- ColorScheme event so the statusline groups follow theme changes.
+-- THEME: habamax; tints are re-derived on every ColorScheme event
 
 -- read fg/bg of a highlight group as a hex string, e.g. '#c7c7c7'
 local function hl(name, part)
@@ -19,8 +17,7 @@ local function fg_of(...)
 end
 
 local function apply_theme_extras()
-    -- capture theme colors first: nvim_set_hl REPLACES group definitions,
-    -- so overwriting Normal with bg=none would otherwise drop its fg
+    -- capture first: nvim_set_hl REPLACES definitions (bg=none would drop fg)
     local fg_normal = hl("Normal", "fg")
     local fg_float = hl("NormalFloat", "fg")
     local fg_comment = hl("Comment", "fg")
@@ -32,23 +29,16 @@ local function apply_theme_extras()
     vim.api.nvim_set_hl(0, "NormalFloat", { fg = fg_float, bg = "none" })
     vim.api.nvim_set_hl(0, "FloatBorder", { fg = fg_normal, bg = "none" })
 
-    -- window borders: thin line in Normal fg, transparent bg. breaks the
-    -- default FloatBorder -> WinSeparator -> VertSplit chain, whose fg=bg
-    -- gray paints solid gray strips around native-bordered floats (harpoon
-    -- menu) and makes them look like blocks instead of telescope-style lines
+    -- thin border in Normal fg; the default chain paints solid gray strips
 
-    -- active bar: subtle lift (theme's CursorLine bg); text tiers
-    -- file (Normal fg) > info (Comment fg) > inactive (LineNr fg)
+    -- active bar: CursorLine bg lift, tiers file > info > inactive
     vim.api.nvim_set_hl(0, "StatusLine", { fg = fg_normal, bg = bar_bg })
     vim.api.nvim_set_hl(0, "StlFile", { fg = fg_normal, bg = bar_bg })
     vim.api.nvim_set_hl(0, "StlInfo", { fg = fg_comment, bg = bar_bg })
     vim.api.nvim_set_hl(0, "StatusLineNC", { fg = fg_linenr, bg = "none" })
     vim.api.nvim_set_hl(0, "StlNC", { fg = fg_linenr, bg = "none" })
 
-    -- statusline segment colors from the theme's own palette: git counts
-    -- (+ green / - red / ~ yellow) from the diff colors; diagnostic E/W
-    -- red/yellow fall back to the same palette (habamax Error/WarningMsg
-    -- have no usable fg)
+    -- segment colors from the theme's palette (habamax Error/Warning have no fg)
     local function seg(name, ...)
         vim.api.nvim_set_hl(0, name, { fg = fg_of(...), bg = bar_bg })
     end
@@ -57,6 +47,9 @@ local function apply_theme_extras()
     seg("StlGitMod", "Changed", "DiffChange")
     seg("StlDiagE", "Removed", "DiagnosticError")
     seg("StlDiagW", "Changed", "DiagnosticWarn")
+
+    -- labels link Substitute -> Search, i.e. invisible without a tint
+    vim.api.nvim_set_hl(0, "FlashLabel", { fg = bar_bg, bg = fg_comment })
 end
 
 vim.api.nvim_create_autocmd("ColorScheme", {
