@@ -8,7 +8,7 @@ Personal dotfiles, managed as a git repo and applied via symlinks.
 | --- | --- |
 | `tmux/` | `~/.tmux.conf` — tmux |
 | `vim/` | `~/.vimrc` — Vim (links `vim/basic.vim`) |
-| `kitty/` | `~/.config/kitty/` — Kitty terminal |
+| `ghostty/` | `~/.config/ghostty/` — Ghostty terminal |
 | `nvim/` | `~/.config/nvim/` — Neovim (see `nvim/README.md`) |
 | `yazi/` | `~/.config/yazi/` — Yazi file manager |
 | `zsh/` | `~/.zshrc` — Zsh (built-in vcs_info prompt) |

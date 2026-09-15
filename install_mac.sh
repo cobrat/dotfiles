@@ -112,7 +112,7 @@ say ""
 links=(
   "tmux/tmux.conf|$HOME/.tmux.conf"
   "vim/basic.vim|$HOME/.vimrc"
-  "kitty|$HOME/.config/kitty"
+  "ghostty|$HOME/.config/ghostty"
   "nvim|$HOME/.config/nvim"
   "yazi|$HOME/.config/yazi"
   "zsh/zshrc|$HOME/.zshrc"
