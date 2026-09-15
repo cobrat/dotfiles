@@ -14,10 +14,7 @@ export LANG=en_US.UTF-8
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
 # Download Zinit, if it's not there yet
-if [ ! -d "$ZINIT_HOME" ]; then
-   mkdir -p "$(dirname $ZINIT_HOME)"
-   git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
-fi
+[[ -d "$ZINIT_HOME" ]] || { mkdir -p "${ZINIT_HOME:h}"; git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"; }
 
 # Source/Load zinit
 source "${ZINIT_HOME}/zinit.zsh"
@@ -59,13 +56,10 @@ export NVM_DIR="$HOME/.nvm"
 
 # Resolve the default version by chasing nvm alias chains (e.g. lts/* -> lts/krypton -> v24.x.x)
 () {
-  local _p="$NVM_DIR/alias/default" _v _i
-  for (( _i = 0; _i < 5; _i++ )); do
-    [[ -f "$_p" ]] || break
-    _v="$(<"$_p")"
-    _p="$NVM_DIR/versions/node/$_v"
-    [[ -d "$_p/bin" ]] && break
-    _p="$NVM_DIR/alias/$_v"
+  local _p="$NVM_DIR/alias/default" _v
+  while [[ -f "$_p" ]]; do
+    _v="$(<"$_p")"; _p="$NVM_DIR/versions/node/$_v"
+    [[ -d "$_p/bin" ]] || _p="$NVM_DIR/alias/$_v"
   done
   [[ -d "$_p/bin" ]] && path=("$_p/bin" $path)
 }
@@ -75,13 +69,10 @@ function _lazy_nvm_load() {
   zinit snippet OMZP::nvm   # full nvm.sh + OMZ .nvmrc auto-use hooks
   zinit cdreplay -q
 }
-function nvm()      { _lazy_nvm_load; nvm "$@"; }
-function node()     { _lazy_nvm_load; node "$@"; }
-function npm()      { _lazy_nvm_load; npm "$@"; }
-function npx()      { _lazy_nvm_load; npx "$@"; }
-function pnpm()     { _lazy_nvm_load; pnpm "$@"; }
-function yarn()     { _lazy_nvm_load; yarn "$@"; }
-function corepack() { _lazy_nvm_load; corepack "$@"; }
+for _cmd in nvm node npm npx pnpm yarn corepack; do
+  eval "function $_cmd { _lazy_nvm_load; $_cmd \"\$@\" }"
+done
+unset _cmd
 
 # Load completions (cached: full rescan only when .zcompdump is older than 7d;
 # the dump only needs rebuilding when completion tools are added/removed)
@@ -139,10 +130,8 @@ function yy() {
   rm -f -- "$tmp"
 }
 
-# binaries (idempotent: skip if already inherited from parent environment)
-if [[ -d "$HOME/.local/bin" ]] && (( ! ${path[(Ie)$HOME/.local/bin]} )); then
-  path=("$HOME/.local/bin" $path)
-fi
+# binaries
+path=("$HOME/.local/bin" $path)
 
 # Shell integrations
 eval "$(fzf --zsh)"
