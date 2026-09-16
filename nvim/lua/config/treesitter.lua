@@ -47,7 +47,7 @@ vim.api.nvim_create_autocmd("FileType", {
     callback = function(args)
         local ok, err = pcall(vim.treesitter.start, args.buf)
         if not ok then
-            vim.notify(err, vim.log.levels.WARN, { title = "Tree-sitter" })
+            vim.notify(tostring(err), vim.log.levels.WARN, { title = "Tree-sitter" })
         end
     end,
 })

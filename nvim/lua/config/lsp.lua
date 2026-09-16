@@ -95,7 +95,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end,
 })
 
--- narrow library keeps cold-start indexing fast
+-- narrow library keeps cold-start indexing fast; the config dir is already the
+-- workspace, so listing it as a library indexes every file twice and makes
+-- luals report each _G global as a duplicate field
 vim.lsp.config['luals'] = {
     cmd = { 'lua-language-server' },
     filetypes = { 'lua' },
@@ -106,7 +108,7 @@ vim.lsp.config['luals'] = {
             diagnostics = { globals = { 'vim' } },
             workspace = {
                 checkThirdParty = false,
-                library = { vim.env.VIMRUNTIME, vim.fn.stdpath('config') },
+                library = { vim.env.VIMRUNTIME },
             },
             telemetry = { enable = false },
         },
