@@ -49,24 +49,6 @@ link() {
   local dst="$2"
   local label="$(show "$dst") <- $1"
 
-  # Refuse to create a link through an ancestor symlink that points into this
-  # repo: ln -s would create the new link *inside* the repo, pointing at
-  # itself.
-  local ancestor
-  ancestor="$(dirname "$dst")"
-  while [ "$ancestor" != "$HOME" ] && [ "$ancestor" != "/" ]; do
-    if [ -L "$ancestor" ]; then
-      local link_target
-      link_target="$(readlink "$ancestor")"
-      if [ "$link_target" = "$DOTFILES_DIR" ] || [ "${link_target#"$DOTFILES_DIR"/}" != "$link_target" ]; then
-        warn "skip     $label (parent $ancestor is a symlink into this repo: $link_target)"
-        n_skipped=$((n_skipped + 1))
-        return 1
-      fi
-    fi
-    ancestor="$(dirname "$ancestor")"
-  done
-
   if [ ! -e "$src" ] && [ ! -L "$src" ]; then
     err "missing source: $src"
     n_skipped=$((n_skipped + 1))
@@ -126,10 +108,6 @@ fails=0
 for entry in "${links[@]}"; do
   link "${entry%%|*}" "${entry#*|}" || fails=$((fails + 1))
 done
-
-# Neovim expects this directory for undo files (see nvim/lua/config/core.lua).
-mkdir -p "$HOME/.vim/undodir"
-ok "ready    $(show "$HOME/.vim/undodir")"
 
 # Enable the Conventional Commits commit-msg hook shipped in .githooks/.
 if git -C "$DOTFILES_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then

@@ -169,16 +169,13 @@ vim.lsp.config['yamlls'] = {
 
 -- .h is always cpp in Neovim (g:c_syntax_for_h would force c for every
 -- header), so sniff for C++-only constructs and default to c
+-- ponytail: strongest signals only; a header using just <optional>/override
+-- still lands in C. Add patterns back if that shows up in practice.
 local cpp_only = {
     '%f[%w]class%f[%W]', '%f[%w]template%f[%W]', '%f[%w]namespace%f[%W]',
-    '%f[%w]constexpr%f[%W]', '%f[%w]nullptr%f[%W]', '%f[%w]noexcept%f[%W]',
-    '%f[%w]virtual%f[%W]', '%f[%w]typename%f[%W]', '%f[%w]override%f[%W]',
-    '%f[%w]public%f[%W]%s*:', '%f[%w]private%f[%W]%s*:', '%f[%w]protected%f[%W]%s*:',
-    '::',
+    '%f[%w]constexpr%f[%W]', '%f[%w]nullptr%f[%W]', '%f[%w]typename%f[%W]',
+    '%f[%w]virtual%f[%W]', '%f[%w]override%f[%W]', '::',
     '#include%s*<[%w_]*vector%f[%W]', '#include%s*<[%w_]*iostream%f[%W]',
-    '#include%s*<[%w_]*string%f[%W]', '#include%s*<[%w_]*map%f[%W]',
-    '#include%s*<[%w_]*memory%f[%W]', '#include%s*<[%w_]*algorithm%f[%W]',
-    '#include%s*<[%w_]*optional%f[%W]', '#include%s*<[%w_]*variant%f[%W]',
 }
 
 vim.filetype.add({

@@ -110,18 +110,6 @@
           "costFormatStyle": "default",
           "showSubscription": false
         }
-      },
-      {
-        "id": "total-time-mtkz1yik-4r03tq",
-        "type": "total-time",
-        "enabled": false,
-        "options": {
-          "raw": false,
-          "icon": "",
-          "fg": "yellow",
-          "bg": "default",
-          "bold": false
-        }
       }
     ]
   ],
