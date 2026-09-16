@@ -97,20 +97,17 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 -- narrow library keeps cold-start indexing fast; the config dir is already the
 -- workspace, so listing it as a library indexes every file twice and makes
--- luals report each _G global as a duplicate field
+-- luals report each _G global as a duplicate field. Globals/runtime live in
+-- the repo-root .luarc.json so Zed and other clients get them too.
 vim.lsp.config['luals'] = {
     cmd = { 'lua-language-server' },
     filetypes = { 'lua' },
     root_markers = { { '.luarc.json', '.luarc.jsonc' }, '.git' },
     settings = {
         Lua = {
-            runtime = { version = 'LuaJIT' },
-            diagnostics = { globals = { 'vim' } },
             workspace = {
-                checkThirdParty = false,
                 library = { vim.env.VIMRUNTIME },
             },
-            telemetry = { enable = false },
         },
     },
 }
