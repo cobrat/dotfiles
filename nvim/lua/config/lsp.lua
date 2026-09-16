@@ -1,5 +1,12 @@
 -- LANGUAGE SERVER PROTOCOL
 
+-- Server binaries live in mason's bin, which is not on PATH, so the
+-- executable check at the bottom of this file would never enable them.
+local mason = vim.fn.stdpath('data') .. '/mason/bin'
+if vim.fn.isdirectory(mason) == 1 then
+    vim.env.PATH = mason .. ':' .. vim.env.PATH
+end
+
 vim.lsp.config('*', {
     root_markers = { '.git' },
 })
