@@ -119,6 +119,10 @@ else
 fi
 alias lg='lazygit'
 
+# opencode
+# export PATH=/Users/wzh/.opencode/bin:$PATH
+path=(/Users/wzh/.opencode/bin $path)
+
 # Yazi: open yazi, then cd into the last visited directory on quit
 function yy() {
   local tmp cwd
