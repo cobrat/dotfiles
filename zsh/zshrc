@@ -1,60 +1,41 @@
-# Homebrew fallback for non-login shells (login shells already get the full
-# `eval "$(brew shellenv)"` from ~/.zprofile). Hardcoded instead of eval-ing
-# the brew script to save a ~10ms subprocess; skip if brew already in PATH.
+# Non-login shells: hardcode brew's env instead of eval-ing shellenv (~10ms).
 if [[ -f /opt/homebrew/bin/brew ]] && (( ! ${+commands[brew]} )); then
   export HOMEBREW_PREFIX="/opt/homebrew" HOMEBREW_CELLAR="/opt/homebrew/Cellar" HOMEBREW_REPOSITORY="/opt/homebrew"
   path=(/opt/homebrew/bin /opt/homebrew/sbin $path)
   export MANPATH="/opt/homebrew/share/man${MANPATH+:$MANPATH}" INFOPATH="/opt/homebrew/share/info${INFOPATH+:$INFOPATH}"
 fi
 
-# Locale: English messages/collation, UTF-8 content
 export LANG=en_US.UTF-8
+unsetopt beep   # zsh-side bell off (ghostty still plays the audible bell)
 
-# Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
-
-# Download Zinit, if it's not there yet
 [[ -d "$ZINIT_HOME" ]] || { mkdir -p "${ZINIT_HOME:h}"; git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"; }
-
-# Source/Load zinit
 source "${ZINIT_HOME}/zinit.zsh"
 
-# Add in zsh plugins
-# Order matters (per upstream docs):
-#   - completions first, fzf-tab after compinit but BEFORE widget-wrapping plugins
-#   - zsh-autosuggestions before zsh-syntax-highlighting
-#   - zsh-syntax-highlighting must be sourced LAST
+# Order matters: fzf-tab before widget-wrapping plugins, autosuggestions
+# before syntax-highlighting, syntax-highlighting last.
 zinit light zsh-users/zsh-completions
 zinit light Aloxaf/fzf-tab
 
-# Prompt: zsh built-ins only (vcs_info) — no prompt plugin, ASCII by
-# construction, branch-only (instant even in huge repos):
-#   ~/path  branch
-#   >                  (green, turns red after a failed command)
+# Prompt: vcs_info only, no prompt plugin — blank line, path + branch, green/red >
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git
 zstyle ':vcs_info:git:*' formats ' %F{magenta}%b%f'
 zstyle ':vcs_info:git:*' actionformats ' %F{magenta}%b%f %F{yellow}(%a)%f'
-# PROMPT contains ${vcs_info_msg_0_}; without this it renders literally.
-setopt PROMPT_SUBST
+setopt PROMPT_SUBST   # vcs_info_msg_0_ in PROMPT renders literally without it
 precmd() { vcs_info }
-# Leading newline = one blank line between command output and the next prompt.
 PROMPT='
 %F{cyan}%~%f${vcs_info_msg_0_}
 %(?.%F{green}.%F{red})>%f '
 
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-syntax-highlighting
-
-# Add in snippets
 zinit snippet OMZP::uv
 
-# nvm lazy loading: source nvm.sh only on first use (~250ms saved at startup).
-# The default version's bin dir is resolved into PATH eagerly so node is
-# immediately available (LSP servers, scripts, etc.) before nvm.sh ever loads.
+# nvm: PATH gets the default version now, nvm.sh itself only on first use (~250ms).
 export NVM_DIR="$HOME/.nvm"
 
-# Resolve the default version by chasing nvm alias chains (e.g. lts/* -> lts/krypton -> v24.x.x)
+# Chase alias chains: lts/* -> lts/krypton -> v24.x.x
 () {
   local _p="$NVM_DIR/alias/default" _v
   while [[ -f "$_p" ]]; do
@@ -65,33 +46,27 @@ export NVM_DIR="$HOME/.nvm"
 }
 
 function _lazy_nvm_load() {
-  unfunction nvm node npm npx pnpm yarn corepack 2>/dev/null
-  zinit snippet OMZP::nvm   # full nvm.sh + OMZ .nvmrc auto-use hooks
+  unfunction nvm node npm npx corepack 2>/dev/null
+  zinit snippet OMZP::nvm   # full nvm.sh + OMZ .nvmrc auto-use
   zinit cdreplay -q
 }
-for _cmd in nvm node npm npx pnpm yarn corepack; do
+for _cmd in nvm node npm npx corepack; do
   eval "function $_cmd { _lazy_nvm_load; $_cmd \"\$@\" }"
 done
 unset _cmd
 
-# Load completions (cached: full rescan only when .zcompdump is older than 7d;
-# the dump only needs rebuilding when completion tools are added/removed)
+# Plain compinit: the "skip if .zcompdump is fresh" trick needs extended_glob
+# and an unquoted glob qualifier for ~15ms — not worth it.
 autoload -Uz compinit
-if [[ -n "${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+168)" ]]; then
-  compinit
-else
-  compinit -C
-fi
+compinit
 
 zinit cdreplay -q
 
-# Keybindings
 bindkey -e
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 bindkey '^[w' kill-region
 
-# History
 HISTSIZE=50000
 HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE
@@ -100,16 +75,13 @@ setopt sharehistory
 setopt hist_ignore_space
 setopt hist_ignore_all_dups
 setopt hist_find_no_dups
+setopt extended_history
 
-# Completion styling
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
 zstyle ':fzf-tab:complete:(cd|__zoxide_z):*' fzf-preview '${_LS_PREVIEW} $realpath'
 
-# Aliases
-
-# GNU ls supports --color; BSD ls (older macOS) uses -G.
+# --color on GNU/uutils ls, -G on BSD
 if ls --color=auto >/dev/null 2>&1; then
   alias ls='ls -la --color=auto'
   _LS_PREVIEW='ls --color=auto'
@@ -119,11 +91,9 @@ else
 fi
 alias lg='lazygit'
 
-# opencode
-# export PATH=/Users/wzh/.opencode/bin:$PATH
-path=(/Users/wzh/.opencode/bin $path)
+path=("$HOME/.local/bin" "$HOME/.opencode/bin" $path)
 
-# Yazi: open yazi, then cd into the last visited directory on quit
+# yazi, then cd to the directory you quit in
 function yy() {
   local tmp cwd
   tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
@@ -134,9 +104,5 @@ function yy() {
   rm -f -- "$tmp"
 }
 
-# binaries
-path=("$HOME/.local/bin" $path)
-
-# Shell integrations
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
