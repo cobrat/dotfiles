@@ -94,7 +94,7 @@
           "fg": "yellow",
           "bg": "default",
           "bold": false,
-          "gitDiffMode": "compact"
+          "gitDiffMode": "plain"
         }
       },
       {
