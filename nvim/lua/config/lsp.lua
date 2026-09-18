@@ -139,7 +139,7 @@ vim.lsp.config['jsonls'] = {
 
 vim.lsp.config['gopls'] = {
     cmd = { 'gopls' },
-    filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
+    filetypes = { 'go', 'gomod', 'gowork' },
     root_markers = { 'go.mod', 'go.work', '.git' },
     settings = {
         gopls = {
@@ -167,7 +167,7 @@ vim.lsp.config['bashls'] = {
 
 vim.lsp.config['yamlls'] = {
     cmd = { 'yaml-language-server', '--stdio' },
-    filetypes = { 'yaml', 'yaml.docker-compose', 'yaml.github' },
+    filetypes = { 'yaml' },
     root_markers = { '.git' },
 }
 

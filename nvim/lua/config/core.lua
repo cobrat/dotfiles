@@ -14,6 +14,7 @@ set.smartcase = true
 set.termguicolors = true
 set.background = "dark"
 set.signcolumn = "yes"
+set.showmode = false -- the statusline mode badge replaces it
 
 -- default float border (explicit ones win)
 set.winborder = "rounded"
@@ -24,7 +25,8 @@ set.clipboard:append("unnamedplus")
 set.splitbelow = true
 set.splitright = true
 set.scrolloff = 8
-set.updatetime = 50
+-- idle timer behind CursorHold: auto_refresh and the document highlight
+set.updatetime = 250
 
 -- 'autocomplete' = menu-as-you-type (off by default in 0.12); 'o' = omnifunc,
 -- i.e. vim.lsp.omnifunc once a client attaches. clangd returns ~100 items per
@@ -34,8 +36,9 @@ set.autocompletedelay = 80
 set.complete = { "o^15" }
 set.pumheight = 10
 set.pummaxwidth = 50
--- <C-y> to accept; pumborder matches winborder
-set.completeopt = { "menuone", "noselect", "popup" }
+-- <C-y> to accept; pumborder matches winborder. Only popup/preinsert/longest/
+-- fuzzy/preselect/preview apply under 'autocomplete'; noselect is implied
+set.completeopt = { "popup" }
 set.pumborder = "rounded"
 
 -- prefix keys otherwise wait 1s
@@ -44,10 +47,8 @@ set.timeoutlen = 300
 -- '-' is a word char, so dw/diw/ciw handle hyphenated words
 set.iskeyword:append("-")
 
--- undo persistence
+-- undo persistence; 'undodir' already defaults to $XDG_STATE_HOME/nvim/undo
 set.swapfile = false
-vim.fn.mkdir(os.getenv("HOME") .. "/.vim/undodir", "p")
-set.undodir = os.getenv("HOME") .. "/.vim/undodir"
 set.undofile = true
 
 -- pick up on-disk changes (autoread is default)

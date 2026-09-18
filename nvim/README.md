@@ -43,7 +43,6 @@ A reference for the custom keybinds in this configuration. `leader` is mapped to
 | `n`     | `J`         | Join lines, keeping the cursor in place       |
 | `n`     | `Q`         | Disable Ex mode                               |
 | `n`/`v` | `<leader>d` | Delete into the black-hole register (no yank) |
-| `n`     | `]h` / `[h` | Jump to next / previous git hunk              |
 
 ### Movement and Scrolling
 
