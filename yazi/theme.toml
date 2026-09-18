@@ -12,9 +12,5 @@ sep_right = { open = "", close = "" }
 [indicator]
 padding = { open = "", close = "" }
 
-[tabs]
-sep_inner = { open = "", close = "" }
-sep_outer = { open = "", close = "" }
-
 [which]
 separator = " > "
