@@ -64,7 +64,8 @@ vim.api.nvim_create_autocmd("PackChanged", {
         end
 
         vim.schedule(function()
-            require("nvim-treesitter").update():wait(300000)
+            -- nil = every installed parser; async, so the UI is not blocked
+            require("nvim-treesitter").update(nil, { summary = true })
         end)
     end,
 })
