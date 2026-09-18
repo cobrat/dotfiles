@@ -1,13 +1,13 @@
 -- THEME: habamax; tints are re-derived on every ColorScheme event
 
--- read fg/bg of a highlight group as a hex string, e.g. '#c7c7c7'
+-- fg/bg of a highlight group as '#c7c7c7'
 local function hl(name, part)
     local ok, def = pcall(vim.api.nvim_get_hl, 0, { name = name, link = true })
     if not ok or not def or not def[part] then return nil end
     return ('#%06x'):format(def[part])
 end
 
--- first defined fg among candidate groups, e.g. Added before DiffAdd
+-- first defined fg among candidates (Added before DiffAdd)
 local function fg_of(...)
     for _, name in ipairs({ ... }) do
         local f = hl(name, "fg")
@@ -17,38 +17,45 @@ local function fg_of(...)
 end
 
 local function apply_theme_extras()
-    -- capture first: nvim_set_hl REPLACES definitions (bg=none would drop fg)
+    -- capture first: nvim_set_hl replaces definitions (bg=none drops fg)
     local fg_normal = hl("Normal", "fg")
     local fg_float = hl("NormalFloat", "fg")
     local fg_comment = hl("Comment", "fg")
     local fg_linenr = hl("LineNr", "fg")
     local bar_bg = hl("CursorLine", "bg")
 
-    -- keep editor surfaces transparent so the terminal bg shows through
+    -- transparent surfaces so the terminal bg shows through
     vim.api.nvim_set_hl(0, "Normal", { fg = fg_normal, bg = "none" })
     vim.api.nvim_set_hl(0, "NormalFloat", { fg = fg_float, bg = "none" })
     vim.api.nvim_set_hl(0, "FloatBorder", { fg = fg_normal, bg = "none" })
 
-    -- thin border in Normal fg; the default chain paints solid gray strips
+    -- thin border in Normal fg; the defaults paint solid gray strips
 
-    -- active bar: CursorLine bg lift, tiers file > info > inactive
+    -- active bar: CursorLine bg lift, tiers file > info > inactive; Folded is
+    -- the only neutral habamax gray clearing 4.5:1 on it (Comment 2.9:1,
+    -- LineNr 1.9:1)
     vim.api.nvim_set_hl(0, "StatusLine", { fg = fg_normal, bg = bar_bg })
     vim.api.nvim_set_hl(0, "StlFile", { fg = fg_normal, bg = bar_bg })
-    vim.api.nvim_set_hl(0, "StlInfo", { fg = fg_comment, bg = bar_bg })
+    vim.api.nvim_set_hl(0, "StlInfo", { fg = fg_of("Folded", "Comment"), bg = bar_bg })
     vim.api.nvim_set_hl(0, "StatusLineNC", { fg = fg_linenr, bg = "none" })
     vim.api.nvim_set_hl(0, "StlNC", { fg = fg_linenr, bg = "none" })
 
-    -- segment colors from the theme's palette (habamax Error/Warning have no fg)
-    local function seg(name, ...)
-        vim.api.nvim_set_hl(0, name, { fg = fg_of(...), bg = bar_bg })
+    -- segment colors from the palette (habamax Error/Warning have no fg)
+    local function seg(name, bold, ...)
+        vim.api.nvim_set_hl(0, name, { fg = fg_of(...), bg = bar_bg, bold = bold })
     end
-    seg("StlGitAdd", "Added", "DiffAdd")
-    seg("StlGitDel", "Removed", "DiffDelete")
-    seg("StlGitMod", "Changed", "DiffChange")
-    seg("StlDiagE", "Removed", "DiagnosticError")
-    seg("StlDiagW", "Changed", "DiagnosticWarn")
+    seg("StlSearch", false, "Question", "Changed")
 
-    -- labels link Substitute -> Search, i.e. invisible without a tint
+    -- mode badge: bold, one hue per mode
+    local function badge(name, color)
+        vim.api.nvim_set_hl(0, name, { fg = color, bg = bar_bg, bold = true })
+    end
+    badge("StlModeN", fg_normal)
+    badge("StlModeI", fg_of("Added", "DiffAdd"))
+    badge("StlModeV", fg_of("Changed", "DiffChange"))
+    badge("StlModeR", fg_of("Removed", "DiffDelete"))
+
+    -- labels link Substitute -> Search, invisible without a tint
     vim.api.nvim_set_hl(0, "FlashLabel", { fg = bar_bg, bg = fg_comment })
 end
 

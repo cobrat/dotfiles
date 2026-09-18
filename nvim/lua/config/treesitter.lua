@@ -1,6 +1,6 @@
 -- TREE-SITTER
 
--- Parsers for every LSP language plus dotfiles/docs; dependencies are not
+-- Parsers for every LSP language plus dotfiles/docs; deps are not
 -- auto-installed, hence markdown_inline and luadoc
 local parsers = {
     -- editing basics
@@ -17,7 +17,7 @@ local parsers = {
     "rust",
 }
 
--- lua, markdown and query are already started by their runtime ftplugins
+-- lua/markdown/query are already started by their runtime ftplugins
 local filetypes = {
     "bash", "json", "jsonc", "yaml", "vim",
     "c", "cpp",
@@ -32,7 +32,7 @@ vim.treesitter.language.register('bash', 'sh')
 
 local treesitter = require("nvim-treesitter")
 
--- install in the background; surface failures as a notification
+-- install in the background; notify on failure
 local task = treesitter.install(parsers)
 task:await(function(err)
     if err then

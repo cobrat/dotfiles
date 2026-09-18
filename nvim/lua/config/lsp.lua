@@ -1,7 +1,6 @@
 -- LANGUAGE SERVER PROTOCOL
 
--- Server binaries live in mason's bin, which is not on PATH, so the
--- executable check at the bottom of this file would never enable them.
+-- mason's bin is not on PATH; the executable check below needs it
 local mason = vim.fn.stdpath('data') .. '/mason/bin'
 if vim.fn.isdirectory(mason) == 1 then
     vim.env.PATH = mason .. ':' .. vim.env.PATH
@@ -12,7 +11,7 @@ vim.lsp.config('*', {
 })
 
 vim.diagnostic.config({
-    -- inline text on every line, including the cursor line; the float is manual
+    -- inline text on every line; the float is manual
     virtual_text  = { prefix = '>' },
     severity_sort = true,
     float         = {
@@ -33,12 +32,12 @@ local orig = vim.lsp.util.open_floating_preview
 ---@diagnostic disable-next-line: duplicate-set-field
 function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
     opts            = opts or {}
-    -- the runtime sets no default max height, so a long hover would fill the screen
+    -- no runtime default max height; a long hover would fill the screen
     opts.max_height = opts.max_height or 24
     return orig(contents, syntax, opts, ...)
 end
 
--- clear = true so re-sourcing (<leader>rl) replaces old autocmds
+-- clear = true so re-sourcing replaces old autocmds
 local lsp_augroup = vim.api.nvim_create_augroup('my.lsp', { clear = true })
 
 vim.api.nvim_create_autocmd('LspAttach', {
@@ -56,17 +55,17 @@ vim.api.nvim_create_autocmd('LspAttach', {
         map('n', 'gi', vim.lsp.buf.implementation, 'Go to implementation')
         map('n', 'go', vim.lsp.buf.type_definition, 'Go to type definition')
         -- references: native grr or <leader>fr; a `gr` map would shadow the
-        -- native gr* prefix and cost a timeoutlen wait on every press
+        -- native gr* prefix and cost a timeoutlen wait per press
         map('n', 'gs', vim.lsp.buf.signature_help, 'Signature help')
-        -- manual float for the diagnostics of the current line (native <C-w>d
-        -- does the same and works without a client)
+        -- float for the diagnostics of the current line (native <C-w>d does
+        -- the same and works without a client)
         map('n', 'gl', vim.diagnostic.open_float, 'Diagnostics float')
         map('n', '<leader>cr', vim.lsp.buf.rename, 'Rename symbol')
         map({ 'n', 'x' }, '<leader>cf', function() vim.lsp.buf.format({ async = true }) end, 'Format (LSP)')
         map('n', '<leader>ca', vim.lsp.buf.code_action, 'Code action')
 
-        -- the menu itself comes from 'autocomplete' + 'complete' (core.lua); this
-        -- enables LSP item conversion and the <C-y> side effects (snippets, edits)
+        -- menu comes from 'autocomplete'/'complete' (core.lua); this enables LSP
+        -- item conversion and the <C-y> side effects (snippets, edits)
         if client:supports_method('textDocument/completion') then
             vim.lsp.completion.enable(true, client.id, buf, { autotrigger = true })
         end
@@ -95,10 +94,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end,
 })
 
--- narrow library keeps cold-start indexing fast; the config dir is already the
--- workspace, so listing it as a library indexes every file twice and makes
--- luals report each _G global as a duplicate field. Globals/runtime live in
--- the workspace-root .luarc.json so every client (Zed, nvim) gets them.
+-- narrow library keeps cold-start indexing fast; listing the config dir too
+-- would index every file twice and make luals flag each _G as a duplicate
+-- field. Globals live in the workspace-root .luarc.json, shared by all clients
 vim.lsp.config['luals'] = {
     cmd = { 'lua-language-server' },
     filetypes = { 'lua' },
@@ -173,10 +171,9 @@ vim.lsp.config['yamlls'] = {
     root_markers = { '.git' },
 }
 
--- .h is always cpp in Neovim (g:c_syntax_for_h would force c for every
--- header), so sniff for C++-only constructs and default to c
+-- .h is always cpp in Neovim, so sniff for C++-only constructs, default to c.
 -- ponytail: strongest signals only; a header using just <optional>/override
--- still lands in C. Add patterns back if that shows up in practice.
+-- still lands in C — add patterns back if that bites.
 local cpp_only = {
     '%f[%w]class%f[%W]', '%f[%w]template%f[%W]', '%f[%w]namespace%f[%W]',
     '%f[%w]constexpr%f[%W]', '%f[%w]nullptr%f[%W]', '%f[%w]typename%f[%W]',
@@ -197,7 +194,7 @@ vim.filetype.add({
     },
 })
 
--- enable servers whose binary is on PATH; the binary comes from the config's cmd
+-- enable servers whose cmd[1] is on PATH
 local servers = {
     'luals', 'clangd', 'jsonls', 'yamlls', 'gopls', 'rust_analyzer',
     'pyright', 'bashls',

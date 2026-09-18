@@ -46,8 +46,8 @@ require("oil").setup({
 local actions = require("telescope.actions")
 local themes = require("telescope.themes")
 
--- label-jump in the results window; one label per row, so multi-line entry
--- pickers (the <leader>u undo picker) would mis-index
+-- label-jump in the results window; one label per row, so multi-line pickers
+-- (the <leader>u undo picker) land on the wrong row
 local function flash_results(prompt_bufnr)
     require("flash").jump({
         pattern = "^",
@@ -84,7 +84,7 @@ require("telescope").setup({
     }),
 })
 
--- undo history as an ivy picker: fuzzy filter, diff preview, <CR> restores
+-- undo history ivy picker: fuzzy filter, diff preview, <CR> restores
 require("telescope").load_extension("undo")
 vim.keymap.set("n", "<leader>u", function()
     require("telescope").extensions.undo.undo()
@@ -172,13 +172,13 @@ require("nvim-highlight-colors").setup({})
 
 -- FLASH
 
--- defaults kept: f/t stay plain motions, and a unique match in another window
+-- defaults kept: f/t stay plain motions; a unique match in another window
 -- never jumps on its own
 require("flash").setup({
     prompt = { prefix = {} }, -- drop the default prompt glyph
 })
 
--- rhs must be a function or "<cmd>lua ...<cr>": a ":lua" rhs breaks dot-repeat
+-- rhs must be a function or "<cmd>lua ...<cr>"; a ":lua" rhs breaks dot-repeat
 vim.keymap.set({ "n", "x", "o" }, "s", function() require("flash").jump() end,
     { desc = "Flash jump" })
 vim.keymap.set({ "n", "x", "o" }, "S", function() require("flash").treesitter() end,
