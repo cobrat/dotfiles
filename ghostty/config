@@ -3,23 +3,20 @@
 
 theme = Kanagawa Dragon
 
-# font-family = Monaspace Argon
-font-family = Sarasa Term SC
-font-size = 15
-# font-style-bold = SemiBold
-# font-style-italic = Italic
-# font-style-bold-italic = SemiBold Italic
+font-family = Fira Mono
+font-size = 14
 
-font-feature = -calt, -liga, -dlig
+# Fira Mono ships calt and dlig but no liga, so `-liga` would be a no-op
+font-feature = -calt, -dlig
 adjust-cell-height = 10%
-# macOS only
-# font-thicken = true
-# font-thicken-strength = 50
 
+# Opt-in upstream: they give remote hosts a usable TERM (ghostty's terminfo,
+# falling back to xterm-256color when the install fails)
 shell-integration-features = no-cursor,ssh-env,ssh-terminfo
 
 window-padding-y = 4
 window-padding-x = 10
+window-padding-balance = true
 
 macos-option-as-alt = left
 
