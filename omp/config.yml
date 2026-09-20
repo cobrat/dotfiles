@@ -1,0 +1,29 @@
+providers:
+  webSearchOrder:
+    []
+setupVersion: 2
+modelRoles:
+  default: opencode-go/deepseek-v4.1-flash
+symbolPreset: ascii
+composer:
+  shape: pi
+  tokenRate: true
+theme:
+  dark: dark-gruvbox
+colorBlindMode: true
+retry:
+  maxRetries: 2
+security:
+  enabled: true
+astGrep:
+  enabled: true
+defaultThinkingLevel: auto
+statusLine:
+  preset: compact
+  contextLine: embedded
+  separator: none
+display:
+  showTokenUsage: true
+  showTurnTime: true
+  hideToolActivity: false
+hideThinkingBlock: true
