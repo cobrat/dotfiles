@@ -98,10 +98,6 @@ links=(
   "nvim|$HOME/.config/nvim"
   "yazi|$HOME/.config/yazi"
   "zsh/zshrc|$HOME/.zshrc"
-  "pi/AGENTS.md|$HOME/.pi/agent/AGENTS.md"
-  "pi/settings.json|$HOME/.pi/agent/settings.json"
-  "pi/claude-code-style.json|$HOME/.pi/agent/claude-code-style.json"
-  "pi/extensions|$HOME/.pi/agent/extensions"
 )
 
 fails=0
