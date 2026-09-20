@@ -141,6 +141,10 @@ immediately instead of waiting out `timeoutlen`.
 |---------|--------------|----------------|
 | `n`/`x` | `<leader>cf` | Format (LSP)   |
 
+C/C++ is formatted by clangd through clang-format, whose style comes from the
+dotfiles' `.clang-format` (linked to `~/.clang-format`): clangd exposes no
+style setting, and `--fallback-style` accepts predefined names only.
+
 ### Telescope
 
 | Mode | Key         | Action                                             |

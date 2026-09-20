@@ -98,6 +98,7 @@ links=(
   "nvim|$HOME/.config/nvim"
   "yazi|$HOME/.config/yazi"
   "zsh/zshrc|$HOME/.zshrc"
+  ".clang-format|$HOME/.clang-format"
   "omp/config.yml|$HOME/.omp/agent/config.yml"
 )
 

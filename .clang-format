@@ -1,0 +1,8 @@
+# 4-space C/C++ style for clangd and clang-format; install_mac.sh links this to
+# ~/.clang-format. clang-format has no other global config, and a project's own
+# .clang-format is found first, so this only fills the gap.
+BasedOnStyle: LLVM
+IndentWidth: 4
+ContinuationIndentWidth: 4
+TabWidth: 4
+UseTab: Never
