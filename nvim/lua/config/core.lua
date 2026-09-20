@@ -28,17 +28,20 @@ set.scrolloff = 8
 -- idle timer behind CursorHold: auto_refresh and the document highlight
 set.updatetime = 250
 
--- 'autocomplete' = menu-as-you-type (off by default in 0.12); 'o' = omnifunc,
--- i.e. vim.lsp.omnifunc once a client attaches. clangd returns ~100 items per
--- keystroke, so cap source/rows/width; the delay stops the menu flashing
+-- 'autocomplete' = menu-as-you-type (off by default); 'o' = omnifunc, i.e.
+-- vim.lsp.omnifunc once a client attaches. The first four are the stock
+-- sources (buffer, windows, buffers, tags): without them nothing completes in
+-- a buffer with no LSP attached, and no buffer word in one that has an LSP
 set.autocomplete = true
 set.autocompletedelay = 80
-set.complete = { "o^15" }
+set.complete = { ".,w,b,u,t,o" }
 set.pumheight = 10
 set.pummaxwidth = 50
--- <C-y> to accept; pumborder matches winborder. Only popup/preinsert/longest/
--- fuzzy/preselect/preview apply under 'autocomplete'; noselect is implied
-set.completeopt = { "popup" }
+-- noselect is not cosmetic: without it the LSP path inserts the first
+-- candidate on every trigger and draws no menu (typing "s.ap" yields
+-- "s.append(alignof(...))"). menuone shows the menu when there is a single
+-- candidate, the common LSP case. <C-y> accepts the selected item
+set.completeopt = { "menuone", "noselect", "popup" }
 set.pumborder = "rounded"
 
 -- prefix keys otherwise wait 1s
