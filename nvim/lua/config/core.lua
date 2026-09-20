@@ -36,13 +36,16 @@ set.autocomplete = true
 set.autocompletedelay = 80
 set.complete = { ".,w,b,u,t,o" }
 set.pumheight = 10
-set.pummaxwidth = 50
 -- noselect is not cosmetic: without it the LSP path inserts the first
 -- candidate on every trigger and draws no menu (typing "s.ap" yields
 -- "s.append(alignof(...))"). menuone shows the menu when there is a single
 -- candidate, the common LSP case. <C-y> accepts the selected item
 set.completeopt = { "menuone", "noselect", "popup" }
 set.pumborder = "rounded"
+-- cap the width, but leave room for the kind column and the LSP signature
+-- column: the menu lays out all rows at one width and clips from the right,
+-- so a tighter cap costs the kind column (and then names go with a 'trunc')
+set.pummaxwidth = 60
 
 -- prefix keys otherwise wait 1s
 set.timeoutlen = 300

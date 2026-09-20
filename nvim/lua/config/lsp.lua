@@ -67,7 +67,20 @@ vim.api.nvim_create_autocmd('LspAttach', {
         -- menu comes from 'autocomplete'/'complete' (core.lua); this enables LSP
         -- item conversion and the <C-y> side effects (snippets, edits)
         if client:supports_method('textDocument/completion') then
-            vim.lsp.completion.enable(true, client.id, buf, { autotrigger = true })
+            vim.lsp.completion.enable(true, client.id, buf, {
+                autotrigger = true,
+                -- abbr defaults to label + labelDetails.detail, i.e. the whole
+                -- signature in the widest column, which pushes the kind/menu
+                -- columns out of the menu. Keep abbr to the bare name and give the
+                -- signature to `menu` - the column the pum clips first
+                convert = function(item)
+                    local details = item.labelDetails or {}
+                    return {
+                        abbr = (item.label:gsub('%b()$', '')),
+                        menu = (details.description or '') .. (details.detail or ''),
+                    }
+                end,
+            })
         end
 
         -- inlay hints are off by default in 0.12
