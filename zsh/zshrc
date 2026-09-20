@@ -6,7 +6,7 @@ if [[ -f /opt/homebrew/bin/brew ]] && (( ! ${+commands[brew]} )); then
 fi
 
 export LANG=en_US.UTF-8
-unsetopt beep   # zsh-side bell off (ghostty still plays the audible bell)
+unsetopt beep   # zsh stops sending BEL; ghostty ignores it anyway (bell-features)
 
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [[ -d "$ZINIT_HOME" ]] || { mkdir -p "${ZINIT_HOME:h}"; git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"; }
