@@ -91,7 +91,8 @@ else
 fi
 alias lg='lazygit'
 
-path=("$HOME/.local/bin" "$HOME/.opencode/bin" $path)
+# opencode
+export PATH=/Users/wzh/.opencode/bin:$PATH
 
 # yazi, then cd to the directory you quit in
 function yy() {
@@ -103,6 +104,8 @@ function yy() {
   fi
   rm -f -- "$tmp"
 }
+
+path=("$HOME/.local/bin" $path)
 
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"

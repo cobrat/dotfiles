@@ -5,8 +5,6 @@ nvim.log
 # Pi local session runtime data (quiet-tools output caches)
 .pi/
 
-# OMP settings lock, created next to the linked omp/config.yml
-omp/*.lock
 
 # Backups created by install_mac.sh
 backup/

@@ -4,6 +4,7 @@
 theme = Kanagawa Dragon
 
 font-family = Fira Mono
+font-style = Medium
 font-size = 14
 
 # Fira Mono ships calt and dlig but no liga, so `-liga` would be a no-op
