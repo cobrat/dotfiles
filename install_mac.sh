@@ -99,6 +99,7 @@ links=(
   "yazi|$HOME/.config/yazi"
   "zsh/zshrc|$HOME/.zshrc"
   ".clang-format|$HOME/.clang-format"
+  "herdr/config.toml|$HOME/.config/herdr/config.toml"
 )
 
 fails=0

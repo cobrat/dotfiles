@@ -13,6 +13,7 @@ Personal dotfiles, managed as a git repo and applied via symlinks.
 | `yazi/` | `~/.config/yazi/` — Yazi file manager |
 | `zsh/` | `~/.zshrc` — Zsh (built-in vcs_info prompt) |
 | `.clang-format` | `~/.clang-format` — C/C++ formatting for clangd and clang-format |
+| `herdr/config.toml` | `~/.config/herdr/config.toml` — Herdr interface configuration |
 
 ## Install
 
