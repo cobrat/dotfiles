@@ -14,6 +14,7 @@ Personal dotfiles, managed as a git repo and applied via symlinks.
 | `zsh/` | `~/.zshrc` — Zsh (built-in vcs_info prompt) |
 | `.clang-format` | `~/.clang-format` — C/C++ formatting for clangd and clang-format |
 | `herdr/config.toml` | `~/.config/herdr/config.toml` — Herdr interface configuration |
+| `omp/config.yml` | `~/.omp/agent/config.yml` — OMP agent configuration |
 
 ## Install
 

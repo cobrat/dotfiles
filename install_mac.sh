@@ -100,6 +100,7 @@ links=(
   "zsh/zshrc|$HOME/.zshrc"
   ".clang-format|$HOME/.clang-format"
   "herdr/config.toml|$HOME/.config/herdr/config.toml"
+  "omp/config.yml|$HOME/.omp/agent/config.yml"
 )
 
 fails=0
