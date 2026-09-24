@@ -6,3 +6,6 @@ auto_switch = false
 
 [ui.toast]
 delivery = "off"
+
+[experimental]
+allow_nested = true

@@ -17,7 +17,7 @@ source "${ZINIT_HOME}/zinit.zsh"
 zinit light zsh-users/zsh-completions
 zinit light Aloxaf/fzf-tab
 
-# Prompt: vcs_info only, no prompt plugin — blank line, path + branch, green/red >
+# Prompt: yellow user@host, cyan path, magenta branch; green/red > on its own line
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git
 zstyle ':vcs_info:git:*' formats ' %F{magenta}%b%f'
@@ -25,7 +25,7 @@ zstyle ':vcs_info:git:*' actionformats ' %F{magenta}%b%f %F{yellow}(%a)%f'
 setopt PROMPT_SUBST   # vcs_info_msg_0_ in PROMPT renders literally without it
 precmd() { vcs_info }
 PROMPT='
-%F{cyan}%~%f${vcs_info_msg_0_}
+%F{yellow}%n@%m%f %F{cyan}%~%f${vcs_info_msg_0_}
 %(?.%F{green}.%F{red})>%f '
 
 zinit light zsh-users/zsh-autosuggestions
