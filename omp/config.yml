@@ -32,3 +32,5 @@ statusLine:
 theme:
   dark: titanium
 setupVersion: 2
+dev:
+  autoqaConsent: denied
