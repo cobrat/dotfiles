@@ -50,5 +50,8 @@ repo — commit and push from `~/dotfiles`.
 - **Zsh**: `zsh/zshrc` is linked to `~/.zshrc` by `install_mac.sh` and sets up
   a minimal ASCII prompt using zsh's built-in `vcs_info`. Restart your shell
   after installing.
+- **OMP**: the status-line footer keeps model and Git information but omits
+  the working directory. `statusLine.preset: custom` enables the configured
+  segment lists; built-in presets use their own lists.
 - **Backups**: replaced files are moved into `backup/<timestamp>/` inside this
   repo (git-ignored); delete them once you're happy with the symlinked setup.

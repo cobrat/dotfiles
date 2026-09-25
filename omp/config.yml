@@ -21,6 +21,14 @@ task:
 symbolPreset: ascii
 composer:
   shape: pi
+statusLine:
+  preset: custom
+  leftSegments:
+    - vim
+    - model
+    - mode
+    - git
+    - pr
 theme:
   dark: titanium
 setupVersion: 2
