@@ -3,13 +3,13 @@
 
 theme = Kanagawa Dragon
 
-font-family = Fira Mono
+font-family = Source Code Pro
 font-style = Medium
 font-size = 14
 
 # Fira Mono ships calt and dlig but no liga, so `-liga` would be a no-op
 font-feature = -calt, -dlig
-adjust-cell-height = 10%
+# adjust-cell-height = 10%
 
 # Opt-in upstream: they give remote hosts a usable TERM (ghostty's terminfo,
 # falling back to xterm-256color when the install fails)
