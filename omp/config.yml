@@ -1,23 +1,28 @@
-defaultThinkingLevel: medium
+defaultThinkingLevel: auto
 modelRoles:
-  tiny: openai-codex/gpt-6-luna:low
-  memory: openai-codex/gpt-6-luna:low
-  commit: openai-codex/gpt-6-luna:low
-  smol: openai-codex/gpt-6-luna:medium
-  advisor: openai-codex/gpt-6-luna:medium
-  default: openai-codex/gpt-6-sol:medium
-  task: openai-codex/gpt-6-sol:medium
-  vision: openai-codex/gpt-6-sol:medium
-  slow: openai-codex/gpt-6-astra:low
-  plan: openai-codex/gpt-6-astra:low
+  tiny: ctapi/deepseek-v4.1-flash:low
+  commit: ctapi/deepseek-v4.1-flash:low
+  smol: ctapi/qwen3.8-27b:medium
+  memory: ctapi/qwen3.8-27b:medium
+  default: ctapi/deepseek-v4.1-flash:high
+  task: ctapi/deepseek-v4.1-flash:high
+  plan: ctapi/glm-5.3:high
+  slow: ctapi/glm-5.3:max
+  vision: ctapi/deepseek-v4.1-flash:high
+  advisor: ctapi/kimi-k3:max
+  judge: "@smol"
 cycleOrder:
   - smol
   - default
-  - plan
   - slow
 task:
+  eager: preferred
   agentModelOverrides:
     security-reviewer: "@slow"
+    reviewer: "@slow"
+    scout: "@smol"
+    sonic: "@tiny"
+    task: "@default"
 symbolPreset: ascii
 composer:
   shape: pi
@@ -32,5 +37,23 @@ statusLine:
 theme:
   dark: titanium
 setupVersion: 2
+retry:
+  modelFallback: false
+  fallbackChains:
+    default: []
+    image: []
+    web: []
+    speech: []
+    dictation: []
+    judge: []
+providers:
+  maxInFlightRequests:
+    ctapi: 8
+telemetry:
+  otlpExportEnabled: false
+github:
+  enabled: true
 dev:
+  autoqa: false
   autoqaConsent: denied
+hideThinkingBlock: true

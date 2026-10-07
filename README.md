@@ -15,6 +15,7 @@ Personal dotfiles, managed as a git repo and applied via symlinks.
 | `.clang-format` | `~/.clang-format` — C/C++ formatting for clangd and clang-format |
 | `herdr/config.toml` | `~/.config/herdr/config.toml` — Herdr interface configuration |
 | `omp/config.yml` | `~/.omp/agent/config.yml` — OMP agent configuration |
+| `omp/AGENTS.md` | `~/.omp/agent/AGENTS.md` — OMP agent instructions |
 
 ## Install
 
