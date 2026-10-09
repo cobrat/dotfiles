@@ -57,6 +57,24 @@ local function apply_theme_extras()
 
     -- labels link Substitute -> Search, invisible without a tint
     vim.api.nvim_set_hl(0, "FlashLabel", { fg = bar_bg, bg = fg_comment })
+
+    -- Markdown: three heading colors and neutral backgrounds.
+    local heading_colors = {
+        fg_normal, fg_of("Function", "Question"), fg_of("Type", "Changed"),
+    }
+    for level = 1, 6 do
+        vim.api.nvim_set_hl(0, "RenderMarkdownH" .. level, {
+            fg = heading_colors[math.min(level, 3)], bold = true,
+        })
+        vim.api.nvim_set_hl(0, "RenderMarkdownH" .. level .. "Bg", { bg = bar_bg })
+    end
+    for _, name in ipairs({ "Code", "CodeInline", "CodeBorder" }) do
+        vim.api.nvim_set_hl(0, "RenderMarkdown" .. name, { bg = bar_bg })
+    end
+    for _, name in ipairs({ "Quote", "TableRow", "Dash" }) do
+        vim.api.nvim_set_hl(0, "RenderMarkdown" .. name, { fg = fg_comment })
+    end
+    vim.api.nvim_set_hl(0, "RenderMarkdownTableHead", { fg = fg_normal, bold = true })
 end
 
 vim.api.nvim_create_autocmd("ColorScheme", {

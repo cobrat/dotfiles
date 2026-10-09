@@ -25,7 +25,8 @@ zinit light zsh-users/zsh-completions
 zinit light Aloxaf/fzf-tab
 
 # Prompt
-# Show the user, host, path, and Git branch above the command line.
+# Show the user, host, path, Git branch, and virtual environment above the command line.
+export VIRTUAL_ENV_DISABLE_PROMPT=1
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git
 zstyle ':vcs_info:git:*' formats ' %F{magenta}%b%f'
@@ -33,7 +34,7 @@ zstyle ':vcs_info:git:*' actionformats ' %F{magenta}%b%f %F{yellow}(%a)%f'
 setopt PROMPT_SUBST
 precmd() { vcs_info }
 PROMPT='
-%F{yellow}%n@%m%f %B%F{cyan}%~%f%b${vcs_info_msg_0_}
+%F{yellow}%n@%m%f %B%F{cyan}%~%f%b${vcs_info_msg_0_}%F{green}${VIRTUAL_ENV:+ (${VIRTUAL_ENV:t})}%f
 %(?.%F{green}.%F{red})>%f '
 
 # Load autosuggestions before syntax highlighting.

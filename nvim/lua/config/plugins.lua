@@ -6,6 +6,7 @@ vim.pack.add({
     github("nvim-lua/plenary.nvim"),
     github("stevearc/oil.nvim"),
     github("nvim-treesitter/nvim-treesitter"),
+    github("MeanderingProgrammer/render-markdown.nvim"),
     {
         src = github("nvim-treesitter/nvim-treesitter-textobjects"),
         version = "main",
@@ -130,6 +131,53 @@ vim.keymap.set("n", "<C-e>", function()
 end, { desc = "Toggle harpoon menu" })
 vim.keymap.set("n", "<C-p>", function() harpoon:list():prev() end, { desc = "Harpoon previous" })
 vim.keymap.set("n", "<C-n>", function() harpoon:list():next() end, { desc = "Harpoon next" })
+
+-- MARKDOWN
+
+-- Use text labels for callouts; keep their semantic colors.
+local callouts = {}
+for _, name in ipairs({
+    "note", "tip", "important", "warning", "caution",
+    "abstract", "summary", "tldr", "info", "todo", "hint",
+    "success", "check", "done", "question", "help", "faq",
+    "attention", "failure", "fail", "missing", "danger", "error",
+    "bug", "example", "quote", "cite",
+}) do
+    callouts[name] = { rendered = "[" .. name:upper() .. "]" }
+end
+
+require("render-markdown").setup({
+    render_modes = true,
+    anti_conceal = { enabled = false },
+    sign = { enabled = false },
+    heading = {
+        icons = { "H1 ", "H2 ", "H3 ", "H4 ", "H5 ", "H6 " },
+        position = "inline",
+        width = { "full", "block" },
+        right_pad = 1,
+    },
+    code = {
+        width = "block",
+        left_pad = 1,
+        right_pad = 1,
+        language_icon = false,
+        language_border = " ",
+    },
+    bullet = { icons = { "•", "◦" } },
+    checkbox = {
+        unchecked = { icon = "☐ " },
+        checked = { icon = "☑ " },
+        custom = { todo = { rendered = "[-] " } },
+    },
+    quote = { icon = "│", highlight = "RenderMarkdownQuote" },
+    pipe_table = { preset = "round", padding = 1 },
+    callout = callouts,
+    link = { enabled = false },
+})
+
+vim.keymap.set("n", "<leader>tm", function()
+    require("render-markdown").toggle()
+end, { desc = "Toggle Markdown rendering" })
 
 -- STICKY CONTEXT
 

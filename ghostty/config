@@ -4,6 +4,8 @@
 theme = Kanagawa Dragon
 
 font-family = Source Code Pro
+# Use Apple Symbols first for Unicode glyphs missing from the primary font.
+font-family = Apple Symbols
 font-style = Medium
 font-size = 14
 

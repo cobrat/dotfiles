@@ -21,7 +21,9 @@ A reference for the custom keybinds in this configuration. `leader` is mapped to
   - [Miscellaneous](#miscellaneous)
   - [Text Objects](#text-objects)
 - [LSP Servers](#lsp-servers)
+- [Python、C 和 C++ 开发](#pythonc-和-c-开发)
 - [Tree-sitter](#tree-sitter)
+- [Markdown](#markdown)
 
 ## Configuration Structure
 
@@ -144,6 +146,7 @@ immediately instead of waiting out `timeoutlen`.
 C/C++ is formatted by clangd through clang-format, whose style comes from the
 dotfiles' `.clang-format` (linked to `~/.clang-format`): clangd exposes no
 style setting, and `--fallback-style` accepts predefined names only.
+Python 使用 Ruff 格式化。按 `<Space>cf` 手动格式化。
 
 ### Telescope
 
@@ -180,6 +183,7 @@ style setting, and `--fallback-style` accepts predefined names only.
 | `n`  | `<leader>s` | Replace all instances of the word under the cursor on the line|
 | `n`  | `<leader>u` | Browse undo history with a diff preview (telescope-undo)      |
 | `n`  | `<leader>th`| Toggle the sticky context header (treesitter-context)         |
+| `n`  | `<leader>tm`| Toggle Markdown rendering                                    |
 
 `<leader>s` is a leaf mapping, not a prefix: nothing is mapped under
 `<leader>s*`, so no key below it has to wait out `timeoutlen`.
@@ -203,8 +207,99 @@ Server binaries are looked up on `PATH`; a server is enabled only if its
 binary exists. The name list at the bottom of `lsp.lua` drives this, and
 binaries are derived from each config's `cmd` (single source of truth).
 
+## Python、C 和 C++ 开发
+
+使用现有原生补全菜单：`<C-n>` / `<C-p>` 选择候选项，`<C-y>` 确认。
+`gd` 跳转到定义，`K` 显示文档，`<Space>cr` 重命名，`<Space>ca` 显示代码操作。
+用 `:checkhealth vim.lsp` 检查语言服务状态。
+
+### macOS 工具
+
+以下工具只需安装一次，Neovim 启动时不会运行安装命令：
+
+```sh
+# 尚未安装 Apple 命令行工具时执行：
+xcode-select --install
+
+brew install uv cmake ninja
+uv tool install pyright
+uv tool install ruff
+```
+
+确保 `~/.local/bin` 在 `PATH` 中。Apple 命令行工具提供 `clang`、`clang++`
+和 `clangd`。C/C++ 使用 clangd 内置的格式化功能，无需单独安装 `clang-format`。
+
+### Python
+
+Pyright 提供补全、跳转和基本类型检查。Ruff 提供 lint 诊断、格式化、导入整理
+和修复操作。可在项目的 `pyproject.toml`、`pyrightconfig.json` 或 `ruff.toml`
+中调整相应工具的设置。
+
+创建虚拟环境，并安装项目依赖：
+
+```sh
+uv venv
+# 使用 uv 管理、含 pyproject.toml 的项目：
+uv sync
+# 或安装 requirements.txt 中的依赖：
+uv pip install -r requirements.txt
+nvim main.py
+```
+
+Pyright 按以下顺序选择解释器：显式设置的 `python.pythonPath`，已激活的
+`VIRTUAL_ENV` 或 `CONDA_PREFIX`，项目根目录的 `.venv/bin/python` 或
+`venv/bin/python`。否则由 Pyright 从 `PATH` 选择解释器。切换环境后重启
+Neovim。用 `:terminal uv run python main.py` 运行代码；也可先激活环境，再用
+`:terminal python main.py` 运行。
+
+### C 和 C++
+
+clangd 提供补全、跳转、诊断、clang-tidy 检查和格式化。为使 clangd 获得正确的
+头文件路径、宏定义和语言标准，项目应提供 `compile_commands.json`。
+CMake 项目可以这样配置：
+
+```sh
+cmake -S . -B build -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cmake --build build
+ln -s build/compile_commands.json compile_commands.json
+nvim src/main.cpp
+```
+
+仅在根目录没有编译数据库时创建该链接。也可在项目的 `.clangd` 中指定目录：
+
+```yaml
+CompileFlags:
+  CompilationDatabase: build
+```
+
+Make 项目可用 Bear 等工具生成编译数据库。单文件可用
+`:terminal clang -Wall -Wextra -g main.c -o /tmp/main` 或
+`:terminal clang++ -std=c++20 -Wall -Wextra -g main.cpp -o /tmp/main` 编译，
+再用 `:terminal /tmp/main` 运行。
+
+项目可在 `.clang-format` 中设置格式化规则。配置也会用 CMake 和 Meson 文件
+识别项目根目录。`.h` 文件沿用现有的内容识别规则，选择 C 或 C++；需要时用
+`:setfiletype cpp` 指定为 C++。
+
+参考：[Ruff 编辑器配置](https://docs.astral.sh/ruff/editors/setup/)、
+[Pyright 设置](https://github.com/microsoft/pyright/blob/main/docs/settings.md)、
+[clangd 配置](https://clangd.llvm.org/installation)。
+
 ## Tree-sitter
 
 Parsers are auto-installed on startup (`treesitter.lua`) and cover every
 LSP language above plus editing basics (bash/sh, yaml, markdown, json, vim,
 query). Filetype fallback: `sh` uses the `bash` parser.
+
+## Markdown
+
+`render-markdown.nvim` renders Markdown by default in all modes, including
+the cursor line. Headings use `H1` through `H6` with three theme colors;
+only level 1 has a full-width background. Code blocks fit their content with
+one space of padding on each side and show language names without icons.
+Tables use thin, rounded borders. Quotes use a muted vertical line, and
+callouts use text labels such as `[NOTE]` with semantic colors. Links keep
+source syntax. Markdown colors follow the active colorscheme.
+
+Use `<leader>tm` (Space, t, m) or `:RenderMarkdown toggle` to switch between
+rendered Markdown and source text.

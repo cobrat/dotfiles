@@ -44,6 +44,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
     group = lsp_augroup,
     callback = function(args)
         local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
+        -- Pyright 提供 Python 悬浮信息；Ruff 提供 lint 和格式化操作。
+        if client.name == 'ruff' then
+            client.server_capabilities.hoverProvider = false
+        end
         local buf    = args.buf
         local map = function(mode, lhs, rhs, desc)
             vim.keymap.set(mode, lhs, rhs, { buffer = buf, desc = desc })
@@ -139,9 +143,13 @@ vim.lsp.config['rust_analyzer'] = {
 
 -- C / C++ via clangd
 vim.lsp.config['clangd'] = {
-    cmd = { 'clangd' },
+    cmd = { 'clangd', '--background-index', '--clang-tidy' },
     filetypes = { 'c', 'cpp' },
-    root_markers = { 'compile_commands.json', '.clangd', 'configure.ac', 'Makefile', '.git' },
+    root_markers = {
+        { 'compile_commands.json', '.clangd' },
+        { 'CMakeLists.txt', 'configure.ac', 'Makefile', 'meson.build' },
+        '.git',
+    },
 }
 
 vim.lsp.config['jsonls'] = {
@@ -169,7 +177,51 @@ vim.lsp.config['gopls'] = {
 vim.lsp.config['pyright'] = {
     cmd = { 'pyright-langserver', '--stdio' },
     filetypes = { 'python' },
-    root_markers = { 'pyproject.toml', 'setup.py', 'setup.cfg', 'requirements.txt', '.git' },
+    root_markers = {
+        { 'pyproject.toml', 'pyrightconfig.json', 'setup.py', 'setup.cfg', 'requirements.txt' },
+        '.git',
+    },
+    settings = {
+        pyright = { disableOrganizeImports = true },
+        python = {
+            analysis = {
+                autoImportCompletions = true,
+                diagnosticMode = 'openFilesOnly',
+                typeCheckingMode = 'basic',
+            },
+        },
+    },
+    before_init = function(_, config)
+        -- 保留显式指定的解释器。
+        if config.settings.python.pythonPath then return end
+        local environments = {}
+        for _, name in ipairs({ 'VIRTUAL_ENV', 'CONDA_PREFIX' }) do
+            if vim.env[name] then
+                environments[#environments + 1] = vim.env[name]
+            end
+        end
+        if config.root_dir then
+            for _, name in ipairs({ '.venv', 'venv' }) do
+                environments[#environments + 1] = vim.fs.joinpath(config.root_dir, name)
+            end
+        end
+        for _, environment in ipairs(environments) do
+            local python = vim.fs.joinpath(environment, 'bin', 'python')
+            if vim.fn.executable(python) == 1 then
+                config.settings.python.pythonPath = python
+                return
+            end
+        end
+    end,
+}
+
+vim.lsp.config['ruff'] = {
+    cmd = { 'ruff', 'server' },
+    filetypes = { 'python' },
+    root_markers = {
+        { 'pyproject.toml', 'ruff.toml', '.ruff.toml', 'pyrightconfig.json', 'setup.py', 'setup.cfg', 'requirements.txt' },
+        '.git',
+    },
 }
 
 vim.lsp.config['bashls'] = {
@@ -210,7 +262,7 @@ vim.filetype.add({
 -- enable servers whose cmd[1] is on PATH
 local servers = {
     'luals', 'clangd', 'jsonls', 'yamlls', 'gopls', 'rust_analyzer',
-    'pyright', 'bashls',
+    'pyright', 'ruff', 'bashls',
 }
 
 for _, name in ipairs(servers) do
